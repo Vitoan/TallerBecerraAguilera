@@ -115,11 +115,11 @@ git clone https://github.com/Vitoan/TallerBecerraAguilera.git
 cd TallerBecerraAguilera
 ```
 
-### 🧩 2. Crear la base de datos en SQL Server
+### 🧩 2. Crear la base de datos en SQL 
 ```sql
-CREATE DATABASE TallerMecanicoDB;
-GO
-USE TallerMecanicoDB;
+CREATE DATABASE taller_mecanico_db;
+
+USE taller_mecanico_db;
 ```
 - Importar `/Database/taller_mecanico_db.sql` .
 
@@ -164,7 +164,7 @@ https://localhost:7001/  # O puerto asignado
 
 ---
 
-## 🔑 API con JWT - Pruebas en Postman
+## 🔑 API con JWT - Pruebas en Postman (Futuro)
 
 - **Colección**: `/docs/TallerAPI.postman_collection.json` (importar en Postman).
 - **Autenticación**: POST `/api/auth/login` → Obtener token JWT.
