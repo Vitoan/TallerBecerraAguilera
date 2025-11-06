@@ -107,7 +107,7 @@ El modelo de datos incluye **8 entidades principales** con relaciones 1:N y N:N:
 Relaciones clave: Al menos 4 tablas con 1:N (e.g., Cliente-Vehículo, Vehículo-OT).
 
 
-## 🧠 Cómo ejecutar el proyecto (futuro)
+## 🧠 Cómo ejecutar el proyecto (Futuro)
 
 ### 🪜 1. Clonar el repositorio
 ```bash
