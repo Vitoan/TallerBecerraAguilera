@@ -1,8 +1,54 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+
+    <h2 class="fw-bold text-info mb-4">🔧 Panel general del Taller</h2>
+
+    <div class="row g-3">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h4 class="text-primary fw-bold">@ViewBag.OrdenesPendientes</h4>
+                    <p class="text-muted mb-0">Órdenes Pendientes</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h4 class="text-warning fw-bold">@ViewBag.OrdenesEnReparacion</h4>
+                    <p class="text-muted mb-0">En Reparación</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h4 class="text-success fw-bold">@ViewBag.OrdenesFinalizadas</h4>
+                    <p class="text-muted mb-0">Finalizadas</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h4 class="text-danger fw-bold">@ViewBag.StockCritico</h4>
+                    <p class="text-muted mb-0">Repuestos Bajo Stock</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4"/>
+
+    <h4 class="fw-bold mb-3">📋 Ordenes recientes</h4>
+
+    @await Component.InvokeAsync("UltimasOTs")
+
 </div>
