@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TallerBecerraAguilera.Models
 {
@@ -15,8 +16,12 @@ namespace TallerBecerraAguilera.Models
         [Required, StringLength(100)]
         public string Nombre { get; set; } = string.Empty;
 
+        
         [Required, StringLength(100)]
         public string Apellido { get; set; } = string.Empty;
+
+        [NotMapped] // Indica que esta propiedad no debe mapearse a la base de datos
+        public string NombreCompleto => $"{Nombre} {Apellido}";
 
         // PROPIEDAD DNI AÑADIDA PARA SOLUCIONAR EL ERROR
         [StringLength(20)]
@@ -44,5 +49,6 @@ namespace TallerBecerraAguilera.Models
         {
             return $"{Nombre} {Apellido} ({Dni})";
         }
+        
     }
 }

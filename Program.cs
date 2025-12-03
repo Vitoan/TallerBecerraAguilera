@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Data;
-using TallerBecerraAguilera.Repositorio; // Usando el namespace de la carpeta raíz
+using TallerBecerraAguilera.Repositorio; 
+using TallerBecerraAguilera.Repositorios;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<OrdenTrabajoRepositorio, OrdenTrabajoRepositorio>(); 
 // Se registra la clase concreta del Repositorio de Clientes
 builder.Services.AddScoped<ClienteRepositorio, ClienteRepositorio>(); 
+builder.Services.AddScoped<VehiculoRepositorio, VehiculoRepositorio>();
 
 var app = builder.Build();
 
