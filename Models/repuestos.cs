@@ -1,44 +1,43 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema; // <-- NECESARIO PARA EL ATRIBUTO [Column]
 using Microsoft.EntityFrameworkCore;
 
 namespace TallerBecerraAguilera.Models
 {
+    // [Table("repuestos")] // No es necesario si ya mapeaste en ApplicationDbContext
     public class Repuestos
     {
         [Key]
-        [Display(Name = "Código Int.")]
         public int Id { get; set; }
 
-        [Required, StringLength(50)]
-        public string Codigo { get; set; } = string.Empty;
+        [Required, StringLength(100)]
+        public string Nombre { get; set; } = string.Empty;
 
-        [Required, StringLength(200)]
-        [Display(Name = "Descripción")]
-        public string Descripcion { get; set; } = string.Empty;
+        public string? Descripcion { get; set; }
 
-        [Display(Name = "Stock Actual")]
-        public int CantidadStock { get; set; } = 0;
-
-        [Precision(10, 2)]
-        [Display(Name = "Precio Unitario")]
+        [Required]
+        [Column("precio_unitario", TypeName = "decimal(10, 2)")]
         public decimal PrecioUnitario { get; set; }
 
-        [Display(Name = "Stock Mínimo")]
+        // Mapeo crucial para el error:
+        [Column("cantidad_stock")] // <-- Corregido: CantidadStock -> cantidad_stock
+        public int CantidadStock { get; set; } = 0;
+
+        [Column("stock_minimo")] // <-- Corregido: StockMinimo -> stock_minimo
         public int StockMinimo { get; set; } = 0;
 
-        [Display(Name = "Proveedores")]
+        // Clave Foránea
+        [Column("proveedor_id")]
         public int? ProveedorId { get; set; }
+
+        // Propiedad de navegación
         public Proveedores? Proveedor { get; set; }
 
-        [Display(Name = "Creado")]
+        // Fechas y otros campos
+        [Column("created_at")]
         public DateTime? Created_at { get; set; } = DateTime.Now;
 
-        [Display(Name = "Actualizado")]
+        [Column("updated_at")]
         public DateTime? Updated_at { get; set; } = DateTime.Now;
-
-        public override string ToString()
-        {
-            return $"{Codigo} - {Descripcion}";
-        }
     }
 }

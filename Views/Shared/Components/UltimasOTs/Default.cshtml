@@ -1,0 +1,64 @@
+@model List<TallerBecerraAguilera.Models.ViewModels.UltimasOTsViewModel>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Últimas Órdenes de Trabajo</h6>
+    </div>
+    <div class="card-body">
+        @if (Model == null || !Model.Any())
+        {
+            <p>No hay órdenes de trabajo recientes para mostrar.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>OT #</th>
+                            <th>Vehículo</th>
+                            <th>Falla</th>
+                            <th>Ingreso</th>
+                            <th>Estado</th>
+                            <th>Asignado a</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ot in Model)
+                        {
+                            <tr>
+                                <td><a href="#">@ot.Id</a></td> @* En el futuro, este será el link a la edición *@
+                                <td>@ot.Patente</td>
+                                <td>@ot.DescripcionFalla</td>
+                                <td>@ot.FechaIngreso.ToShortDateString()</td>
+                                <td>
+                                    @* Se usa una clase dinámica para mostrar colores según el estado *@
+                                    <span class="badge @GetBadgeClass(ot.Estado)">
+                                        @ot.Estado
+                                    </span>
+                                </td>
+                                <td>@ot.EmpleadoAsignado</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@* Bloque de funciones: Una buena práctica para lógica de presentación simple *@
+@functions {
+    string GetBadgeClass(string estado)
+    {
+        // Se define una clase CSS (tipo Bootstrap) para cada estado
+        return estado switch
+        {
+            "Pendiente" => "bg-warning text-dark",
+            "EnReparacion" => "bg-primary text-white",
+            "Finalizada" => "bg-success text-white",
+            "Entregada" => "bg-info text-dark",
+            _ => "bg-secondary text-white"
+        };
+    }
+}
