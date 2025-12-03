@@ -1,7 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace TallerBecerraAguilera.Models
 {
+    // Una buena práctica sería agregar un índice para búsquedas rápidas por DNI o Email
+    [Index(nameof(Dni), IsUnique = true)] 
+    [Index(nameof(Email))]
     public class Clientes
     {
         [Key]
@@ -14,6 +18,10 @@ namespace TallerBecerraAguilera.Models
         [Required, StringLength(100)]
         public string Apellido { get; set; } = string.Empty;
 
+        // PROPIEDAD DNI AÑADIDA PARA SOLUCIONAR EL ERROR
+        [StringLength(20)]
+        public string? Dni { get; set; }
+
         [StringLength(20)]
         [Phone]
         public string? Telefono { get; set; }
@@ -21,6 +29,10 @@ namespace TallerBecerraAguilera.Models
         [StringLength(255)]
         [EmailAddress]
         public string? Email { get; set; }
+
+        // Propiedad de navegación para la relación 1:N con Vehículos
+        public ICollection<Vehiculos>? Vehiculos { get; set; }
+
 
         [Display(Name = "Creado")]
         public DateTime? Created_at { get; set; } = DateTime.Now;
@@ -30,7 +42,7 @@ namespace TallerBecerraAguilera.Models
 
         public override string ToString()
         {
-            return $"{Nombre} {Apellido}";
+            return $"{Nombre} {Apellido} ({Dni})";
         }
     }
 }

@@ -1,23 +1,40 @@
+using Microsoft.EntityFrameworkCore;
+using TallerBecerraAguilera.Data;
+using TallerBecerraAguilera.Repositorio; // Usando el namespace de la carpeta raíz
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// 1. Agregar el DbContext con Pomelo + MySQL
+// CORRECCIÓN: Usar "DefaultConnection"
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(
+        connectionString,
+        ServerVersion.AutoDetect(connectionString)
+    ));
+    
+// 2. Servicios normales de MVC
 builder.Services.AddControllersWithViews();
+
+// 3. REGISTRO DE REPOSITORIOS (Solución al error de DI)
+// Se registra la clase concreta del Repositorio de Ordenes de Trabajo
+builder.Services.AddScoped<OrdenTrabajoRepositorio, OrdenTrabajoRepositorio>(); 
+// Se registra la clase concreta del Repositorio de Clientes
+builder.Services.AddScoped<ClienteRepositorio, ClienteRepositorio>(); 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(

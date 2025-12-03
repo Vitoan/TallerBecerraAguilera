@@ -1,31 +1,37 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using TallerBecerraAguilera.Repositorio; // Usando el repositorio sin interfaz
 using TallerBecerraAguilera.Models;
+using TallerBecerraAguilera.Models.ViewModels;
 
-namespace TallerBecerraAguilera.Controllers;
-
-public class HomeController : Controller
+namespace TallerBecerraAguilera.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    public class HomeController : Controller
     {
-        _logger = logger;
-    }
+        private readonly OrdenTrabajoRepositorio _ordenTrabajoRepositorio;
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+        public HomeController(OrdenTrabajoRepositorio ordenTrabajoRepositorio)
+        {
+            _ordenTrabajoRepositorio = ordenTrabajoRepositorio;
+        }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+        // Soluciona el warning CS1998 usando 'await' y Task<IActionResult>
+        public async Task<IActionResult> Index()
+        {
+            // Obtener contadores usando los métodos asíncronos del repositorio
+            ViewBag.OrdenesPendientes = await _ordenTrabajoRepositorio.GetCountByEstadoAsync(EstadoOrden.Pendiente);
+            
+            ViewBag.OrdenesEnReparacion = await _ordenTrabajoRepositorio.GetCountByEstadoAsync(EstadoOrden.EnReparacion);
+            
+            // Contar Finalizada y Entregada juntas
+            var finalizadas = await _ordenTrabajoRepositorio.GetCountByEstadoAsync(EstadoOrden.Finalizada);
+            var entregadas = await _ordenTrabajoRepositorio.GetCountByEstadoAsync(EstadoOrden.Entregada);
+            ViewBag.OrdenesFinalizadas = finalizadas + entregadas;
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            ViewBag.StockCritico = await _ordenTrabajoRepositorio.GetStockCriticoCountAsync();
+
+            return View();
+        }
+        
+        // ... (Agrega aquí tus métodos Privacy, Error, etc., si los tienes)
     }
 }

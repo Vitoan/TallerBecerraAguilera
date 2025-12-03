@@ -35,6 +35,9 @@ namespace TallerBecerraAguilera.Models
         [Display(Name = "Cliente")]
         public int ClienteId { get; set; }
 
+        // Propiedad de Navegación AÑADIDA
+        public Clientes? Cliente { get; set; } 
+
         [Display(Name = "Creado")]
         public DateTime? Created_at { get; set; } = DateTime.Now;
 
