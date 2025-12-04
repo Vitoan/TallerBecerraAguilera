@@ -24,6 +24,7 @@ builder.Services.AddScoped<OrdenTrabajoRepositorio, OrdenTrabajoRepositorio>();
 // Se registra la clase concreta del Repositorio de Clientes
 builder.Services.AddScoped<ClienteRepositorio, ClienteRepositorio>(); 
 builder.Services.AddScoped<VehiculoRepositorio, VehiculoRepositorio>();
+builder.Services.AddScoped<HerramientaRepositorio, HerramientaRepositorio>();
 
 var app = builder.Build();
 

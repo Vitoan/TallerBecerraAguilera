@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace TallerBecerraAguilera.Models
@@ -7,7 +8,6 @@ namespace TallerBecerraAguilera.Models
     public class Vehiculos
     {
         [Key]
-        [Display(Name = "Código Int.")]
         public int Id { get; set; }
 
         [Required, StringLength(10)]
@@ -25,29 +25,18 @@ namespace TallerBecerraAguilera.Models
         public int Anio { get; set; }
 
         [Required]
-        [Display(Name = "Tipo Vehículo")]
         public TipoVehiculo Tipo { get; set; }
 
-        [Display(Name = "Observaciones")]
         public string? Observaciones { get; set; }
 
         [Required]
-        [Display(Name = "Cliente")]
+        [Column("cliente_id")]   // 🔥 ESTE ES EL ARREGLO CLAVE
         public int ClienteId { get; set; }
 
-        // Propiedad de Navegación AÑADIDA
-        public Clientes? Cliente { get; set; } 
+        public Clientes? Cliente { get; set; }
 
-        [Display(Name = "Creado")]
         public DateTime? Created_at { get; set; } = DateTime.Now;
-
-        [Display(Name = "Actualizado")]
         public DateTime? Updated_at { get; set; } = DateTime.Now;
-
-        public override string ToString()
-        {
-            return $"{Patente} - {Marca} {Modelo} ({Anio}) [{Tipo}]";
-        }
     }
 
     public enum TipoVehiculo

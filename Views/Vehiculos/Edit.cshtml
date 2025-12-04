@@ -1,0 +1,32 @@
+@model TallerBecerraAguilera.Models.Vehiculos
+
+<h1>Editar Vehículo</h1>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+
+    <label>Patente</label>
+    <input asp-for="Patente" class="form-control" />
+
+    <label>Marca</label>
+    <input asp-for="Marca" class="form-control" />
+
+    <label>Modelo</label>
+    <input asp-for="Modelo" class="form-control" />
+
+    <label>Año</label>
+    <input asp-for="Anio" class="form-control" />
+
+    <label>Tipo</label>
+    <select asp-for="Tipo" class="form-control" asp-items="Html.GetEnumSelectList<TipoVehiculo>()"></select>
+
+    <label>Cliente</label>
+    <select asp-for="ClienteId" class="form-control" asp-items="ViewBag.ClienteId"></select>
+
+    <label>Observaciones</label>
+    <textarea asp-for="Observaciones" class="form-control"></textarea>
+
+    <br />
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+</form>

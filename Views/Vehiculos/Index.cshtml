@@ -1,0 +1,39 @@
+@model IEnumerable<TallerBecerraAguilera.Models.Vehiculos>
+
+<h1>Vehículos</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Nuevo Vehículo</a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Patente</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Año</th>
+            <th>Tipo</th>
+            <th>Cliente</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Patente</td>
+            <td>@item.Marca</td>
+            <td>@item.Modelo</td>
+            <td>@item.Anio</td>
+            <td>@item.Tipo</td>
+            <td>@item.Cliente?.Nombre @item.Cliente?.Apellido</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Detalle</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

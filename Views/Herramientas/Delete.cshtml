@@ -1,0 +1,39 @@
+@model TallerBecerraAguilera.Models.Herramientas
+
+@{
+    ViewData["Title"] = "Eliminar Herramienta";
+}
+
+<h2>Eliminar Herramienta</h2>
+
+<h4>¿Seguro que deseas eliminar esta herramienta?</h4>
+
+<hr />
+
+<div class="mb-3">
+    <dl class="row">
+        <dt class="col-sm-3">Código</dt>
+        <dd class="col-sm-9">@Model.Codigo</dd>
+
+        <dt class="col-sm-3">Nombre</dt>
+        <dd class="col-sm-9">@Model.Nombre</dd>
+
+        <dt class="col-sm-3">Estado</dt>
+        <dd class="col-sm-9">@Model.Estado</dd>
+
+        <dt class="col-sm-3">Ubicación</dt>
+        <dd class="col-sm-9">@Model.Ubicacion</dd>
+    </dl>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <button type="submit" class="btn btn-danger">
+        🗑️ Eliminar
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Cancelar
+    </a>
+</form>
