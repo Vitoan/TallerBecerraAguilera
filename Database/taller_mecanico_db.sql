@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-11-2025 a las 02:59:29
+-- Tiempo de generación: 07-12-2025 a las 17:56:07
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `taller_mecanico_db`
 --
-CREATE DATABASE IF NOT EXISTS `taller_mecanico_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `taller_mecanico_db`;
 
 -- --------------------------------------------------------
 
@@ -36,16 +34,17 @@ CREATE TABLE `clientes` (
   `telefono` varchar(20) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `Dni` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `clientes`
 --
 
-INSERT INTO `clientes` (`id`, `nombre`, `apellido`, `telefono`, `email`, `created_at`, `updated_at`) VALUES
-(1, 'Carlos', 'López', '351-1111111', 'carlos@cliente.com', '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
-(2, 'Ana', 'Gómez', '351-2222222', 'ana@cliente.com', '2025-11-05 22:58:39', '2025-11-05 22:58:39');
+INSERT INTO `clientes` (`id`, `nombre`, `apellido`, `telefono`, `email`, `created_at`, `updated_at`, `Dni`) VALUES
+(1, 'Carlos', 'López', '351-1111111', 'carlos@cliente.com', '2025-11-05 22:58:39', '2025-12-07 13:13:42', '12345678'),
+(2, 'Ana', 'Gómez', '351-2222222', 'ana@cliente.com', '2025-11-05 22:58:39', '2025-12-07 13:13:49', '12123123');
 
 -- --------------------------------------------------------
 
@@ -82,7 +81,7 @@ CREATE TABLE `herramientas` (
   `id` int(11) NOT NULL,
   `codigo` varchar(50) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `estado` enum('Disponible','EnUso','EnMantenimiento') NOT NULL DEFAULT 'Disponible',
+  `Estado` int(11) NOT NULL,
   `ubicacion` varchar(100) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -92,9 +91,9 @@ CREATE TABLE `herramientas` (
 -- Volcado de datos para la tabla `herramientas`
 --
 
-INSERT INTO `herramientas` (`id`, `codigo`, `nombre`, `estado`, `ubicacion`, `created_at`, `updated_at`) VALUES
-(1, 'H001', 'Llave inglesa 10mm', 'Disponible', 'Estante A1', '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
-(2, 'H002', 'Extractor de bujías', 'Disponible', 'Cajón B2', '2025-11-05 22:58:39', '2025-11-05 22:58:39');
+INSERT INTO `herramientas` (`id`, `codigo`, `nombre`, `Estado`, `ubicacion`, `created_at`, `updated_at`) VALUES
+(1, 'H001', 'Llave inglesa 10mm', 1, 'Estante A1', '2025-12-04 16:07:56', '2025-12-04 16:07:56'),
+(2, 'H002', 'Extractor de bujías', 1, 'Cajón B2', '2025-11-05 22:58:39', '2025-11-05 22:58:39');
 
 -- --------------------------------------------------------
 
@@ -290,7 +289,7 @@ CREATE TABLE `vehiculos` (
   `marca` varchar(50) NOT NULL,
   `modelo` varchar(50) NOT NULL,
   `anio` year(4) NOT NULL CHECK (`anio` >= 1900),
-  `tipo` enum('Auto','Camioneta','Moto') NOT NULL,
+  `tipo` int(11) NOT NULL,
   `observaciones` text DEFAULT NULL,
   `cliente_id` int(11) NOT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
@@ -302,8 +301,8 @@ CREATE TABLE `vehiculos` (
 --
 
 INSERT INTO `vehiculos` (`id`, `patente`, `marca`, `modelo`, `anio`, `tipo`, `observaciones`, `cliente_id`, `created_at`, `updated_at`) VALUES
-(1, 'ABC123', 'Toyota', 'Corolla', '2020', 'Auto', 'Cambio de aceite', 1, '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
-(2, 'DEF456', 'Fiat', 'Cronos', '2022', 'Auto', 'Frenos delanteros', 2, '2025-11-05 22:58:39', '2025-11-05 22:58:39');
+(1, 'ABC123', 'Toyota', 'Corolla', '2020', 0, 'Cambio de aceite', 1, '2025-11-05 22:58:39', '2025-12-07 13:27:25'),
+(2, 'DEF456', 'Fiat', 'Cronos', '2022', 0, 'Frenos delanteros', 2, '2025-11-05 22:58:39', '2025-12-07 13:27:25');
 
 --
 -- Índices para tablas volcadas
@@ -313,7 +312,8 @@ INSERT INTO `vehiculos` (`id`, `patente`, `marca`, `modelo`, `anio`, `tipo`, `ob
 -- Indices de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `IX_Clientes_Dni` (`Dni`);
 
 --
 -- Indices de la tabla `empleados`
@@ -329,7 +329,7 @@ ALTER TABLE `empleados`
 ALTER TABLE `herramientas`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `codigo` (`codigo`),
-  ADD KEY `idx_herramientas_estado` (`estado`);
+  ADD KEY `idx_herramientas_estado` (`Estado`);
 
 --
 -- Indices de la tabla `ordenes_trabajo`
@@ -422,7 +422,7 @@ ALTER TABLE `empleados`
 -- AUTO_INCREMENT de la tabla `herramientas`
 --
 ALTER TABLE `herramientas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `ordenes_trabajo`
