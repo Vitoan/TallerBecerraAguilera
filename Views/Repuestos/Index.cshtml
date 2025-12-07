@@ -1,0 +1,43 @@
+@model IEnumerable<TallerBecerraAguilera.Models.Repuestos>
+
+@{
+    ViewData["Title"] = "Repuestos";
+}
+
+<h2>Repuestos</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Agregar Repuesto</a>
+    <a class="btn btn-success" asp-controller="PedidoRepuestos" asp-action="Create">Solicitar Repuesto</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Descripción</th>
+            <th>Stock</th>
+            <th>Stock Mínimo</th>
+            <th>Precio</th>
+            <th>Proveedor</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Descripcion</td>
+            <td>@item.CantidadStock</td>
+            <td>@item.StockMinimo</td>
+            <td>@item.PrecioUnitario</td>
+            <td>@item.Proveedor?.Nombre</td>
+            <td>
+                <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

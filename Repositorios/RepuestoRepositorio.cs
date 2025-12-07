@@ -4,51 +4,60 @@ using TallerBecerraAguilera.Data;
 
 namespace TallerBecerraAguilera.Repositorios
 {
-    public class RepuestoRepositorio : RepositorioBase<Repuestos>
+    public class RepuestoRepositorio
     {
-        public RepuestoRepositorio(ApplicationDbContext context) : base(context) { }
+        private readonly ApplicationDbContext _context;
 
-        public async Task<int> ContarStockCritico() =>
-            await _context.Repuestos
-                .CountAsync(r => r.CantidadStock <= r.StockMinimo && r.StockMinimo > 0);
+        public RepuestoRepositorio(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
-        public async Task<IEnumerable<Repuestos>> GetAllWithProveedorAsync()
+        public async Task<IEnumerable<Repuestos>> GetAllAsync()
         {
             return await _context.Repuestos
                 .Include(r => r.Proveedor)
                 .ToListAsync();
         }
 
-        public async Task<Repuestos?> GetByIdWithProveedorAsync(int id)
+        public async Task<Repuestos?> GetByIdAsync(int id)
         {
             return await _context.Repuestos
                 .Include(r => r.Proveedor)
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async Task<IEnumerable<Repuestos>> GetDisponiblesAsync()
+        public async Task AddAsync(Repuestos repuesto)
         {
-            return await _context.Repuestos
-                .Where(r => r.CantidadStock > 0)
-                .ToListAsync();
+            _context.Repuestos.Add(repuesto);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Proveedores>> GetAllProveedoresAsync()
+        public async Task UpdateAsync(Repuestos repuesto)
         {
-            return await _context.Proveedores.ToListAsync();
+            _context.Repuestos.Update(repuesto);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task DescontarStockAsync(int repuestoId, int cantidad)
+        public async Task DeleteAsync(int id)
         {
-            var repuesto = await _context.Repuestos.FindAsync(repuestoId);
+            var repuesto = await _context.Repuestos.FindAsync(id);
             if (repuesto != null)
             {
-                repuesto.CantidadStock -= cantidad;
-                if (repuesto.CantidadStock < 0)
-                    repuesto.CantidadStock = 0;
-
+                _context.Repuestos.Remove(repuesto);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Repuestos.AnyAsync(r => r.Id == id);
+        }
+
+        public async Task<int> ContarStockCritico()
+        {
+            return await _context.Repuestos
+                .CountAsync(r => r.CantidadStock <= r.StockMinimo && r.StockMinimo > 0);
         }
 
         public async Task AumentarStockAsync(int repuestoId, int cantidad)
@@ -61,9 +70,14 @@ namespace TallerBecerraAguilera.Repositorios
             }
         }
 
-        public async Task<bool> ExisteRepuestoAsync(int id)
+        public async Task DescontarStockAsync(int repuestoId, int cantidad)
         {
-            return await _context.Repuestos.AnyAsync(r => r.Id == id);
+            var repuesto = await _context.Repuestos.FindAsync(repuestoId);
+            if (repuesto != null && repuesto.CantidadStock >= cantidad)
+            {
+                repuesto.CantidadStock -= cantidad;
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

@@ -1,0 +1,29 @@
+@model TallerBecerraAguilera.Models.PedidosRepuestos
+
+<h2>Solicitar Repuesto</h2>
+
+<form asp-action="Create" method="post">
+
+    <div class="form-group">
+        <label>Proveedor</label>
+        <select asp-for="ProveedorId" asp-items="ViewBag.Proveedores" class="form-control"></select>
+    </div>
+
+    <div class="form-group">
+        <label>Empleado</label>
+        <select asp-for="EmpleadoId" asp-items="ViewBag.Empleados" class="form-control"></select>
+    </div>
+
+    <div class="form-group">
+        <label>Repuesto</label>
+        <select name="RepuestoId" asp-items="ViewBag.Repuestos" class="form-control"></select>
+    </div>
+
+    <div class="form-group">
+        <label>Cantidad</label>
+        <input type="number" name="CantidadSolicitada" class="form-control"/>
+    </div>
+
+    <button type="submit" class="btn btn-success">Generar Pedido</button>
+    <a asp-controller="Repuestos" asp-action="Index" class="btn btn-secondary">Volver</a>
+</form>

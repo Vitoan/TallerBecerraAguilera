@@ -1,0 +1,16 @@
+@model TallerBecerraAguilera.Models.Repuestos
+
+<h2>Eliminar Repuesto</h2>
+
+<h4>¿Seguro que desea eliminar este repuesto?</h4>
+
+<dl class="row">
+    <dt class="col-sm-3">Descripción</dt>
+    <dd class="col-sm-9">@Model.Descripcion</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id"/>
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
