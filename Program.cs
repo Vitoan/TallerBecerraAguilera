@@ -25,6 +25,12 @@ builder.Services.AddScoped<OrdenTrabajoRepositorio, OrdenTrabajoRepositorio>();
 builder.Services.AddScoped<ClienteRepositorio, ClienteRepositorio>(); 
 builder.Services.AddScoped<VehiculoRepositorio, VehiculoRepositorio>();
 builder.Services.AddScoped<HerramientaRepositorio, HerramientaRepositorio>();
+builder.Services.AddScoped<RepuestoRepositorio,RepuestoRepositorio>();
+builder.Services.AddScoped<PedidosRepuestosRepositorio, PedidosRepuestosRepositorio>();
+builder.Services.AddScoped<PedidoRepuestosRepositorio, PedidoRepuestosRepositorio>();
+builder.Services.AddScoped<ProveedorRepositorio, ProveedorRepositorio>();
+
+
 
 var app = builder.Build();
 

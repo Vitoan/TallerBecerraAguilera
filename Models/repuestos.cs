@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema; // <-- NECESARIO PARA EL ATRIBUTO [Column]
+using System.ComponentModel.DataAnnotations.Schema; 
 using Microsoft.EntityFrameworkCore;
 
 namespace TallerBecerraAguilera.Models
 {
-    // [Table("repuestos")] // No es necesario si ya mapeaste en ApplicationDbContext
     public class Repuestos
     {
         [Key]
@@ -20,10 +19,10 @@ namespace TallerBecerraAguilera.Models
         public decimal PrecioUnitario { get; set; }
 
         // Mapeo crucial para el error:
-        [Column("cantidad_stock")] // <-- Corregido: CantidadStock -> cantidad_stock
+        [Column("cantidad_stock")]
         public int CantidadStock { get; set; } = 0;
 
-        [Column("stock_minimo")] // <-- Corregido: StockMinimo -> stock_minimo
+        [Column("stock_minimo")]
         public int StockMinimo { get; set; } = 0;
 
         // Clave Foránea
