@@ -1,0 +1,32 @@
+@model IEnumerable<TallerBecerraAguilera.Models.Proveedores>
+
+<h2>Proveedores</h2>
+
+<a asp-action="Create" class="btn btn-success mb-2">Agregar Proveedor</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Contacto</th>
+            <th>Teléfono</th>
+            <th>Condiciones</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Nombre</td>
+                <td>@p.Contacto</td>
+                <td>@p.Telefono</td>
+                <td>@p.CondicionesCompra</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-warning btn-sm">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@p.Id" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

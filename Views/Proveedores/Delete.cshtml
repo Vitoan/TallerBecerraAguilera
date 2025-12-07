@@ -1,0 +1,13 @@
+@model TallerBecerraAguilera.Models.Proveedores
+
+<h2>Eliminar Proveedor</h2>
+
+<div class="alert alert-danger">
+    ¿Seguro que querés eliminar a <strong>@Model.Nombre</strong>?
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id"/>
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
