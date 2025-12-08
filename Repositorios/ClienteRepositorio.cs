@@ -3,8 +3,9 @@ using TallerBecerraAguilera.Data;
 using TallerBecerraAguilera.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
-namespace TallerBecerraAguilera.Repositorio // Namespace correcto para la raíz
+namespace TallerBecerraAguilera.Repositorio 
 {
     public class ClienteRepositorio
     {
@@ -21,15 +22,31 @@ namespace TallerBecerraAguilera.Repositorio // Namespace correcto para la raíz
             return await _context.Clientes.ToListAsync();
         }
 
-        // Obtener un cliente por ID (LEER/BUSCAR)
+        // Obtener un cliente por ID (INCLUYE VEHÍCULOS para la vista Details)
         public async Task<Clientes?> GetByIdAsync(int id)
         {
-            return await _context.Clientes.FindAsync(id);
+            return await _context.Clientes
+                .Include(c => c.Vehiculos) // Carga los vehículos asociados
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
+        
+        // Obtener por DNI (para validación de unicidad)
+        public async Task<Clientes?> GetByDniAsync(string dni)
+        {
+            return await _context.Clientes.FirstOrDefaultAsync(c => c.Dni == dni);
+        }
+
+        // Comprobar existencia (para manejo de concurrencia en Edit)
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.Clientes.AnyAsync(c => c.Id == id);
         }
 
         // Agregar un nuevo cliente (CREAR)
         public async Task AddAsync(Clientes cliente)
         {
+            cliente.Created_at = DateTime.Now;
+            cliente.Updated_at = DateTime.Now;
             _context.Clientes.Add(cliente);
             await _context.SaveChangesAsync();
         }
@@ -37,6 +54,7 @@ namespace TallerBecerraAguilera.Repositorio // Namespace correcto para la raíz
         // Actualizar un cliente existente (ACTUALIZAR)
         public async Task UpdateAsync(Clientes cliente)
         {
+            cliente.Updated_at = DateTime.Now;
             _context.Clientes.Update(cliente);
             await _context.SaveChangesAsync();
         }

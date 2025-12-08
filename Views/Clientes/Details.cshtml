@@ -1,29 +1,80 @@
 @model TallerBecerraAguilera.Models.Clientes
+@using TallerBecerraAguilera.Models
 
 @{
     ViewData["Title"] = "Detalle del Cliente";
 }
 
-<h1>Detalle del Cliente</h1>
-
-<div class="mt-3">
-    <dl class="row">
-        <dt class="col-sm-2">Nombre</dt>
-        <dd class="col-sm-10">@Model.Nombre</dd>
-
-        <dt class="col-sm-2">Apellido</dt>
-        <dd class="col-sm-10">@Model.Apellido</dd>
-
-        <dt class="col-sm-2">DNI</dt>
-        <dd class="col-sm-10">@Model.Dni</dd>
-
-        <dt class="col-sm-2">Teléfono</dt>
-        <dd class="col-sm-10">@Model.Telefono</dd>
-
-        <dt class="col-sm-2">Email</dt>
-        <dd class="col-sm-10">@Model.Email</dd>
-    </dl>
-
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
-    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]: @Model.NombreCompleto</h1>
 </div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Información General</h6>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Dni)</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.Dni)</dd>
+
+            <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Telefono)</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.Telefono)</dd>
+
+            <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Email)</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.Email)</dd>
+            
+            <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Created_at)</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.Created_at)</dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+            <i class="bi bi-pencil-square"></i> Editar
+        </a>
+        <a asp-action="Index" class="btn btn-secondary ms-2">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<h4 class="mt-5">🚗 Vehículos Registrados (@(Model.Vehiculos?.Count ?? 0))</h4>
+@if (Model.Vehiculos != null && Model.Vehiculos.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Patente</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Año</th>
+                    <th>Tipo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var vehiculo in Model.Vehiculos)
+                {
+                    <tr>
+                        <td>@vehiculo.Patente</td>
+                        <td>@vehiculo.Marca</td>
+                        <td>@vehiculo.Modelo</td>
+                        <td>@vehiculo.Anio</td>
+                        <td>@vehiculo.Tipo</td>
+                        <td>
+                            <a asp-controller="Vehiculos" asp-action="Details" asp-route-id="@vehiculo.Id" class="btn btn-sm btn-info">Ver Detalle</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning mt-3">
+        Este cliente no tiene vehículos asociados.
+        <a asp-controller="Vehiculos" asp-action="Create" class="alert-link">¡Registrar uno ahora!</a>
+    </div>
+}

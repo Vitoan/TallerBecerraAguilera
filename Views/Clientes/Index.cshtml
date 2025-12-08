@@ -4,38 +4,60 @@
     ViewData["Title"] = "Clientes";
 }
 
-<h1>Listado de Clientes</h1>
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">👤 Listado de Clientes</h1>
+    <a asp-action="Create" class="btn btn-primary btn-icon-split">
+        <span class="text">Nuevo Cliente</span>
+    </a>
+</div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Nuevo Cliente</a>
-</p>
+@* Mostrar mensaje de éxito/error si existe *@
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Mensaje"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>DNI</th>
-            <th>Teléfono</th>
-            <th>Email</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.First().Nombre)</th>
+                        <th>@Html.DisplayNameFor(model => model.First().Apellido)</th>
+                        <th>@Html.DisplayNameFor(model => model.First().Dni)</th>
+                        <th>@Html.DisplayNameFor(model => model.First().Telefono)</th>
+                        <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
 @foreach (var item in Model)
 {
-        <tr>
-            <td>@item.Nombre</td>
-            <td>@item.Apellido</td>
-            <td>@item.Dni</td>
-            <td>@item.Telefono</td>
-            <td>@item.Email</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
-            </td>
-        </tr>
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Apellido)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Dni)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Telefono)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Editar">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info ms-1" title="Detalles">
+                                <i class="bi bi-info-circle"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger ms-1" title="Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
 }
-    </tbody>
-</table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

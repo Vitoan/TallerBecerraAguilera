@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace TallerBecerraAguilera.Models
 {
-    // Una buena práctica sería agregar un índice para búsquedas rápidas por DNI o Email
+    // Índice único para DNI (clave para la validación de unicidad)
     [Index(nameof(Dni), IsUnique = true)] 
     [Index(nameof(Email))]
     public class Clientes
@@ -13,31 +14,33 @@ namespace TallerBecerraAguilera.Models
         [Display(Name = "Código Int.")]
         public int Id { get; set; }
 
-        [Required, StringLength(100)]
+        [Required(ErrorMessage = "El nombre es obligatorio."), StringLength(100)]
         public string Nombre { get; set; } = string.Empty;
 
-        
-        [Required, StringLength(100)]
+        [Required(ErrorMessage = "El apellido es obligatorio."), StringLength(100)]
         public string Apellido { get; set; } = string.Empty;
 
-        [NotMapped] // Indica que esta propiedad no debe mapearse a la base de datos
+        [NotMapped]
+        [Display(Name = "Nombre Completo")]
         public string NombreCompleto => $"{Nombre} {Apellido}";
 
-        // PROPIEDAD DNI AÑADIDA PARA SOLUCIONAR EL ERROR
+        // DNI requerido y con límite de longitud
+        [Required(ErrorMessage = "El DNI es obligatorio.")]
         [StringLength(20)]
-        public string? Dni { get; set; }
+        [Display(Name = "DNI")]
+        public string Dni { get; set; } = string.Empty;
 
         [StringLength(20)]
-        [Phone]
+        [Phone(ErrorMessage = "Formato de teléfono no válido.")]
+        [Display(Name = "Teléfono")]
         public string? Telefono { get; set; }
 
         [StringLength(255)]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "Formato de correo electrónico no válido.")]
         public string? Email { get; set; }
 
-        // Propiedad de navegación para la relación 1:N con Vehículos
+        // Propiedad de navegación: Colección de vehículos de este cliente
         public ICollection<Vehiculos>? Vehiculos { get; set; }
-
 
         [Display(Name = "Creado")]
         public DateTime? Created_at { get; set; } = DateTime.Now;
@@ -49,6 +52,5 @@ namespace TallerBecerraAguilera.Models
         {
             return $"{Nombre} {Apellido} ({Dni})";
         }
-        
     }
 }

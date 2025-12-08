@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using TallerBecerraAguilera.Repositorio; // Usando el repositorio sin interfaz
+using TallerBecerraAguilera.Repositorio;
 using TallerBecerraAguilera.Models;
 using System.Threading.Tasks;
+// NECESARIO para DbUpdateConcurrencyException
+using Microsoft.EntityFrameworkCore; 
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -21,6 +23,15 @@ namespace TallerBecerraAguilera.Controllers
             return View(clientes);
         }
 
+        // GET: Clientes/Details/5 (VISTA DETALLES)
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+            var cliente = await _clienteRepositorio.GetByIdAsync(id.Value); 
+            if (cliente == null) return NotFound();
+            return View(cliente);
+        }
+
         // GET: Clientes/Create (VISTA CREAR)
         public IActionResult Create()
         {
@@ -32,6 +43,12 @@ namespace TallerBecerraAguilera.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Nombre,Apellido,Dni,Telefono,Email")] Clientes cliente)
         {
+            // VALIDACIÓN: DNI duplicado
+            if (cliente.Dni != null && await _clienteRepositorio.GetByDniAsync(cliente.Dni) != null)
+            {
+                ModelState.AddModelError("Dni", "Ya existe un cliente con este DNI.");
+            }
+
             if (ModelState.IsValid)
             {
                 await _clienteRepositorio.AddAsync(cliente);
@@ -56,15 +73,32 @@ namespace TallerBecerraAguilera.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Apellido,Dni,Telefono,Email,Created_at")] Clientes cliente)
         {
             if (id != cliente.Id) return NotFound();
+            
+            // VALIDACIÓN: DNI duplicado, excluyendo el cliente que se está editando
+            if (cliente.Dni != null)
+            {
+                var existingClient = await _clienteRepositorio.GetByDniAsync(cliente.Dni);
+                if (existingClient != null && existingClient.Id != cliente.Id)
+                {
+                    ModelState.AddModelError("Dni", "El DNI ya está registrado para otro cliente.");
+                }
+            }
 
             if (ModelState.IsValid)
             {
-                // Asegurar que Created_at y Updated_at se manejen correctamente si no están en el Bind
-                // Por simplicidad, se deja Created_at para ser usado si está en el Bind.
-
-                // Actualizar el registro
-                await _clienteRepositorio.UpdateAsync(cliente);
-                TempData["Mensaje"] = "Cliente actualizado exitosamente.";
+                try
+                {
+                    await _clienteRepositorio.UpdateAsync(cliente);
+                    TempData["Mensaje"] = "Cliente actualizado exitosamente.";
+                }
+                catch (DbUpdateConcurrencyException) // Manejo de concurrencia
+                {
+                    if (await _clienteRepositorio.ExistsAsync(cliente.Id) == false)
+                    {
+                        return NotFound();
+                    }
+                    throw;
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(cliente);
@@ -87,15 +121,6 @@ namespace TallerBecerraAguilera.Controllers
             await _clienteRepositorio.DeleteAsync(id);
             TempData["Mensaje"] = "Cliente eliminado exitosamente.";
             return RedirectToAction(nameof(Index));
-        }
-
-        // GET: Clientes/Details/5 (VISTA DETALLES)
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null) return NotFound();
-            var cliente = await _clienteRepositorio.GetByIdAsync(id.Value);
-            if (cliente == null) return NotFound();
-            return View(cliente);
         }
     }
 }
