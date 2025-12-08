@@ -1,0 +1,79 @@
+@model TallerBecerraAguilera.Models.OrdenesTrabajo
+@using TallerBecerraAguilera.Models
+@using System.ComponentModel.DataAnnotations // Necesario para el DisplayName
+
+@{
+    ViewData["Title"] = $"Detalle de OT #{Model.Id}";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Información Principal</h6>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Vehículo</dt>
+            <dd class="col-sm-9">
+                <strong>@Model.Vehiculo?.Patente</strong> (@Model.Vehiculo?.Marca @Model.Vehiculo?.Modelo)
+                <br/>
+                Cliente: <a asp-controller="Clientes" asp-action="Details" asp-route-id="@Model.Vehiculo?.ClienteId">@Model.Vehiculo?.Cliente?.NombreCompleto</a>
+            </dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Empleado)</dt>
+            <dd class="col-sm-9">
+                @Model.Empleado?.Nombre @Model.Empleado?.Apellido
+            </dd>
+
+            <hr class="my-3"/>
+            
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FechaIngreso)</dt>
+            <dd class="col-sm-3">@Model.FechaIngreso.ToString("dd/MM/yyyy")</dd>
+            
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FechaEstimadaEntrega)</dt>
+            <dd class="col-sm-3">@(Model.FechaEstimadaEntrega.HasValue ? Model.FechaEstimadaEntrega.Value.ToString("dd/MM/yyyy") : "N/A")</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Estado)</dt>
+            <dd class="col-sm-9">
+                 <span class="badge @GetBadgeClass(Model.Estado)">
+                    @Model.Estado
+                </span>
+            </dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.HorasEstimadas)</dt>
+            <dd class="col-sm-9">
+                @(Model.HorasEstimadas.HasValue ? $"{Model.HorasEstimadas.Value:N2} horas" : "No estimado")
+            </dd>
+            
+            <hr class="my-3"/>
+            
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DescripcionFalla)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.DescripcionFalla)</dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+            <i class="bi bi-pencil-square"></i> Editar OT
+        </a>
+        <a asp-action="Index" class="btn btn-secondary ms-2">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+@functions {
+    public string GetBadgeClass(EstadoOrden estado)
+    {
+        return estado switch
+        {
+            EstadoOrden.Pendiente => "bg-secondary",
+            EstadoOrden.EnReparacion => "bg-primary",
+            EstadoOrden.Finalizada => "bg-warning text-dark",
+            EstadoOrden.Entregada => "bg-success",
+            _ => "bg-light text-dark",
+        };
+    }
+}

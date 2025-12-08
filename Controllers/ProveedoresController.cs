@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
+using System.Threading.Tasks; 
+using Microsoft.EntityFrameworkCore; // Necesario para DbUpdateConcurrencyException
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -13,24 +15,47 @@ namespace TallerBecerraAguilera.Controllers
             _repo = repo;
         }
 
+        // GET: Proveedores/Index (LISTAR TODOS)
         public async Task<IActionResult> Index()
         {
             return View(await _repo.GetAllAsync());
         }
+        
+        // GET: Proveedores/Details/5 (VISTA DETALLES)
+        public async Task<IActionResult> Details(int id)
+        {
+            var proveedor = await _repo.GetByIdAsync(id);
+            if (proveedor == null) return NotFound();
+            return View(proveedor);
+        }
 
+        // GET: Proveedores/Create (VISTA CREAR)
         public IActionResult Create()
         {
             return View();
         }
 
+        // POST: Proveedores/Create (ACCIÓN CREAR)
         [HttpPost]
-        public async Task<IActionResult> Create(Proveedores proveedor)
+        [ValidateAntiForgeryToken] // Seguridad
+        public async Task<IActionResult> Create([Bind("Nombre,Contacto,Telefono,CondicionesCompra")] Proveedores proveedor)
         {
-            if (!ModelState.IsValid) return View(proveedor);
-            await _repo.AddAsync(proveedor);
-            return RedirectToAction(nameof(Index));
+            // Validación de unicidad
+            if (proveedor.Nombre != null && await _repo.GetByNameAsync(proveedor.Nombre) != null)
+            {
+                ModelState.AddModelError("Nombre", "Ya existe un proveedor con este nombre/razón social.");
+            }
+            
+            if (ModelState.IsValid)
+            {
+                await _repo.AddAsync(proveedor);
+                TempData["Mensaje"] = "Proveedor creado exitosamente.";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(proveedor);
         }
 
+        // GET: Proveedores/Edit/5 (VISTA EDITAR)
         public async Task<IActionResult> Edit(int id)
         {
             var proveedor = await _repo.GetByIdAsync(id);
@@ -38,14 +63,45 @@ namespace TallerBecerraAguilera.Controllers
             return View(proveedor);
         }
 
+        // POST: Proveedores/Edit (ACCIÓN ACTUALIZAR)
         [HttpPost]
-        public async Task<IActionResult> Edit(Proveedores proveedor)
+        [ValidateAntiForgeryToken] // Seguridad
+        // Se incluye Created_at en el Bind para asegurar que se mantenga el valor al actualizar.
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Contacto,Telefono,CondicionesCompra,Created_at")] Proveedores proveedor)
         {
-            if (!ModelState.IsValid) return View(proveedor);
-            await _repo.UpdateAsync(proveedor);
-            return RedirectToAction(nameof(Index));
+            if (id != proveedor.Id) return NotFound();
+
+            // Validación de unicidad en edición
+            if (proveedor.Nombre != null)
+            {
+                var existingProveedor = await _repo.GetByNameAsync(proveedor.Nombre);
+                if (existingProveedor != null && existingProveedor.Id != proveedor.Id)
+                {
+                    ModelState.AddModelError("Nombre", "El nombre/razón social ya está registrado para otro proveedor.");
+                }
+            }
+            
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _repo.UpdateAsync(proveedor);
+                    TempData["Mensaje"] = "Proveedor actualizado exitosamente.";
+                }
+                catch (DbUpdateConcurrencyException) // Manejo de concurrencia
+                {
+                    if (await _repo.ExistsAsync(proveedor.Id) == false)
+                    {
+                        return NotFound();
+                    }
+                    throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(proveedor);
         }
 
+        // GET: Proveedores/Delete/5 (VISTA ELIMINAR)
         public async Task<IActionResult> Delete(int id)
         {
             var proveedor = await _repo.GetByIdAsync(id);
@@ -53,10 +109,13 @@ namespace TallerBecerraAguilera.Controllers
             return View(proveedor);
         }
 
+        // POST: Proveedores/Delete/5 (ACCIÓN ELIMINAR)
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken] // Seguridad
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _repo.DeleteAsync(id);
+            TempData["Mensaje"] = "Proveedor eliminado exitosamente.";
             return RedirectToAction(nameof(Index));
         }
     }

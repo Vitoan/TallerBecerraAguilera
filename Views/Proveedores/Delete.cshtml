@@ -1,13 +1,39 @@
 @model TallerBecerraAguilera.Models.Proveedores
 
-<h2>Eliminar Proveedor</h2>
+@{
+    ViewData["Title"] = "Eliminar Proveedor";
+}
 
-<div class="alert alert-danger">
-    ¿Seguro que querés eliminar a <strong>@Model.Nombre</strong>?
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">🗑️ @ViewData["Title"]</h1>
 </div>
 
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id"/>
-    <button type="submit" class="btn btn-danger">Eliminar</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
+<div class="alert alert-danger" role="alert">
+    <h3>Advertencia: ¿Seguro que desea eliminar al proveedor **@Model.Nombre**?</h3>
+    <p>Esta acción es irreversible y podría afectar a los repuestos asociados (dependiendo de las reglas de eliminación en cascada de tu base de datos).</p>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Nombre)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Nombre)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Contacto)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Contacto)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Telefono)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Telefono)</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id"/>
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash"></i> Confirmar Eliminación
+            </button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">
+                <i class="bi bi-arrow-left"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>

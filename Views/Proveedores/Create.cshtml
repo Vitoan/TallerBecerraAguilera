@@ -1,28 +1,56 @@
 @model TallerBecerraAguilera.Models.Proveedores
 
-<h2>Nuevo Proveedor</h2>
+@{
+    ViewData["Title"] = "Crear Nuevo Proveedor";
+}
 
-<form asp-action="Create" method="post">
-    <div class="form-group">
-        <label>Nombre</label>
-        <input asp-for="Nombre" class="form-control"/>
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Nombre" class="control-label"></label>
+                        <input asp-for="Nombre" class="form-control"/>
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Contacto" class="control-label"></label>
+                        <input asp-for="Contacto" class="form-control"/>
+                        <span asp-validation-for="Contacto" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Telefono" class="control-label"></label>
+                        <input asp-for="Telefono" class="form-control"/>
+                        <span asp-validation-for="Telefono" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="CondicionesCompra" class="control-label"></label>
+                        <textarea asp-for="CondicionesCompra" class="form-control"></textarea>
+                        <span asp-validation-for="CondicionesCompra" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">
+                        <i class="fas fa-arrow-left"></i> Volver a la Lista
+                    </a>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="form-group">
-        <label>Contacto</label>
-        <input asp-for="Contacto" class="form-control"/>
-    </div>
-
-    <div class="form-group">
-        <label>Teléfono</label>
-        <input asp-for="Telefono" class="form-control"/>
-    </div>
-
-    <div class="form-group">
-        <label>Condiciones de compra</label>
-        <textarea asp-for="CondicionesCompra" class="form-control"></textarea>
-    </div>
-
-    <button type="submit" class="btn btn-success">Guardar</button>
-    <a asp-action="Index" class="btn btn-secondary">Volver</a>
-</form>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

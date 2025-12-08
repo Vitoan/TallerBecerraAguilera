@@ -1,0 +1,45 @@
+@model TallerBecerraAguilera.Models.Proveedores
+@using TallerBecerraAguilera.Models
+
+@{
+    ViewData["Title"] = "Detalle del Proveedor";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]: @Model.Nombre</h1>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Información General</h6>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Nombre)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Nombre)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Contacto)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Contacto)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Telefono)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Telefono)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CondicionesCompra)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.CondicionesCompra)</dd>
+            
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Created_at)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Created_at)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Updated_at)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Updated_at)</dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+            <i class="bi bi-pencil-square"></i> Editar
+        </a>
+        <a asp-action="Index" class="btn btn-secondary ms-2">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>

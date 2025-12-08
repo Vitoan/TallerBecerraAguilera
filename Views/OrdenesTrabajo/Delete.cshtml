@@ -1,0 +1,46 @@
+@model TallerBecerraAguilera.Models.OrdenesTrabajo
+@using TallerBecerraAguilera.Models
+
+@{
+    ViewData["Title"] = $"Eliminar OT #{Model.Id}";
+}
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">🗑️ @ViewData["Title"]</h1>
+</div>
+
+<div class="alert alert-danger" role="alert">
+    <h3>Advertencia: ¿Seguro que desea eliminar la Orden de Trabajo **#@Model.Id**?</h3>
+    <p>Esta acción es irreversible y eliminará todos los registros de repuestos y herramientas asociados a esta OT.</p>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Vehículo</dt>
+            <dd class="col-sm-9">@Model.Vehiculo?.Patente (@Model.Vehiculo?.Marca @Model.Vehiculo?.Modelo)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Empleado)</dt>
+            <dd class="col-sm-9">@Model.Empleado?.Nombre @Model.Empleado?.Apellido</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FechaIngreso)</dt>
+            <dd class="col-sm-9">@Model.FechaIngreso.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Estado)</dt>
+            <dd class="col-sm-9">@Model.Estado</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DescripcionFalla)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.DescripcionFalla)</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash"></i> Confirmar Eliminación
+            </button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">
+                <i class="bi bi-arrow-left"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>
