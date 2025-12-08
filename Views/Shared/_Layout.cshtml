@@ -10,25 +10,39 @@
 </head>
 <body>
     
+    @{
+        // Obtiene el nombre del controlador actual para aplicar la clase 'active'
+        var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+    }
+
     <nav class="navbar navbar-expand-lg navbar-dark" style="background:#111;border-bottom:3px solid #18a2b8;">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold text-info" asp-controller="Home" asp-action="Index">
                 🔧 Taller Becerra Aguilera
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuTaller">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuTaller" aria-controls="menuTaller" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="menuTaller">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" asp-controller="Ordenes" asp-action="Create">➕ Nueva OT</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Herramientas" asp-action="Index">🔧 Solicitar herramienta</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Repuestos" asp-action="Index">📦 Inventario</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Pedidos" asp-action="Create">📩 Pedidos</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Proveedores" asp-action="Index">🏭 Proveedores</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Clientes" asp-action="Index">👤 Clientes</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Vehiculos" asp-action="Index">🚗 Vehículos</a></li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "OrdenesTrabajo" ? "active" : "")" 
+                            asp-controller="OrdenesTrabajo" asp-action="Create">➕ Nueva OT</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link @(currentController == "Herramientas" ? "active" : "")" asp-controller="Herramientas" asp-action="Index">🔧 Solicitar herramienta</a></li>
+                    <li class="nav-item"><a class="nav-link @(currentController == "Repuestos" ? "active" : "")" asp-controller="Repuestos" asp-action="Index">📦 Inventario</a></li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "PedidosRepuestos" ? "active" : "")" 
+                            asp-controller="PedidosRepuestos" **asp-action="Create"**>📩 Pedidos</a>
+                    </li>
+
+                    <li class="nav-item"><a class="nav-link @(currentController == "Proveedores" ? "active" : "")" asp-controller="Proveedores" asp-action="Index">🏭 Proveedores</a></li>
+                    <li class="nav-item"><a class="nav-link @(currentController == "Clientes" ? "active" : "")" asp-controller="Clientes" asp-action="Index">👤 Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link @(currentController == "Vehiculos" ? "active" : "")" asp-controller="Vehiculos" asp-action="Index">🚗 Vehículos</a></li>
                 </ul>
 
                 <div class="d-flex text-light small">
@@ -41,9 +55,7 @@
     
     <div class="container-fluid mt-3">
         <main role="main" class="pb-3">
-            
             @RenderBody() 
-            
         </main>
     </div>
 

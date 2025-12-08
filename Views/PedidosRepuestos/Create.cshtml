@@ -1,42 +1,53 @@
-@model TallerBecerraAguilera.Models.PedidosRepuestos 
+@model TallerBecerraAguilera.Models.PedidosRepuestos
 
-@* OJO: Este modelo es el ENCABEZADO del pedido, no la línea de detalle. *@
+@{
+    ViewData["Title"] = "Crear Nuevo Pedido de Repuestos";
+}
 
-<h2>Crear Nuevo Pedido de Repuestos</h2>
+<h2 class="fw-bold mb-4">@ViewData["Title"]</h2>
 
-<form asp-action="Create" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="card p-4 shadow-sm">
+    <form asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    @* --- EL COMBOBOX DEL PROVEEDOR (CORRECCIÓN) --- *@
-    <div class="form-group">
-        <label asp-for="ProveedorId" class="control-label">Proveedor</label>
+        @* 1. CAMPO PROVEEDOR (Combobox corregido) *@
+        <div class="form-group mb-3">
+            <label asp-for="ProveedorId" class="control-label">Proveedor</label>
+            
+            @* Este asp-items debe coincidir con el ViewBag que cargas en el Controller *@
+            <select asp-for="ProveedorId" 
+                    class="form-control" 
+                    asp-items="ViewBag.ProveedorId">
+                <option value="">-- Seleccione un Proveedor --</option>
+            </select>
+            
+            <span asp-validation-for="ProveedorId" class="text-danger"></span>
+        </div>
+
+        @* 2. CAMPO EMPLEADO *@
+        <div class="form-group mb-3">
+            <label asp-for="EmpleadoId" class="control-label">Empleado Solicitante</label>
+            
+            @* Asume que el controlador también carga ViewBag.EmpleadoId * @
+            <select asp-for="EmpleadoId" 
+                    class="form-control" 
+                    asp-items="ViewBag.EmpleadoId">
+                <option value="">-- Seleccione un Empleado --</option>
+            </select>
+            
+            <span asp-validation-for="EmpleadoId" class="text-danger"></span>
+        </div>
+
+        @* 3. CAMPO FECHA (Corregido: Usa la propiedad 'Fecha' del modelo) *@
+        <div class="form-group mb-4">
+            <label asp-for="Fecha" class="control-label">Fecha de Pedido</label>
+            <input asp-for="Fecha" type="date" class="form-control" />
+            <span asp-validation-for="Fecha" class="text-danger"></span>
+        </div>
+
+        <hr />
         
-        @* La propiedad "ProveedorId" debe existir en tu modelo PedidosRepuestos *@
-        @* La lista "ViewBag.ProveedorId" fue cargada en el controlador. *@
-        <select asp-for="ProveedorId" 
-                class="form-control" 
-                asp-items="ViewBag.ProveedorId">
-            <option value="">-- Seleccione el Proveedor --</option>
-        </select>
-        
-        <span asp-validation-for="ProveedorId" class="text-danger"></span>
-    </div>
-    
-    @* Opcionalmente, agregar el selector de Empleado si está en el modelo PedidosRepuestos *@
-    @*
-    <div class="form-group">
-        <label asp-for="EmpleadoId" class="control-label">Empleado</label>
-        <select asp-for="EmpleadoId" class="form-control" asp-items="ViewBag.EmpleadoId"></select>
-        <span asp-validation-for="EmpleadoId" class="text-danger"></span>
-    </div>
-    *@
-
-    <div class="form-group">
-        <label asp-for="FechaPedido" class="control-label">Fecha de Pedido</label>
-        <input asp-for="FechaPedido" type="date" class="form-control" />
-        <span asp-validation-for="FechaPedido" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-success">Crear Pedido</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
+        <button type="submit" class="btn btn-success">Crear Pedido (Siguiente: añadir repuestos)</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar y Volver</a>
+    </form>
+</div>
