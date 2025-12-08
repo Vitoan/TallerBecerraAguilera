@@ -1,0 +1,42 @@
+@model TallerBecerraAguilera.Models.PedidosRepuestos 
+
+@* OJO: Este modelo es el ENCABEZADO del pedido, no la línea de detalle. *@
+
+<h2>Crear Nuevo Pedido de Repuestos</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @* --- EL COMBOBOX DEL PROVEEDOR (CORRECCIÓN) --- *@
+    <div class="form-group">
+        <label asp-for="ProveedorId" class="control-label">Proveedor</label>
+        
+        @* La propiedad "ProveedorId" debe existir en tu modelo PedidosRepuestos *@
+        @* La lista "ViewBag.ProveedorId" fue cargada en el controlador. *@
+        <select asp-for="ProveedorId" 
+                class="form-control" 
+                asp-items="ViewBag.ProveedorId">
+            <option value="">-- Seleccione el Proveedor --</option>
+        </select>
+        
+        <span asp-validation-for="ProveedorId" class="text-danger"></span>
+    </div>
+    
+    @* Opcionalmente, agregar el selector de Empleado si está en el modelo PedidosRepuestos *@
+    @*
+    <div class="form-group">
+        <label asp-for="EmpleadoId" class="control-label">Empleado</label>
+        <select asp-for="EmpleadoId" class="form-control" asp-items="ViewBag.EmpleadoId"></select>
+        <span asp-validation-for="EmpleadoId" class="text-danger"></span>
+    </div>
+    *@
+
+    <div class="form-group">
+        <label asp-for="FechaPedido" class="control-label">Fecha de Pedido</label>
+        <input asp-for="FechaPedido" type="date" class="form-control" />
+        <span asp-validation-for="FechaPedido" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Crear Pedido</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

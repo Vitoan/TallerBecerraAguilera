@@ -32,6 +32,5 @@ namespace TallerBecerraAguilera.Controllers
             return View();
         }
         
-        // ... (Agrega aquí tus métodos Privacy, Error, etc., si los tienes)
     }
 }
