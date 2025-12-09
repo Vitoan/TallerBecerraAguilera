@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using TallerBecerraAguilera.Repositorio; // Usando el repositorio sin interfaz
+using TallerBecerraAguilera.Repositorios; // Usando el repositorio sin interfaz
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Models.ViewModels;
 

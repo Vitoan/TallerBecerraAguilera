@@ -1,0 +1,28 @@
+@model TallerBecerraAguilera.Models.PedidosRepuestos
+
+@{
+    ViewData["Title"] = "Detalles del Pedido";
+}
+
+<h2 class="fw-bold mb-4">@ViewData["Title"]</h2>
+
+<div class="card p-4 shadow-sm mb-3">
+    <dl class="row">
+        <dt class="col-sm-3">ID del Pedido</dt>
+        <dd class="col-sm-9">@Model.Id</dd>
+
+        <dt class="col-sm-3">Proveedor</dt>
+        <dd class="col-sm-9">@Model.ProveedorId</dd>
+
+        <dt class="col-sm-3">Empleado</dt>
+        <dd class="col-sm-9">@Model.EmpleadoId</dd>
+
+        <dt class="col-sm-3">Fecha</dt>
+        <dd class="col-sm-9">@Model.Fecha.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-3">Estado</dt>
+        <dd class="col-sm-9">@Model.Estado</dd>
+    </dl>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary">Volver</a>

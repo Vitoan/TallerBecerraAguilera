@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using TallerBecerraAguilera.Repositorio;
+using TallerBecerraAguilera.Repositorios;
 using TallerBecerraAguilera.Models;
 using System.Threading.Tasks;
 // NECESARIO para DbUpdateConcurrencyException

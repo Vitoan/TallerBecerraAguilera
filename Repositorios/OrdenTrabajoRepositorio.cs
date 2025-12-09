@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace TallerBecerraAguilera.Repositorio
+namespace TallerBecerraAguilera.Repositorios
 {
     public class OrdenTrabajoRepositorio
     {

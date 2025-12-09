@@ -1,0 +1,33 @@
+@model TallerBecerraAguilera.Models.PedidosRepuestos
+
+@{
+    ViewData["Title"] = "Editar Pedido";
+}
+
+<h2>Editar Pedido</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label>Proveedor</label>
+        <select class="form-control" asp-for="ProveedorId" asp-items="ViewBag.Proveedores"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>Empleado</label>
+        <select class="form-control" asp-for="EmpleadoId" asp-items="ViewBag.Empleados"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>Estado</label>
+        <select class="form-control" asp-for="Estado">
+            <option value="Pendiente">Pendiente</option>
+            <option value="Recibido">Recibido</option>
+            <option value="Cancelado">Cancelado</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+</form>

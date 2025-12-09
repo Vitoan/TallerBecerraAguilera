@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using TallerBecerraAguilera.Repositorio;
+using TallerBecerraAguilera.Repositorios;
 using TallerBecerraAguilera.Models;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;

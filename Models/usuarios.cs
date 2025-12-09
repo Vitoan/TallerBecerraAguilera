@@ -7,23 +7,23 @@ namespace TallerBecerraAguilera.Models
     {
         [Key]
         [Display(Name = "Código Int.")]
-        public int Id { get; set; }
+        public int id { get; set; }
 
         [Required, StringLength(255)]
         [Display(Name = "Correo Electrónico")]
-        public string Email { get; set; } = string.Empty;
+        public string email { get; set; } = string.Empty;
 
         [Required, StringLength(255)]
         [Display(Name = "Contraseña (Hash)")]
-        public string PasswordHash { get; set; } = string.Empty;
+        public string password_hash { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Rol")]
-        public string Rol { get; set; } = "Empleado"; // Valores permitidos: Administrador / Empleado
+        public string rol { get; set; } = "Empleado"; // Valores permitidos: Administrador / Empleado
 
         [StringLength(500)]
         [Display(Name = "Avatar")]
-        public string? AvatarPath { get; set; } = "/uploads/avatars/default.jpg";
+        public string? avatar_path { get; set; } = "/uploads/avatars/default.jpg";
 
         [Display(Name = "Creado")]
         public DateTime? Created_at { get; set; } = DateTime.Now;
@@ -33,7 +33,7 @@ namespace TallerBecerraAguilera.Models
 
         public override string ToString()
         {
-            return $"{Email} - {Rol}";
+            return $"{email} - {rol}";
         }
     }
 }

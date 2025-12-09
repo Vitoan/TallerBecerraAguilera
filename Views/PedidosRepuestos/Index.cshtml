@@ -1,0 +1,48 @@
+@model IEnumerable<TallerBecerraAguilera.Models.PedidosRepuestos>
+
+@{
+    ViewData["Title"] = "Pedidos de Repuestos";
+}
+
+<h2 class="fw-bold mb-4">@ViewData["Title"]</h2>
+
+<table class="table table-bordered table-striped shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Proveedor</th>
+            <th>Empleado</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.ProveedorId</td>
+            <td>@item.EmpleadoId</td>
+            <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+            <td>@item.Estado</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Detalles</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Editar</a>
+
+                <form asp-action="CambiarEstado" method="post" class="d-inline">
+                    <input type="hidden" name="pedidoId" value="@item.Id" />
+                    <select name="estado" class="form-select d-inline w-auto">
+                        <option value="Pendiente" selected="@((item.Estado == EstadoPedido.Pendiente))">Pendiente</option>
+                        <option value="Recibido" selected="@((item.Estado == EstadoPedido.Recibido))">Recibido</option>
+                        <option value="Cancelado" selected="@((item.Estado == EstadoPedido.Cancelado))">Cancelado</option>
+                    </select>
+                    <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+                </form>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-success mt-3">Nuevo Pedido</a>
