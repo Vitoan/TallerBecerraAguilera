@@ -26,6 +26,7 @@ namespace TallerBecerraAguilera.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // === TODAS TUS CONFIGURACIONES ANTERIORES (ToTable, HasKey, etc.) ===
             modelBuilder.Entity<Clientes>().ToTable("clientes");
             modelBuilder.Entity<Vehiculos>().ToTable("vehiculos");
             modelBuilder.Entity<Empleados>().ToTable("empleados");
@@ -55,6 +56,18 @@ namespace TallerBecerraAguilera.Data
             modelBuilder.Entity<PedidosRepuestos>()
                 .Property(p => p.Estado)
                 .HasConversion<string>();
+
+            // FIX DEFINITIVO PARA EL ENUM ESTADO DE ORDENES_TRABAJO
+            modelBuilder.Entity<OrdenesTrabajo>(entity =>
+            {
+                entity.Property(e => e.Estado)
+                      .HasColumnName("Estado")
+                      .HasColumnType("int")
+                      .HasConversion(
+                          v => (int)v,
+                      v => (EstadoOrden)v
+                    );
+            });
         }
     }
 }

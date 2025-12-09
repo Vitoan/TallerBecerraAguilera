@@ -1,0 +1,108 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using TallerBecerraAguilera.Models;
+using TallerBecerraAguilera.Repositorios;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+
+public class UsuariosController : Controller
+{
+    private readonly UsuarioRepositorio _repo;
+    private readonly PasswordHasher<Usuarios> _hasher;
+    private readonly IConfiguration _config;
+
+    public UsuariosController(
+        UsuarioRepositorio repo,
+        PasswordHasher<Usuarios> hasher,
+        IConfiguration config)
+    {
+        _repo = repo;
+        _hasher = hasher;
+        _config = config;
+    }
+
+    [AllowAnonymous]
+    public IActionResult Login()
+    {
+        return View();
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<IActionResult> Login(string email, string password)
+    {
+        var user = await _repo.ObtenerPorEmail(email);
+
+        if (user == null)
+        {
+            ModelState.AddModelError("", "Usuario no encontrado.");
+            return View();
+        }
+
+        var result = _hasher.VerifyHashedPassword(user, user.password_hash!, password);
+
+        if (result == PasswordVerificationResult.Failed)
+        {
+            ModelState.AddModelError("", "Contraseña incorrecta.");
+            return View();
+        }
+
+        // ==== CREAR COOKIE ====
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
+            new Claim(ClaimTypes.Email, user.email),
+            new Claim(ClaimTypes.Role, user.rol)
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal);
+
+        // ==== GENERAR JWT ====
+        var token = GenerarJwt(user);
+
+        // (opcional) guardar JWT en ViewBag, cookie, frontend, etc.
+        TempData["jwt"] = token;
+
+        return RedirectToAction("Index", "Home");
+    }
+
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync();
+        return RedirectToAction("Login", "Usuarios");
+    }
+
+    private string GenerarJwt(Usuarios user)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenAuthentication:SecretKey"]!));
+
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
+            new Claim(ClaimTypes.Email, user.email),
+            new Claim(ClaimTypes.Role, user.rol),
+        };
+
+        var token = new JwtSecurityToken(
+            issuer: _config["TokenAuthentication:Issuer"],
+            audience: _config["TokenAuthentication:Audience"],
+            claims: claims,
+            expires: DateTime.Now.AddHours(2),
+            signingCredentials: creds);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+}

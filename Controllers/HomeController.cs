@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using TallerBecerraAguilera.Repositorios; // Usando el repositorio sin interfaz
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TallerBecerraAguilera.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly OrdenTrabajoRepositorio _ordenTrabajoRepositorio;

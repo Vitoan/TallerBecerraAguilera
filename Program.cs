@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -13,7 +14,7 @@ var configuration = builder.Configuration;
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")!));
 
 builder.Services.AddControllersWithViews();
 
@@ -28,8 +29,18 @@ builder.Services.AddScoped<ProveedorRepositorio, ProveedorRepositorio>();
 builder.Services.AddScoped<EmpleadoRepositorio, EmpleadoRepositorio>();
 builder.Services.AddScoped<PedidosRepuestosRepositorio, PedidosRepuestosRepositorio>();
 builder.Services.AddScoped<PedidoRepuestosRepositorio, PedidoRepuestosRepositorio>();
+builder.Services.AddScoped<UsuarioRepositorio, UsuarioRepositorio>();
+
 
 builder.Services.AddScoped<PasswordHasher<Usuarios>>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

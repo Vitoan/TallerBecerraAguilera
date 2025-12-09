@@ -7,11 +7,23 @@
     
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        .avatar-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .dropdown-menu-end {
+            right: 0;
+            left: auto;
+        }
+    </style>
 </head>
 <body>
     
     @{
-        // Obtiene el nombre del controlador actual para aplicar la clase 'active'
         var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
     }
 
@@ -27,27 +39,42 @@
 
             <div class="collapse navbar-collapse" id="menuTaller">
                 <ul class="navbar-nav me-auto">
-                    
                     <li class="nav-item">
                         <a class="nav-link @(currentController == "OrdenesTrabajo" ? "active" : "")" 
                             asp-controller="OrdenesTrabajo" asp-action="Create">➕ Nueva OT</a>
                     </li>
                     <li class="nav-item"><a class="nav-link @(currentController == "Herramientas" ? "active" : "")" asp-controller="Herramientas" asp-action="Index">🔧 Solicitar herramienta</a></li>
                     <li class="nav-item"><a class="nav-link @(currentController == "Repuestos" ? "active" : "")" asp-controller="Repuestos" asp-action="Index">📦 Inventario</a></li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link @(currentController == "PedidosRepuestos" ? "active" : "")" 
-                            asp-controller="PedidosRepuestos" **asp-action="Create"**>📩 Pedidos</a>
-                    </li>
-
+                    <li class="nav-item"><a class="nav-link @(currentController == "PedidosRepuestos" ? "active" : "")" asp-controller="PedidosRepuestos" asp-action="Create">📩 Pedidos</a></li>
                     <li class="nav-item"><a class="nav-link @(currentController == "Proveedores" ? "active" : "")" asp-controller="Proveedores" asp-action="Index">🏭 Proveedores</a></li>
                     <li class="nav-item"><a class="nav-link @(currentController == "Clientes" ? "active" : "")" asp-controller="Clientes" asp-action="Index">👤 Clientes</a></li>
                     <li class="nav-item"><a class="nav-link @(currentController == "Vehiculos" ? "active" : "")" asp-controller="Vehiculos" asp-action="Index">🚗 Vehículos</a></li>
                 </ul>
 
-                <div class="d-flex text-light small">
-                    <span class="me-3">👤 @User.Identity?.Name</span>
-                    <a asp-controller="Auth" asp-action="Logout" class="btn btn-sm btn-danger">Salir</a>
+                <div class="d-flex align-items-center">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        var avatarPath = "/uploads/avatars/default.jpg"; // valor por defecto
+                        // Si guardás la ruta real del avatar en claim o DB, podés reemplazarlo:
+                        // var avatarPath = User.FindFirst("AvatarPath")?.Value ?? "/uploads/avatars/default.jpg";
+
+                        <div class="dropdown">
+                            <img src="@avatarPath" class="avatar-circle dropdown-toggle" id="avatarDropdown" data-bs-toggle="dropdown" aria-expanded="false" />
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Usuarios" asp-action="Perfil">Perfil</a>
+                                </li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" asp-controller="Usuarios" asp-action="Logout">Cerrar sesión</a>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Usuarios" asp-action="Login" class="btn btn-primary">Iniciar sesión</a>
+                    }
                 </div>
             </div>
         </div>
@@ -68,7 +95,6 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
