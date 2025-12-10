@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-12-2025 a las 17:56:07
+-- Tiempo de generación: 10-12-2025 a las 15:47:02
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `taller_mecanico_db`
 --
+CREATE DATABASE IF NOT EXISTS `taller_mecanico_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `taller_mecanico_db`;
 
 -- --------------------------------------------------------
 
@@ -106,7 +108,7 @@ CREATE TABLE `ordenes_trabajo` (
   `descripcion_falla` text NOT NULL,
   `fecha_ingreso` datetime NOT NULL DEFAULT current_timestamp(),
   `fecha_estimada_entrega` datetime DEFAULT NULL,
-  `estado` enum('Pendiente','EnReparacion','Finalizada','Entregada') NOT NULL DEFAULT 'Pendiente',
+  `estado` int(11) NOT NULL DEFAULT 0,
   `horas_estimadas` decimal(5,2) DEFAULT NULL,
   `vehiculo_id` int(11) NOT NULL,
   `empleado_id` int(11) NOT NULL,
@@ -119,7 +121,7 @@ CREATE TABLE `ordenes_trabajo` (
 --
 
 INSERT INTO `ordenes_trabajo` (`id`, `descripcion_falla`, `fecha_ingreso`, `fecha_estimada_entrega`, `estado`, `horas_estimadas`, `vehiculo_id`, `empleado_id`, `created_at`, `updated_at`) VALUES
-(1, 'Cambio de aceite y filtro', '2025-11-05 22:58:39', '2025-11-10 12:00:00', 'Pendiente', 2.50, 1, 2, '2025-11-05 22:58:39', '2025-11-05 22:58:39');
+(1, 'Cambio de aceite y filtro', '2025-11-05 22:58:39', '2025-11-10 12:00:00', 0, 2.50, 1, 2, '2025-11-05 22:58:39', '2025-12-10 10:44:27');
 
 -- --------------------------------------------------------
 
@@ -170,19 +172,22 @@ INSERT INTO `ot_repuestos` (`ot_id`, `repuesto_id`, `cantidad_usada`) VALUES
 CREATE TABLE `pedidos_repuestos` (
   `id` int(11) NOT NULL,
   `fecha` datetime NOT NULL DEFAULT current_timestamp(),
-  `estado` enum('Pendiente','Recibido','Cancelado') NOT NULL DEFAULT 'Pendiente',
+  `estado` int(11) NOT NULL DEFAULT 0,
   `proveedor_id` int(11) NOT NULL,
   `empleado_id` int(11) NOT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `fecha_pedido` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `pedidos_repuestos`
 --
 
-INSERT INTO `pedidos_repuestos` (`id`, `fecha`, `estado`, `proveedor_id`, `empleado_id`, `created_at`, `updated_at`) VALUES
-(1, '2025-11-04 10:00:00', 'Pendiente', 1, 2, '2025-11-05 22:58:39', '2025-11-05 22:58:39');
+INSERT INTO `pedidos_repuestos` (`id`, `fecha`, `estado`, `proveedor_id`, `empleado_id`, `created_at`, `updated_at`, `fecha_pedido`) VALUES
+(1, '2025-11-04 10:00:00', 2, 1, 2, '2025-11-05 22:58:39', '2025-12-10 11:45:40', '2025-12-07 22:01:01'),
+(2, '2025-12-10 11:41:29', 0, 1, 1, '2025-12-10 11:41:29', '2025-12-10 11:41:29', '2025-12-10 00:00:00'),
+(3, '2025-12-10 11:44:38', 0, 1, 1, '2025-12-10 11:44:38', '2025-12-10 11:44:38', '2025-12-10 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -274,8 +279,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `email`, `password_hash`, `rol`, `avatar_path`, `created_at`, `updated_at`) VALUES
-(1, 'admin@taller.com', '$2a$11$z3X9kLmNqRtYv8QwErT8.uO1pW3v4XyZ6aBcDeFgHiJkLmNopQrS2', 'Administrador', '/uploads/avatars/admin.jpg', '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
-(2, 'juan@taller.com', '$2a$11$z3X9kLmNqRtYv8QwErT8.uO1pW3v4XyZ6aBcDeFgHiJkLmNopQrS2', 'Empleado', '/uploads/avatars/juan.jpg', '2025-11-05 22:58:39', '2025-11-05 22:58:39');
+(1, 'admin@taller.local', 'AQAAAAIAAYagAAAAEMrZoSZcmZv1uUC//u6qzF4lG8Ca8mChjyyN3OTnSOuDLo1o9ReDH8GEAa+4rpvMNg==', 'Administrador', '/uploads/avatars/default.jpg', '2025-12-10 10:38:41', '2025-12-10 10:38:41');
 
 -- --------------------------------------------------------
 
@@ -303,6 +307,17 @@ CREATE TABLE `vehiculos` (
 INSERT INTO `vehiculos` (`id`, `patente`, `marca`, `modelo`, `anio`, `tipo`, `observaciones`, `cliente_id`, `created_at`, `updated_at`) VALUES
 (1, 'ABC123', 'Toyota', 'Corolla', '2020', 0, 'Cambio de aceite', 1, '2025-11-05 22:58:39', '2025-12-07 13:27:25'),
 (2, 'DEF456', 'Fiat', 'Cronos', '2022', 0, 'Frenos delanteros', 2, '2025-11-05 22:58:39', '2025-12-07 13:27:25');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `__efmigrationshistory`
+--
+
+CREATE TABLE `__efmigrationshistory` (
+  `MigrationId` varchar(150) NOT NULL,
+  `ProductVersion` varchar(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Índices para tablas volcadas
@@ -403,6 +418,12 @@ ALTER TABLE `vehiculos`
   ADD KEY `idx_vehiculos_patente` (`patente`);
 
 --
+-- Indices de la tabla `__efmigrationshistory`
+--
+ALTER TABLE `__efmigrationshistory`
+  ADD PRIMARY KEY (`MigrationId`);
+
+--
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
@@ -434,7 +455,7 @@ ALTER TABLE `ordenes_trabajo`
 -- AUTO_INCREMENT de la tabla `pedidos_repuestos`
 --
 ALTER TABLE `pedidos_repuestos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
@@ -452,7 +473,7 @@ ALTER TABLE `repuestos`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `vehiculos`
@@ -496,6 +517,7 @@ ALTER TABLE `ot_repuestos`
 -- Filtros para la tabla `pedidos_repuestos`
 --
 ALTER TABLE `pedidos_repuestos`
+  ADD CONSTRAINT `fk_empleado_pedido` FOREIGN KEY (`empleado_id`) REFERENCES `empleados` (`id`),
   ADD CONSTRAINT `pedidos_repuestos_ibfk_1` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedores` (`id`),
   ADD CONSTRAINT `pedidos_repuestos_ibfk_2` FOREIGN KEY (`empleado_id`) REFERENCES `empleados` (`id`);
 

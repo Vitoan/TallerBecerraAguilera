@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema; // Necesario para [ForeignKey]
 using Microsoft.EntityFrameworkCore;
 
 namespace TallerBecerraAguilera.Models
@@ -10,8 +11,16 @@ namespace TallerBecerraAguilera.Models
         [Display(Name = "Pedido")]
         public int PedidoId { get; set; }
 
+        // Propiedad de Navegación hacia la cabecera del pedido
+        [ForeignKey("PedidoId")]
+        public PedidosRepuestos? Pedido { get; set; }
+
         [Display(Name = "Repuesto")]
         public int RepuestoId { get; set; }
+
+        // Propiedad de Navegación hacia el Repuesto (Vital para mostrar el Nombre/Descripción)
+        [ForeignKey("RepuestoId")]
+        public Repuestos? Repuesto { get; set; }
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "La cantidad solicitada debe ser mayor a 0")]
@@ -25,7 +34,7 @@ namespace TallerBecerraAguilera.Models
 
         public override string ToString()
         {
-            return $"Pedido {PedidoId} - Rep {RepuestoId} | Solicitado: {CantidadSolicitada} | Recibido: {CantidadRecibida}";
+            return $"Pedido {PedidoId} - Rep {RepuestoId} | Solicitado: {CantidadSolicitada}";
         }
     }
 }

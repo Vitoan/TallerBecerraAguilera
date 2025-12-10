@@ -27,15 +27,21 @@ public class UsuariosController : Controller
     }
 
     [AllowAnonymous]
-    public IActionResult Login()
+    // 1. Recibimos la returnUrl si el sistema nos redirigió aquí
+    public IActionResult Login(string? returnUrl = null)
     {
+        ViewData["ReturnUrl"] = returnUrl;
         return View();
     }
 
     [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> Login(string email, string password)
+    // 2. Recibimos la returnUrl de vuelta desde el formulario
+    public async Task<IActionResult> Login(string email, string password, string? returnUrl = null)
     {
+        // La guardamos de nuevo por si falla el login y hay que volver a mostrar la vista
+        ViewData["ReturnUrl"] = returnUrl;
+
         var user = await _repo.ObtenerPorEmail(email);
 
         if (user == null)
@@ -57,7 +63,9 @@ public class UsuariosController : Controller
         {
             new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
             new Claim(ClaimTypes.Email, user.email),
-            new Claim(ClaimTypes.Role, user.rol)
+            new Claim(ClaimTypes.Role, user.rol),
+            // 🔥 IMPORTANTE: Agregamos este Claim "Id" porque tus otros controladores lo buscan explícitamente
+            new Claim("Id", user.id.ToString()) 
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -69,11 +77,17 @@ public class UsuariosController : Controller
 
         // ==== GENERAR JWT ====
         var token = GenerarJwt(user);
-
-        // (opcional) guardar JWT en ViewBag, cookie, frontend, etc.
         TempData["jwt"] = token;
 
-        return RedirectToAction("Index", "Home");
+        // 3. Lógica de redirección inteligente
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            return Redirect(returnUrl);
+        }
+        else
+        {
+            return RedirectToAction("Index", "Home");
+        }
     }
 
     public async Task<IActionResult> Logout()
@@ -93,6 +107,7 @@ public class UsuariosController : Controller
             new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
             new Claim(ClaimTypes.Email, user.email),
             new Claim(ClaimTypes.Role, user.rol),
+            new Claim("Id", user.id.ToString()) // También lo agregamos al JWT por consistencia
         };
 
         var token = new JwtSecurityToken(
@@ -104,5 +119,4 @@ public class UsuariosController : Controller
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-
 }

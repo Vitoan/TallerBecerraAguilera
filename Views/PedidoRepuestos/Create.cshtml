@@ -1,0 +1,53 @@
+@model TallerBecerraAguilera.Models.PedidoRepuestos
+
+@{
+    ViewData["Title"] = "Agregar Repuesto al Pedido";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">➕ Agregar ítem al Pedido #@Model.PedidoId</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        
+                        <input type="hidden" asp-for="PedidoId" />
+                        
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="RepuestoId" class="control-label fw-bold">Repuesto</label>
+                            <select asp-for="RepuestoId" class="form-select" asp-items="ViewBag.Repuestos">
+                                <option value="">-- Seleccione un repuesto --</option>
+                            </select>
+                            <span asp-validation-for="RepuestoId" class="text-danger"></span>
+                            <small class="text-muted">Seleccione del inventario actual.</small>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="CantidadSolicitada" class="control-label fw-bold">Cantidad a Pedir</label>
+                            <input asp-for="CantidadSolicitada" type="number" min="1" class="form-control" />
+                            <span asp-validation-for="CantidadSolicitada" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-lg"></i> Agregar al Pedido
+                            </button>
+                            <a asp-controller="PedidosRepuestos" asp-action="Details" asp-route-id="@Model.PedidoId" class="btn btn-secondary">
+                                Cancelar y Volver
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

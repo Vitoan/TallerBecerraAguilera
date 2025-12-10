@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
+using System.Security.Claims; // Necesario para User.FindFirst
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -28,6 +29,7 @@ namespace TallerBecerraAguilera.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
+            // Gracias a la modificación en el Repositorio, esto traerá los detalles
             var pedido = await _repo.GetByIdAsync(id);
             if (pedido == null) return NotFound();
             return View(pedido);
@@ -37,15 +39,25 @@ namespace TallerBecerraAguilera.Controllers
         {
             ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre");
 
-            var usuarioId = int.Parse(User.FindFirst("Id")!.Value);
+            // Asegúrate de que el usuario esté autenticado para evitar error aquí
+            var claimId = User.FindFirst("Id");
+            if (claimId == null) return RedirectToAction("Login", "Usuarios");
+
+            var usuarioId = int.Parse(claimId.Value);
             var empleado = await _empleadoRepo.GetByUsuarioIdAsync(usuarioId);
 
             if (User.IsInRole("Admin"))
+            {
                 ViewBag.EmpleadoId = new SelectList(await _empleadoRepo.GetAllAsync(), "Id", "NombreCompleto");
+            }
             else if (empleado != null)
+            {
                 ViewBag.EmpleadoId = empleado.Id;
+            }
             else
+            {
                 return BadRequest("No existe un empleado asociado a este usuario.");
+            }
 
             return View();
         }
@@ -53,7 +65,10 @@ namespace TallerBecerraAguilera.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(PedidosRepuestos pedido)
         {
-            var usuarioId = int.Parse(User.FindFirst("Id")!.Value);
+            var claimId = User.FindFirst("Id");
+            if (claimId == null) return RedirectToAction("Login", "Usuarios");
+
+            var usuarioId = int.Parse(claimId.Value);
             var empleado = await _empleadoRepo.GetByUsuarioIdAsync(usuarioId);
 
             if (!User.IsInRole("Admin"))
@@ -76,8 +91,11 @@ namespace TallerBecerraAguilera.Controllers
                 return View(pedido);
             }
 
-            var id = await _repo.AddAsync(pedido);
-            return RedirectToAction(nameof(Index));
+            // Guardamos la cabecera del pedido
+            var nuevoId = await _repo.AddAsync(pedido);
+            
+            // 👇 CAMBIO IMPORTANTE: Redirigimos a Details para agregar los repuestos
+            return RedirectToAction(nameof(Details), new { id = nuevoId });
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -87,7 +105,10 @@ namespace TallerBecerraAguilera.Controllers
 
             ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre", pedido.ProveedorId);
 
-            var usuarioId = int.Parse(User.FindFirst("Id")!.Value);
+            // Lógica de usuario
+            var claimId = User.FindFirst("Id");
+            // Nota: Aquí podrías manejar si claimId es null, pero asumimos auth activa
+            var usuarioId = int.Parse(claimId!.Value); 
             var empleado = await _empleadoRepo.GetByUsuarioIdAsync(usuarioId);
 
             if (User.IsInRole("Admin"))
@@ -110,7 +131,8 @@ namespace TallerBecerraAguilera.Controllers
         {
             if (id != pedido.Id) return NotFound();
 
-            var usuarioId = int.Parse(User.FindFirst("Id")!.Value);
+            var claimId = User.FindFirst("Id");
+            var usuarioId = int.Parse(claimId!.Value);
             var empleado = await _empleadoRepo.GetByUsuarioIdAsync(usuarioId);
 
             if (!User.IsInRole("Admin"))
@@ -141,7 +163,9 @@ namespace TallerBecerraAguilera.Controllers
         public async Task<IActionResult> CambiarEstado(int pedidoId, EstadoPedido estado)
         {
             await _repo.CambiarEstadoAsync(pedidoId, estado);
-            return RedirectToAction(nameof(Index));
+            
+            // Redirigimos a Details para ver el cambio reflejado en contexto
+            return RedirectToAction(nameof(Details), new { id = pedidoId });
         }
     }
 }

@@ -16,24 +16,44 @@ namespace TallerBecerraAguilera.Controllers
             _repuestoRepo = repuestoRepo;
         }
 
+        // GET: Mostrar formulario para agregar un repuesto
         public async Task<IActionResult> Create(int pedidoId)
         {
-            ViewBag.PedidoId = pedidoId;
-            ViewBag.Repuestos = new SelectList(await _repuestoRepo.GetAllAsync(), "Id", "Nombre");
-            return View();
+            // Creamos el modelo inicializado con el ID del padre para no perderlo
+            var modelo = new PedidoRepuestos { PedidoId = pedidoId };
+
+            // CORRECCIÓN IMPORTANTE: Tu modelo 'Repuestos' usa "Descripcion", no "Nombre".
+            ViewBag.Repuestos = new SelectList(await _repuestoRepo.GetAllAsync(), "Id", "Descripcion");
+            
+            return View(modelo);
         }
 
+        // POST: Guardar el repuesto en la base de datos
         [HttpPost]
         public async Task<IActionResult> Create(PedidoRepuestos item)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Repuestos = new SelectList(await _repuestoRepo.GetAllAsync(), "Id", "Nombre");
+                // Si falla, recargamos la lista. Nota: "Descripcion" aquí también.
+                ViewBag.Repuestos = new SelectList(await _repuestoRepo.GetAllAsync(), "Id", "Descripcion");
                 return View(item);
             }
 
-            await _repo.AddAsync(item);
-            return RedirectToAction("Create", new { pedidoId = item.PedidoId });
+            try 
+            {
+                await _repo.AddAsync(item);
+            }
+            catch (Exception)
+            {
+                // Si intentan agregar el mismo repuesto dos veces, capturamos el error
+                ModelState.AddModelError("", "Este repuesto ya está en la lista. Edítalo en lugar de agregarlo de nuevo.");
+                ViewBag.Repuestos = new SelectList(await _repuestoRepo.GetAllAsync(), "Id", "Descripcion");
+                return View(item);
+            }
+
+            // CAMBIO CLAVE: Al guardar, volvemos a los DETALLES del Pedido Padre
+            // para ver la lista completa actualizada.
+            return RedirectToAction("Details", "PedidosRepuestos", new { id = item.PedidoId });
         }
     }
 }

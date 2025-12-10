@@ -26,7 +26,7 @@ namespace TallerBecerraAguilera.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // === TODAS TUS CONFIGURACIONES ANTERIORES (ToTable, HasKey, etc.) ===
+            // === MAPEO DE TABLAS (snake_case) ===
             modelBuilder.Entity<Clientes>().ToTable("clientes");
             modelBuilder.Entity<Vehiculos>().ToTable("vehiculos");
             modelBuilder.Entity<Empleados>().ToTable("empleados");
@@ -40,6 +40,7 @@ namespace TallerBecerraAguilera.Data
             modelBuilder.Entity<OtRepuestos>().ToTable("ot_repuestos");
             modelBuilder.Entity<OtHerramientas>().ToTable("ot_herramientas");
 
+            // === CLAVES COMPUESTAS (Relaciones Muchos a Muchos) ===
             modelBuilder.Entity<PedidoRepuestos>()
                 .HasKey(pr => new { pr.PedidoId, pr.RepuestoId });
 
@@ -49,25 +50,15 @@ namespace TallerBecerraAguilera.Data
             modelBuilder.Entity<OtHerramientas>()
                 .HasKey(oh => new { oh.OtId, oh.HerramientaId });
 
+            // === ÍNDICES Y UNICIDAD ===
             modelBuilder.Entity<Vehiculos>()
                 .HasIndex(v => v.Patente)
                 .IsUnique();
 
-            modelBuilder.Entity<PedidosRepuestos>()
-                .Property(p => p.Estado)
-                .HasConversion<string>();
-
-            // FIX DEFINITIVO PARA EL ENUM ESTADO DE ORDENES_TRABAJO
-            modelBuilder.Entity<OrdenesTrabajo>(entity =>
-            {
-                entity.Property(e => e.Estado)
-                      .HasColumnName("Estado")
-                      .HasColumnType("int")
-                      .HasConversion(
-                          v => (int)v,
-                      v => (EstadoOrden)v
-                    );
-            });
+            // ⚠️ NOTA: He ELIMINADO todas las configuraciones de .HasConversion<string>()
+            // y las configuraciones manuales de "HasColumnType".
+            // Al no poner nada, EF asume automáticamente que el Enum es un INT,
+            // lo cual corregirá tu error de "InvalidCastException".
         }
     }
 }

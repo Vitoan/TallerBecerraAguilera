@@ -4,7 +4,9 @@
 
 <h2>Iniciar Sesión</h2>
 
-<form method="post">
+@* 👇 AQUÍ ESTÁ EL CAMBIO CLAVE *@
+<form method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+    
     <div class="mb-3">
         <label>Email</label>
         <input name="email" class="form-control" />
