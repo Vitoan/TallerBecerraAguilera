@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-12-2025 a las 15:47:02
+-- Tiempo de generación: 10-12-2025 a las 21:28:42
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `taller_mecanico_db`
 --
-CREATE DATABASE IF NOT EXISTS `taller_mecanico_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `taller_mecanico_db`;
 
 -- --------------------------------------------------------
 
@@ -46,7 +44,8 @@ CREATE TABLE `clientes` (
 
 INSERT INTO `clientes` (`id`, `nombre`, `apellido`, `telefono`, `email`, `created_at`, `updated_at`, `Dni`) VALUES
 (1, 'Carlos', 'López', '351-1111111', 'carlos@cliente.com', '2025-11-05 22:58:39', '2025-12-07 13:13:42', '12345678'),
-(2, 'Ana', 'Gómez', '351-2222222', 'ana@cliente.com', '2025-11-05 22:58:39', '2025-12-07 13:13:49', '12123123');
+(2, 'Ana', 'Gómez', '351-2222222', 'ana@cliente.com', '2025-11-05 22:58:39', '2025-12-07 13:13:49', '12123123'),
+(3, 'Martin Nahuel', 'Becerra', '02664304069', 'martinbecerrasl7@gmail.com', '2025-12-10 14:07:35', '2025-12-10 14:07:35', '47266622');
 
 -- --------------------------------------------------------
 
@@ -100,6 +99,26 @@ INSERT INTO `herramientas` (`id`, `codigo`, `nombre`, `Estado`, `ubicacion`, `cr
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `imagenherramientas`
+--
+
+CREATE TABLE `imagenherramientas` (
+  `Id` int(11) NOT NULL,
+  `HerramientaId` int(11) NOT NULL,
+  `Url` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `imagenherramientas`
+--
+
+INSERT INTO `imagenherramientas` (`Id`, `HerramientaId`, `Url`) VALUES
+(1, 1, '/uploads/herramientas/62854a68-0958-419e-8771-532263c41fe4.webp'),
+(2, 1, '/uploads/herramientas/933fff84-b8da-45ce-a7f0-4abe0ba617aa.jpeg');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `ordenes_trabajo`
 --
 
@@ -121,7 +140,8 @@ CREATE TABLE `ordenes_trabajo` (
 --
 
 INSERT INTO `ordenes_trabajo` (`id`, `descripcion_falla`, `fecha_ingreso`, `fecha_estimada_entrega`, `estado`, `horas_estimadas`, `vehiculo_id`, `empleado_id`, `created_at`, `updated_at`) VALUES
-(1, 'Cambio de aceite y filtro', '2025-11-05 22:58:39', '2025-11-10 12:00:00', 0, 2.50, 1, 2, '2025-11-05 22:58:39', '2025-12-10 10:44:27');
+(1, 'Cambio de aceite y filtro', '2025-11-05 22:58:39', '2025-11-10 12:00:00', 0, 2.50, 1, 2, '2025-11-05 22:58:39', '2025-12-10 10:44:27'),
+(2, 'Le gotea aceite', '2025-12-10 00:00:00', '2025-12-12 00:00:00', 0, 12.00, 3, 2, '2025-12-10 17:27:14', '2025-12-10 17:27:14');
 
 -- --------------------------------------------------------
 
@@ -187,7 +207,9 @@ CREATE TABLE `pedidos_repuestos` (
 INSERT INTO `pedidos_repuestos` (`id`, `fecha`, `estado`, `proveedor_id`, `empleado_id`, `created_at`, `updated_at`, `fecha_pedido`) VALUES
 (1, '2025-11-04 10:00:00', 2, 1, 2, '2025-11-05 22:58:39', '2025-12-10 11:45:40', '2025-12-07 22:01:01'),
 (2, '2025-12-10 11:41:29', 0, 1, 1, '2025-12-10 11:41:29', '2025-12-10 11:41:29', '2025-12-10 00:00:00'),
-(3, '2025-12-10 11:44:38', 0, 1, 1, '2025-12-10 11:44:38', '2025-12-10 11:44:38', '2025-12-10 00:00:00');
+(3, '2025-12-10 11:44:38', 0, 1, 1, '2025-12-10 11:44:38', '2025-12-10 17:26:31', '2025-12-10 00:00:00'),
+(4, '2025-12-10 13:46:17', 0, 1, 1, '2025-12-10 13:46:17', '2025-12-10 14:05:39', '2025-12-10 00:00:00'),
+(5, '2025-12-10 16:41:43', 0, 1, 1, '2025-12-10 16:41:43', '2025-12-10 17:26:05', '2025-12-10 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -207,7 +229,9 @@ CREATE TABLE `pedido_repuestos` (
 --
 
 INSERT INTO `pedido_repuestos` (`pedido_id`, `repuesto_id`, `cantidad_solicitada`, `cantidad_recibida`) VALUES
-(1, 2, 5, 0);
+(1, 2, 5, 0),
+(3, 1, 2, 0),
+(3, 3, 2, 0);
 
 -- --------------------------------------------------------
 
@@ -230,7 +254,8 @@ CREATE TABLE `proveedores` (
 --
 
 INSERT INTO `proveedores` (`id`, `nombre`, `contacto`, `telefono`, `condiciones_compra`, `created_at`, `updated_at`) VALUES
-(1, 'AutoParts SRL', 'ventas@autoparts.com', '351-4444444', 'Pago a 30 días', '2025-11-05 22:58:39', '2025-11-05 22:58:39');
+(1, 'AutoParts SRL', 'ventas@autoparts.com', '351-4444444', 'Pago a 30 días', '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
+(2, 'Arcor SRL', 'arcorsrl@gmail.com', '3549-304069', 'Pago con cheque menor o igual a 30 Días', '2025-12-10 14:02:36', '2025-12-10 14:02:36');
 
 -- --------------------------------------------------------
 
@@ -256,7 +281,8 @@ CREATE TABLE `repuestos` (
 
 INSERT INTO `repuestos` (`id`, `codigo`, `descripcion`, `cantidad_stock`, `precio_unitario`, `stock_minimo`, `proveedor_id`, `created_at`, `updated_at`) VALUES
 (1, 'R001', 'Filtro de aceite Toyota', 15, 12.50, 5, 1, '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
-(2, 'R002', 'Pastillas de freno Fiat', 8, 45.00, 3, 1, '2025-11-05 22:58:39', '2025-11-05 22:58:39');
+(2, 'R002', 'Pastillas de freno Fiat', 8, 45.00, 3, 1, '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
+(3, 'H003', 'Balizas Ford ', 6, 15.00, 4, 2, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -279,7 +305,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `email`, `password_hash`, `rol`, `avatar_path`, `created_at`, `updated_at`) VALUES
-(1, 'admin@taller.local', 'AQAAAAIAAYagAAAAEMrZoSZcmZv1uUC//u6qzF4lG8Ca8mChjyyN3OTnSOuDLo1o9ReDH8GEAa+4rpvMNg==', 'Administrador', '/uploads/avatars/default.jpg', '2025-12-10 10:38:41', '2025-12-10 10:38:41');
+(1, 'admin@taller.local', 'AQAAAAIAAYagAAAAEDSnXVDl9Vqy+GQON2Jw7Qpuive1C1Kf+uClaw5LtFWkA6oRfaZ3CQxGZJECcKoKjA==', 'Administrador', '/uploads/avatars/9db6db2a-51bf-47a3-a8fc-d08837f6dec4.jpg', '2025-12-10 10:38:41', '2025-12-10 16:25:25'),
+(2, 'empleado@taller.local', 'AQAAAAIAAYagAAAAEJnbdPIVJ2sZrK8EtO5RpIthyk7Ci+RmQ01conSWInbHjlEX4htKpUTJMaEL2+Mtkg==', 'Empleado', '/uploads/avatars/8b0a0b7b-9994-4e24-a8e6-e8a501b1c1ec.jpg', '2025-12-10 16:25:01', '2025-12-10 16:30:05');
 
 -- --------------------------------------------------------
 
@@ -306,7 +333,8 @@ CREATE TABLE `vehiculos` (
 
 INSERT INTO `vehiculos` (`id`, `patente`, `marca`, `modelo`, `anio`, `tipo`, `observaciones`, `cliente_id`, `created_at`, `updated_at`) VALUES
 (1, 'ABC123', 'Toyota', 'Corolla', '2020', 0, 'Cambio de aceite', 1, '2025-11-05 22:58:39', '2025-12-07 13:27:25'),
-(2, 'DEF456', 'Fiat', 'Cronos', '2022', 0, 'Frenos delanteros', 2, '2025-11-05 22:58:39', '2025-12-07 13:27:25');
+(2, 'DEF456', 'Fiat', 'Cronos', '2022', 0, 'Frenos delanteros', 2, '2025-11-05 22:58:39', '2025-12-07 13:27:25'),
+(3, 'AA411LL', 'Chevrolet', 'Onix LTZ', '2016', 0, NULL, 3, '2025-12-10 14:08:08', '2025-12-10 14:08:08');
 
 -- --------------------------------------------------------
 
@@ -345,6 +373,13 @@ ALTER TABLE `herramientas`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `codigo` (`codigo`),
   ADD KEY `idx_herramientas_estado` (`Estado`);
+
+--
+-- Indices de la tabla `imagenherramientas`
+--
+ALTER TABLE `imagenherramientas`
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `FK_ImagenHerramientas_Herramientas` (`HerramientaId`);
 
 --
 -- Indices de la tabla `ordenes_trabajo`
@@ -431,7 +466,7 @@ ALTER TABLE `__efmigrationshistory`
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `empleados`
@@ -446,50 +481,56 @@ ALTER TABLE `herramientas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT de la tabla `imagenherramientas`
+--
+ALTER TABLE `imagenherramientas`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `ordenes_trabajo`
 --
 ALTER TABLE `ordenes_trabajo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `pedidos_repuestos`
 --
 ALTER TABLE `pedidos_repuestos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `repuestos`
 --
 ALTER TABLE `repuestos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `vehiculos`
 --
 ALTER TABLE `vehiculos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restricciones para tablas volcadas
 --
 
 --
--- Filtros para la tabla `empleados`
+-- Filtros para la tabla `imagenherramientas`
 --
-ALTER TABLE `empleados`
-  ADD CONSTRAINT `empleados_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+ALTER TABLE `imagenherramientas`
+  ADD CONSTRAINT `FK_ImagenHerramientas_Herramientas` FOREIGN KEY (`HerramientaId`) REFERENCES `herramientas` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `ordenes_trabajo`
@@ -497,48 +538,6 @@ ALTER TABLE `empleados`
 ALTER TABLE `ordenes_trabajo`
   ADD CONSTRAINT `ordenes_trabajo_ibfk_1` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehiculos` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `ordenes_trabajo_ibfk_2` FOREIGN KEY (`empleado_id`) REFERENCES `empleados` (`id`);
-
---
--- Filtros para la tabla `ot_herramientas`
---
-ALTER TABLE `ot_herramientas`
-  ADD CONSTRAINT `ot_herramientas_ibfk_1` FOREIGN KEY (`ot_id`) REFERENCES `ordenes_trabajo` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `ot_herramientas_ibfk_2` FOREIGN KEY (`herramienta_id`) REFERENCES `herramientas` (`id`),
-  ADD CONSTRAINT `ot_herramientas_ibfk_3` FOREIGN KEY (`empleado_id`) REFERENCES `empleados` (`id`);
-
---
--- Filtros para la tabla `ot_repuestos`
---
-ALTER TABLE `ot_repuestos`
-  ADD CONSTRAINT `ot_repuestos_ibfk_1` FOREIGN KEY (`ot_id`) REFERENCES `ordenes_trabajo` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `ot_repuestos_ibfk_2` FOREIGN KEY (`repuesto_id`) REFERENCES `repuestos` (`id`) ON DELETE CASCADE;
-
---
--- Filtros para la tabla `pedidos_repuestos`
---
-ALTER TABLE `pedidos_repuestos`
-  ADD CONSTRAINT `fk_empleado_pedido` FOREIGN KEY (`empleado_id`) REFERENCES `empleados` (`id`),
-  ADD CONSTRAINT `pedidos_repuestos_ibfk_1` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedores` (`id`),
-  ADD CONSTRAINT `pedidos_repuestos_ibfk_2` FOREIGN KEY (`empleado_id`) REFERENCES `empleados` (`id`);
-
---
--- Filtros para la tabla `pedido_repuestos`
---
-ALTER TABLE `pedido_repuestos`
-  ADD CONSTRAINT `pedido_repuestos_ibfk_1` FOREIGN KEY (`pedido_id`) REFERENCES `pedidos_repuestos` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `pedido_repuestos_ibfk_2` FOREIGN KEY (`repuesto_id`) REFERENCES `repuestos` (`id`) ON DELETE CASCADE;
-
---
--- Filtros para la tabla `repuestos`
---
-ALTER TABLE `repuestos`
-  ADD CONSTRAINT `repuestos_ibfk_1` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedores` (`id`);
-
---
--- Filtros para la tabla `vehiculos`
---
-ALTER TABLE `vehiculos`
-  ADD CONSTRAINT `vehiculos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
