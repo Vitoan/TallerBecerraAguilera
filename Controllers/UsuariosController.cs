@@ -1,14 +1,15 @@
+// Controllers/UsuariosController.cs
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
 
 public class UsuariosController : Controller
 {
@@ -27,7 +28,6 @@ public class UsuariosController : Controller
     }
 
     [AllowAnonymous]
-    // 1. Recibimos la returnUrl si el sistema nos redirigió aquí
     public IActionResult Login(string? returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
@@ -36,14 +36,12 @@ public class UsuariosController : Controller
 
     [AllowAnonymous]
     [HttpPost]
-    // 2. Recibimos la returnUrl de vuelta desde el formulario
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(string email, string password, string? returnUrl = null)
     {
-        // La guardamos de nuevo por si falla el login y hay que volver a mostrar la vista
         ViewData["ReturnUrl"] = returnUrl;
 
         var user = await _repo.ObtenerPorEmail(email);
-
         if (user == null)
         {
             ModelState.AddModelError("", "Usuario no encontrado.");
@@ -51,43 +49,32 @@ public class UsuariosController : Controller
         }
 
         var result = _hasher.VerifyHashedPassword(user, user.password_hash!, password);
-
         if (result == PasswordVerificationResult.Failed)
         {
             ModelState.AddModelError("", "Contraseña incorrecta.");
             return View();
         }
 
-        // ==== CREAR COOKIE ====
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
             new Claim(ClaimTypes.Email, user.email),
             new Claim(ClaimTypes.Role, user.rol),
-            // 🔥 IMPORTANTE: Agregamos este Claim "Id" porque tus otros controladores lo buscan explícitamente
-            new Claim("Id", user.id.ToString()) 
+            new Claim("Id", user.id.ToString())
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);
 
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            principal);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-        // ==== GENERAR JWT ====
         var token = GenerarJwt(user);
         TempData["jwt"] = token;
 
-        // 3. Lógica de redirección inteligente
         if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-        {
             return Redirect(returnUrl);
-        }
-        else
-        {
-            return RedirectToAction("Index", "Home");
-        }
+
+        return RedirectToAction("Index", "Home");
     }
 
     public async Task<IActionResult> Logout()
@@ -99,7 +86,6 @@ public class UsuariosController : Controller
     private string GenerarJwt(Usuarios user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenAuthentication:SecretKey"]!));
-
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -107,7 +93,7 @@ public class UsuariosController : Controller
             new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
             new Claim(ClaimTypes.Email, user.email),
             new Claim(ClaimTypes.Role, user.rol),
-            new Claim("Id", user.id.ToString()) // También lo agregamos al JWT por consistencia
+            new Claim("Id", user.id.ToString())
         };
 
         var token = new JwtSecurityToken(
@@ -118,5 +104,182 @@ public class UsuariosController : Controller
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> Index()
+    {
+        var lista = await _repo.ObtenerTodos();
+        return View(lista);
+    }
+
+    [Authorize(Roles = "Administrador")]
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [Authorize(Roles = "Administrador")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(Usuarios model, string password)
+    {
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            ModelState.AddModelError("password", "La contraseña es obligatoria.");
+            return View(model);
+        }
+
+        model.password_hash = _hasher.HashPassword(model, password);
+        await _repo.Crear(model);
+        return RedirectToAction("Index");
+    }
+
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var user = await _repo.ObtenerPorId(id);
+        if (user == null) return NotFound();
+        return View(user);
+    }
+
+    [Authorize(Roles = "Administrador")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Usuarios model)
+    {
+        var user = await _repo.ObtenerPorId(model.id);
+        if (user == null) return NotFound();
+
+        user.email = model.email;
+        user.rol = model.rol;
+        if (!string.IsNullOrEmpty(model.avatar_path))
+            user.avatar_path = model.avatar_path;
+
+        await _repo.Actualizar(user);
+        return RedirectToAction("Index");
+    }
+
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> ResetPassword(int id)
+    {
+        var user = await _repo.ObtenerPorId(id);
+        if (user == null) return NotFound();
+        return View(user);
+    }
+
+    [Authorize(Roles = "Administrador")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(int id, string nuevaClave)
+    {
+        var user = await _repo.ObtenerPorId(id);
+        if (user == null) return NotFound();
+
+        user.password_hash = _hasher.HashPassword(user, nuevaClave);
+        await _repo.Actualizar(user);
+        return RedirectToAction("Index");
+    }
+
+    [Authorize(Roles = "Administrador")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var user = await _repo.ObtenerPorId(id);
+        if (user == null) return NotFound();
+        return View(user);
+    }
+
+    [Authorize(Roles = "Administrador")]
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        await _repo.Eliminar(id);
+        return RedirectToAction("Index");
+    }
+
+    [Authorize]
+    public async Task<IActionResult> Perfil()
+    {
+        int id = int.Parse(User.FindFirst("Id")!.Value);
+        var user = await _repo.ObtenerPorId(id);
+        if (user == null) return NotFound();
+        return View(user);
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditarDatosPersonales(Usuarios model)
+    {
+        var user = await _repo.ObtenerPorId(model.id);
+        if (user == null) return NotFound();
+
+        user.email = model.email;
+        await _repo.Actualizar(user);
+
+        TempData["Success"] = "Datos actualizados correctamente.";
+        return RedirectToAction("Perfil");
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CambiarClave(int id, string ClaveActual, string NuevaClave, string ConfirmarClave)
+    {
+        var user = await _repo.ObtenerPorId(id);
+        if (user == null) return NotFound();
+
+        if (NuevaClave != ConfirmarClave)
+        {
+            TempData["Error"] = "Las contraseñas no coinciden.";
+            return RedirectToAction("Perfil");
+        }
+
+        var result = _hasher.VerifyHashedPassword(user, user.password_hash!, ClaveActual);
+        if (result == PasswordVerificationResult.Failed)
+        {
+            TempData["Error"] = "La contraseña actual es incorrecta.";
+            return RedirectToAction("Perfil");
+        }
+
+        user.password_hash = _hasher.HashPassword(user, NuevaClave);
+        await _repo.Actualizar(user);
+
+        TempData["Success"] = "Contraseña actualizada.";
+        return RedirectToAction("Perfil");
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditarAvatar(int id, IFormFile? Avatar, bool EliminarAvatar = false)
+    {
+        var user = await _repo.ObtenerPorId(id);
+        if (user == null) return NotFound();
+
+        string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+        Directory.CreateDirectory(uploadPath);
+
+        if (EliminarAvatar)
+        {
+            user.avatar_path = "/uploads/avatars/default.jpg";
+        }
+        else if (Avatar != null)
+        {
+            string fileName = $"{Guid.NewGuid()}{Path.GetExtension(Avatar.FileName)}";
+            string filePath = Path.Combine(uploadPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await Avatar.CopyToAsync(stream);
+            }
+
+            user.avatar_path = $"/uploads/avatars/{fileName}";
+        }
+
+        await _repo.Actualizar(user);
+        TempData["Success"] = "Avatar actualizado correctamente.";
+        return RedirectToAction("Perfil");
     }
 }

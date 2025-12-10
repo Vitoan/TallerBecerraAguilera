@@ -1,0 +1,10 @@
+@model TallerBecerraAguilera.Models.Usuarios
+
+<h1>Eliminar Usuario</h1>
+
+<p>¿Seguro que deseas eliminar el usuario @Model.email?</p>
+
+<form method="post">
+    <button class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

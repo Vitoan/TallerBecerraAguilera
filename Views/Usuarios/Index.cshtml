@@ -1,0 +1,31 @@
+@model List<TallerBecerraAguilera.Models.Usuarios>
+
+<h1 class="mb-3">Usuarios</h1>
+
+<a class="btn btn-primary mb-3" asp-action="Create">Nuevo Usuario</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Avatar</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.email</td>
+                <td>@u.rol</td>
+                <td><img src="@u.avatar_path" width="40" class="rounded-circle" /></td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@u.id" class="btn btn-warning btn-sm">Editar</a>
+                    <a asp-action="ResetPassword" asp-route-id="@u.id" class="btn btn-info btn-sm">Clave</a>
+                    <a asp-action="Delete" asp-route-id="@u.id" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

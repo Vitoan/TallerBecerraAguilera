@@ -1,0 +1,22 @@
+@model TallerBecerraAguilera.Models.Usuarios
+
+<h1>Editar Usuario</h1>
+
+<form method="post">
+    <input type="hidden" asp-for="id" />
+
+    <div class="mb-3">
+        <label>Email</label>
+        <input asp-for="email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Rol</label>
+        <select asp-for="rol" class="form-select">
+            <option>Administrador</option>
+            <option>Empleado</option>
+        </select>
+    </div>
+
+    <button class="btn btn-primary">Guardar Cambios</button>
+</form>

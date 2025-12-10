@@ -1,0 +1,91 @@
+@model TallerBecerraAguilera.Models.Usuarios
+
+<h1 class="mb-4">Mi Perfil</h1>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+
+        <!-- Datos Personales -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">Datos Personales</div>
+            <div class="card-body">
+
+                <form asp-action="EditarDatosPersonales" method="post">
+                    <input type="hidden" asp-for="id" />
+
+                    <div class="mb-3">
+                        <label asp-for="email" class="form-label"></label>
+                        <input asp-for="email" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- Avatar -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">Avatar</div>
+            <div class="card-body">
+
+                <form asp-action="EditarAvatar" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="id" />
+
+                    <div class="mb-3">
+                        <img src="@Model.avatar_path" width="80" class="rounded mb-2" />
+                    </div>
+
+                    <input type="file" name="Avatar" class="form-control mb-3" />
+
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" name="EliminarAvatar" />
+                        <label class="form-check-label">Eliminar avatar</label>
+                    </div>
+
+                    <button class="btn btn-info text-white">Actualizar Avatar</button>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- Cambiar Contraseña -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning">Cambiar Contraseña</div>
+            <div class="card-body">
+
+                <form asp-action="CambiarClave" method="post">
+                    <input type="hidden" asp-for="id" />
+
+                    <div class="mb-3">
+                        <label>Contraseña Actual</label>
+                        <input type="password" name="ClaveActual" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Nueva Contraseña</label>
+                        <input type="password" name="NuevaClave" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Confirmar Contraseña</label>
+                        <input type="password" name="ConfirmarClave" class="form-control" required />
+                    </div>
+
+                    <button class="btn btn-warning">Cambiar Contraseña</button>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>

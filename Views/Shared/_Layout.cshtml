@@ -23,114 +23,121 @@
 </head>
 <body>
 
-    @{
-        var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+@using TallerBecerraAguilera.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext Db
+
+@{
+    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+
+    string avatarPath = "/uploads/avatars/default.jpg";
+
+    if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        var userId = int.Parse(User.FindFirst("Id")!.Value);
+        var user = await Db.Usuarios.FirstOrDefaultAsync(u => u.id == userId);
+        if (user != null && !string.IsNullOrEmpty(user.avatar_path))
+            avatarPath = user.avatar_path;
     }
+}
 
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background:#111;border-bottom:3px solid #18a2b8;">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-info" asp-controller="Home" asp-action="Index">
-                🔧 Taller Becerra Aguilera
-            </a>
+<nav class="navbar navbar-expand-lg navbar-dark" style="background:#111;border-bottom:3px solid #18a2b8;">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-info" asp-controller="Home" asp-action="Index">
+            🔧 Taller Becerra Aguilera
+        </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuTaller" aria-controls="menuTaller" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuTaller">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <div class="collapse navbar-collapse" id="menuTaller">
-                <ul class="navbar-nav me-auto">
+        <div class="collapse navbar-collapse" id="menuTaller">
+            <ul class="navbar-nav me-auto">
 
-                    @if (User.IsInRole("Administrador"))
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "OrdenesTrabajo" ? "active" : "")"
-                               asp-controller="OrdenesTrabajo" asp-action="Create">➕ Nueva OT</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "Herramientas" ? "active" : "")"
-                               asp-controller="Herramientas" asp-action="Index">🔧 Herramientas</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "Repuestos" ? "active" : "")"
-                               asp-controller="Repuestos" asp-action="Index">📦 Inventario</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "PedidosRepuestos" ? "active" : "")"
-                               asp-controller="PedidosRepuestos" asp-action="Create">📩 Pedidos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "Proveedores" ? "active" : "")"
-                               asp-controller="Proveedores" asp-action="Index">🏭 Proveedores</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "Clientes" ? "active" : "")"
-                               asp-controller="Clientes" asp-action="Index">👤 Clientes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "Vehiculos" ? "active" : "")"
-                               asp-controller="Vehiculos" asp-action="Index">🚗 Vehículos</a>
-                        </li>
-                    }
+                @if (User.IsInRole("Administrador"))
+                {
+                    <li class="nav-item"><a class="nav-link @(currentController == "OrdenesTrabajo" ? "active" : "")"
+                        asp-controller="OrdenesTrabajo" asp-action="Create">➕ Nueva OT</a></li>
 
-                    @if (User.IsInRole("Empleado"))
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "OrdenesTrabajo" ? "active" : "")"
-                               asp-controller="OrdenesTrabajo" asp-action="MisOTs">📝 Mis Órdenes de Trabajo</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "Herramientas" ? "active" : "")"
-                               asp-controller="Herramientas" asp-action="Disponibles">🔧 Herramientas Disponibles</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "Repuestos" ? "active" : "")"
-                               asp-controller="Repuestos" asp-action="Catalogo">📦 Catálogo Repuestos</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(currentController == "PedidosRepuestos" ? "active" : "")"
-                               asp-controller="PedidosRepuestos" asp-action="Create">📩 Nuevo Pedido</a>
-                        </li>
-                    }
-                </ul>
+                    <li class="nav-item"><a class="nav-link @(currentController == "Herramientas" ? "active" : "")"
+                        asp-controller="Herramientas" asp-action="Index">🔧 Herramientas</a></li>
 
-                <div class="d-flex align-items-center">
-                    @if (User.Identity != null && User.Identity.IsAuthenticated)
-                    {
-                        var avatarPath = "/uploads/avatars/default.jpg";
+                    <li class="nav-item"><a class="nav-link @(currentController == "Repuestos" ? "active" : "")"
+                        asp-controller="Repuestos" asp-action="Index">📦 Inventario</a></li>
 
-                        <div class="dropdown">
-                            <img src="@avatarPath" class="avatar-circle dropdown-toggle" id="avatarDropdown" data-bs-toggle="dropdown" />
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" asp-controller="Usuarios" asp-action="Perfil">Perfil</a></li>
-                                <li><hr class="dropdown-divider" /></li>
-                                <li><a class="dropdown-item text-danger" asp-controller="Usuarios" asp-action="Logout">Cerrar sesión</a></li>
-                            </ul>
-                        </div>
-                    }
-                    else
-                    {
-                        <a asp-controller="Usuarios" asp-action="Login" class="btn btn-primary">Iniciar sesión</a>
-                    }
-                </div>
+                    <li class="nav-item"><a class="nav-link @(currentController == "PedidosRepuestos" ? "active" : "")"
+                        asp-controller="PedidosRepuestos" asp-action="Create">📩 Pedidos</a></li>
+
+                    <li class="nav-item"><a class="nav-link @(currentController == "Proveedores" ? "active" : "")"
+                        asp-controller="Proveedores" asp-action="Index">🏭 Proveedores</a></li>
+
+                    <li class="nav-item"><a class="nav-link @(currentController == "Clientes" ? "active" : "")"
+                        asp-controller="Clientes" asp-action="Index">👤 Clientes</a></li>
+
+                    <li class="nav-item"><a class="nav-link @(currentController == "Vehiculos" ? "active" : "")"
+                        asp-controller="Vehiculos" asp-action="Index">🚗 Vehículos</a></li>
+                    
+                    <li class="nav-item"><a class="nav-link @(currentController == "Usuarios" ? "active" : "")"
+                        asp-controller="Usuarios" asp-action="Index">👥 Usuarios</a></li>
+                }
+
+                @if (User.IsInRole("Empleado"))
+                {
+                    <li class="nav-item"><a class="nav-link @(currentController == "OrdenesTrabajo" ? "active" : "")"
+                        asp-controller="OrdenesTrabajo" asp-action="MisOTs">📝 Mis Órdenes de Trabajo</a></li>
+
+                    <li class="nav-item"><a class="nav-link @(currentController == "Herramientas" ? "active" : "")"
+                        asp-controller="Herramientas" asp-action="Disponibles">🔧 Herramientas Disponibles</a></li>
+
+                    <li class="nav-item"><a class="nav-link @(currentController == "Repuestos" ? "active" : "")"
+                        asp-controller="Repuestos" asp-action="Catalogo">📦 Catálogo Repuestos</a></li>
+
+                    <li class="nav-item"><a class="nav-link @(currentController == "PedidosRepuestos" ? "active" : "")"
+                        asp-controller="PedidosRepuestos" asp-action="Create">📩 Nuevo Pedido</a></li>
+                }
+
+            </ul>
+
+            <div class="d-flex align-items-center">
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="dropdown">
+                        <img src="@avatarPath" class="avatar-circle dropdown-toggle"
+                             id="avatarDropdown" data-bs-toggle="dropdown" />
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" asp-controller="Usuarios" asp-action="Perfil">Perfil</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><a class="dropdown-item text-danger" asp-controller="Usuarios" asp-action="Logout">Cerrar sesión</a></li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <a asp-controller="Usuarios" asp-action="Login" class="btn btn-primary">Iniciar sesión</a>
+                }
             </div>
-        </div>
-    </nav>
 
-    <div class="container-fluid mt-3">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+        </div>
     </div>
+</nav>
 
-    <footer class="border-top footer text-muted">
-        <div class="container-fluid">
-            &copy; @DateTime.Now.Year - Taller Becerra Aguilera
-        </div>
-    </footer>
+<div class="container-fluid mt-3">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+<footer class="border-top footer text-muted">
+    <div class="container-fluid">
+        &copy; @DateTime.Now.Year - Taller Becerra Aguilera
+    </div>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
