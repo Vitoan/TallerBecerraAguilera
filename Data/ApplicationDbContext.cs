@@ -21,6 +21,7 @@ namespace TallerBecerraAguilera.Data
         public DbSet<PedidoRepuestos> PedidoRepuestos { get; set; } = null!;
         public DbSet<OtRepuestos> OtRepuestos { get; set; } = null!;
         public DbSet<OtHerramientas> OtHerramientas { get; set; } = null!;
+        public DbSet<ImagenHerramienta> ImagenHerramientas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,0 +1,12 @@
+@model TallerBecerraAguilera.Models.ImagenHerramienta
+
+<h2>Eliminar Imagen</h2>
+
+<img src="@Model.Url" width="250" style="border-radius:10px;object-fit:cover;" />
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <br />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" asp-route-herramientaId="@Model.HerramientaId" class="btn btn-secondary">Cancelar</a>
+</form>

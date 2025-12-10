@@ -1,30 +1,53 @@
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Iniciar Sesión";
+    string returnUrl = ViewData["ReturnUrl"] as string ?? "/";
 }
 
-<h2>Iniciar Sesión</h2>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
 
-@* 👇 AQUÍ ESTÁ EL CAMBIO CLAVE *@
-<form method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]">
-    
-    <div class="mb-3">
-        <label>Email</label>
-        <input name="email" class="form-control" />
-    </div>
-    <div class="mb-3">
-        <label>Contraseña</label>
-        <input name="password" type="password" class="form-control" />
-    </div>
+        <div class="card shadow-lg">
+            <div class="card-body p-4">
 
-    <button class="btn btn-primary">Ingresar</button>
-</form>
+                <h3 class="text-center mb-4">Iniciar Sesión</h3>
 
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger mt-3">
-        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <div>@error.ErrorMessage</div>
-        }
+                <form method="post" asp-route-returnUrl="@returnUrl" autocomplete="off">
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input name="email"
+                               type="email"
+                               class="form-control"
+                               placeholder="tu-correo@example.com"
+                               required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña</label>
+                        <input name="password"
+                               type="password"
+                               class="form-control"
+                               placeholder="********"
+                               required />
+                    </div>
+
+                    <button class="btn btn-primary w-100">
+                        Ingresar
+                    </button>
+                </form>
+
+                @* Mostrar errores de ModelState *@
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger mt-3">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <div>@error.ErrorMessage</div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
     </div>
-}
+</div>

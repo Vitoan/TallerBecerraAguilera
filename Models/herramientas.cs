@@ -31,6 +31,8 @@ namespace TallerBecerraAguilera.Models
         [Display(Name = "Actualizado")]
         public DateTime? Updated_at { get; set; } = DateTime.Now;
 
+        public List<ImagenHerramienta>? Imagenes { get; set; }
+
         public override string ToString()
         {
             return $"{Nombre} - {Codigo} ({Estado})";

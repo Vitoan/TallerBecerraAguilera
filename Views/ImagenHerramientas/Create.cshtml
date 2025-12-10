@@ -1,0 +1,16 @@
+@model TallerBecerraAguilera.Models.ImagenHerramienta
+
+<h2>Subir Imagen</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="HerramientaId" />
+
+    <div class="mb-3">
+        <label class="form-label">Imagen</label>
+        <input asp-for="Archivo" type="file" class="form-control" />
+        <span asp-validation-for="Archivo" class="text-danger"></span>
+    </div>
+
+    <button class="btn btn-primary">Subir</button>
+    <a asp-action="Index" asp-route-herramientaId="@Model.HerramientaId" class="btn btn-secondary">Volver</a>
+</form>

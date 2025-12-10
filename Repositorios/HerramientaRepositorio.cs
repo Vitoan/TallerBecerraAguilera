@@ -44,5 +44,10 @@ namespace TallerBecerraAguilera.Repositorios
                 await _context.SaveChangesAsync();
             }
         }
+
+        public IQueryable<Herramientas> Query()
+        {
+            return _context.Herramientas.AsQueryable();
+        }
     }
 }

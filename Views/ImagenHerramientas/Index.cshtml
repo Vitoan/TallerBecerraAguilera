@@ -1,0 +1,34 @@
+@model IEnumerable<TallerBecerraAguilera.Models.ImagenHerramienta>
+
+@{
+    ViewBag.Title = "Imágenes de Herramienta";
+}
+
+<h2>Imágenes de Herramienta</h2>
+
+<p>
+    <a asp-action="Create" asp-route-herramientaId="@ViewBag.HerramientaId" class="btn btn-primary">Subir Imagen</a>
+    <a asp-controller="Herramientas" asp-action="Index" class="btn btn-secondary">Volver</a>
+</p>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Imagen</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>
+                <img src="@item.Url" width="120" height="120" style="object-fit:cover;border-radius:8px;" />
+            </td>
+            <td>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

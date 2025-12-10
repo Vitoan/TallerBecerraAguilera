@@ -17,6 +17,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")!));
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
 
 // 2. Inyección de Dependencias (Repositorios)
 builder.Services.AddScoped<OrdenTrabajoRepositorio>();
@@ -29,6 +30,7 @@ builder.Services.AddScoped<PedidoRepuestosRepositorio>();
 builder.Services.AddScoped<ProveedorRepositorio>();
 builder.Services.AddScoped<EmpleadoRepositorio>();
 builder.Services.AddScoped<UsuarioRepositorio>();
+builder.Services.AddScoped<ImagenHerramientaRepositorio>();
 
 // Servicio para Hashing de Contraseñas
 builder.Services.AddScoped<PasswordHasher<Usuarios>>();
