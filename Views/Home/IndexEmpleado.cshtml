@@ -1,0 +1,42 @@
+@model TallerBecerraAguilera.Models.Empleados
+@{
+    ViewData["Title"] = "Mi Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="fw-bold text-info mb-4">👷‍♂️ Bienvenido, @Model.NombreCompleto</h2>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h4 class="text-primary fw-bold">@ViewBag.MisOTsPendientes</h4>
+                    <p class="text-muted mb-0">Órdenes Pendientes</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h4 class="text-warning fw-bold">@ViewBag.MisOTsEnCurso</h4>
+                    <p class="text-muted mb-0">Órdenes en Curso</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h4 class="text-success fw-bold">@ViewBag.MisOTsFinalizadas</h4>
+                    <p class="text-muted mb-0">Órdenes Finalizadas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4"/>
+    
+    <h4 class="fw-bold mb-3">📋 Mis órdenes recientes</h4>
+    @await Component.InvokeAsync("UltimasOTsEmpleado", new { empleadoId = Model.Id })
+</div>

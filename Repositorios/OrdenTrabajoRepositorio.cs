@@ -15,47 +15,37 @@ namespace TallerBecerraAguilera.Repositorios
         {
             _context = context;
         }
-        
-        // =======================================================
-        // CRUD BÁSICO
-        // =======================================================
 
-        // Obtener todas las Órdenes de Trabajo (LISTAR)
         public async Task<List<OrdenesTrabajo>> GetAllAsync()
         {
             return await _context.OrdenesTrabajo
-                .Include(o => o.Vehiculo) // Eager loading: Carga el Vehículo
-                    .ThenInclude(v => v!.Cliente) // Carga el Cliente del Vehículo
-                .Include(o => o.Empleado) // Eager loading: Carga el Empleado
+                .Include(o => o.Vehiculo)
+                    .ThenInclude(v => v!.Cliente)
+                .Include(o => o.Empleado)
                 .OrderByDescending(o => o.FechaIngreso)
                 .ToListAsync();
         }
 
-        // Obtener una OT por ID (LEER/BUSCAR - Incluye relaciones)
         public async Task<OrdenesTrabajo?> GetByIdAsync(int id)
         {
             return await _context.OrdenesTrabajo
                 .Include(o => o.Vehiculo)
-                    .ThenInclude(v => v!.Cliente) 
+                    .ThenInclude(v => v!.Cliente)
                 .Include(o => o.Empleado)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
-        
-        // Agregar una nueva OT (CREAR)
+
         public async Task AddAsync(OrdenesTrabajo ot)
         {
             ot.Created_at = DateTime.Now;
             ot.Updated_at = DateTime.Now;
-            if (ot.FechaIngreso == default) 
-            {
+            if (ot.FechaIngreso == default)
                 ot.FechaIngreso = DateTime.Now;
-            }
-            
+
             _context.OrdenesTrabajo.Add(ot);
             await _context.SaveChangesAsync();
         }
 
-        // Actualizar una OT existente (ACTUALIZAR)
         public async Task UpdateAsync(OrdenesTrabajo ot)
         {
             ot.Updated_at = DateTime.Now;
@@ -63,7 +53,6 @@ namespace TallerBecerraAguilera.Repositorios
             await _context.SaveChangesAsync();
         }
 
-        // Eliminar una OT por ID (ELIMINAR)
         public async Task DeleteAsync(int id)
         {
             var ot = await GetByIdAsync(id);
@@ -73,30 +62,22 @@ namespace TallerBecerraAguilera.Repositorios
                 await _context.SaveChangesAsync();
             }
         }
-        
-        // =======================================================
-        // MÉTODOS DE UTILIDAD Y DROPDOWNS
-        // =======================================================
 
         public async Task<bool> ExistsAsync(int id)
         {
             return await _context.OrdenesTrabajo.AnyAsync(o => o.Id == id);
         }
-        
-        // Obtener todos los vehículos (para DropDownList en Create/Edit)
+
         public async Task<IEnumerable<Vehiculos>> GetAllVehiculosAsync()
         {
             return await _context.Vehiculos.Include(v => v.Cliente).ToListAsync();
         }
 
-        // Obtener todos los empleados (para DropDownList en Create/Edit)
         public async Task<IEnumerable<Empleados>> GetAllEmpleadosAsync()
         {
             return await _context.Empleados.ToListAsync();
         }
 
-
-        // Métodos de conteo (tal como los tenías)
         public async Task<int> GetCountByEstadoAsync(EstadoOrden estado)
         {
             return await _context.OrdenesTrabajo.CountAsync(o => o.Estado == estado);
@@ -104,9 +85,25 @@ namespace TallerBecerraAguilera.Repositorios
 
         public async Task<int> GetStockCriticoCountAsync()
         {
-            // Nota: Este método idealmente iría en RepuestoRepositorio
             return await _context.Repuestos
                 .CountAsync(r => r.CantidadStock <= r.StockMinimo && r.StockMinimo > 0);
+        }
+
+        public async Task<int> GetCountByEmpleadoAndEstadoAsync(int empleadoId, EstadoOrden estado)
+        {
+            return await _context.OrdenesTrabajo
+                .CountAsync(o => o.EmpleadoId == empleadoId && o.Estado == estado);
+        }
+
+        public async Task<List<OrdenesTrabajo>> GetByEmpleadoAsync(int empleadoId)
+        {
+            return await _context.OrdenesTrabajo
+                .Where(o => o.EmpleadoId == empleadoId)
+                .Include(o => o.Vehiculo)
+                    .ThenInclude(v => v!.Cliente)
+                .Include(o => o.Empleado)
+                .OrderByDescending(o => o.FechaIngreso)
+                .ToListAsync();
         }
     }
 }
