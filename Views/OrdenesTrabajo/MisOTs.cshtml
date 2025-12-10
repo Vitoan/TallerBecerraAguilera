@@ -1,0 +1,72 @@
+@model IEnumerable<TallerBecerraAguilera.Models.OrdenesTrabajo>
+@using TallerBecerraAguilera.Models
+@{
+    ViewData["Title"] = "Mis Órdenes de Trabajo";
+}
+
+<div class="container mt-4">
+    <h2 class="fw-bold text-info mb-4">📝 Mis Órdenes de Trabajo</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning">
+            No tenés órdenes asignadas actualmente.
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>OT</th>
+                    <th>Vehículo</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Fecha Ingreso</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ot in Model)
+                {
+                    <tr>
+                        <td>@ot.Id</td>
+                        <td>@ot.Vehiculo?.Patente</td>
+                        <td>@ot.DescripcionFalla</td>
+                        <td>
+                            <span class="badge @(ot.Estado == EstadoOrden.Pendiente ? "bg-secondary" :
+                                                ot.Estado == EstadoOrden.EnReparacion ? "bg-warning text-dark" :
+                                                ot.Estado == EstadoOrden.Finalizada ? "bg-success" :
+                                                ot.Estado == EstadoOrden.Entregada ? "bg-info" : "bg-light")">
+                                @ot.Estado
+                            </span>
+                        </td>
+                        <td>@ot.FechaIngreso.ToShortDateString()</td>
+                        <td>
+                            <form asp-action="CambiarEstado" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@ot.Id" />
+                                <select name="nuevoEstado" class="form-select form-select-sm d-inline w-auto">
+                                    @foreach (EstadoOrden estado in Enum.GetValues(typeof(EstadoOrden)))
+                                    {
+                                        var isSelected = (ot.Estado == estado) ? "selected" : "";
+                                        var displayName = estado switch
+                                        {
+                                            EstadoOrden.Pendiente => "Pendiente (Ingreso)",
+                                            EstadoOrden.EnReparacion => "En Reparación",
+                                            EstadoOrden.Finalizada => "Finalizada (Esperando Retiro)",
+                                            EstadoOrden.Entregada => "Entregada (Cerrada)",
+                                            _ => estado.ToString()
+                                        };
+                                        @:<option value="@( (int)estado )" @isSelected>@displayName</option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-primary ms-1">Actualizar</button>
+                                <a asp-action="Details" asp-route-id="@ot.Id" class="btn btn-sm btn-info ms-1">Detalles</a>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

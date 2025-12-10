@@ -4,7 +4,8 @@ using TallerBecerraAguilera.Repositorios;
 using TallerBecerraAguilera.Models;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using System.Linq; // Necesario para Select
+using System.Linq;
+using Microsoft.AspNetCore.Authorization; // Necesario para Select
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -145,6 +146,34 @@ namespace TallerBecerraAguilera.Controllers
             await _otRepositorio.DeleteAsync(id);
             TempData["Mensaje"] = "Orden de Trabajo eliminada exitosamente.";
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Empleado")]
+        public async Task<IActionResult> MisOTs()
+        {
+            var userId = int.Parse(User.FindFirst("Id")!.Value);
+
+            var ots = await _otRepositorio.GetByEmpleadoAsync(userId);
+
+            return View(ots);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Empleado")]
+        public async Task<IActionResult> CambiarEstado(int id, int nuevoEstado)
+        {
+            var ot = await _otRepositorio.GetByIdAsync(id);
+            if (ot == null) return NotFound();
+
+            var userId = int.Parse(User.FindFirst("Id")!.Value);
+            if (ot.EmpleadoId != userId) return Forbid();
+
+            ot.Estado = (EstadoOrden)nuevoEstado;
+            await _otRepositorio.UpdateAsync(ot);
+
+            TempData["Mensaje"] = $"Estado de OT #{ot.Id} actualizado a {ot.Estado}";
+            return RedirectToAction(nameof(MisOTs));
         }
     }
 }

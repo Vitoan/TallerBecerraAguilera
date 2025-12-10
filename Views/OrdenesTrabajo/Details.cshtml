@@ -1,6 +1,6 @@
 @model TallerBecerraAguilera.Models.OrdenesTrabajo
 @using TallerBecerraAguilera.Models
-@using System.ComponentModel.DataAnnotations // Necesario para el DisplayName
+@using System.ComponentModel.DataAnnotations // Necesario para DisplayName
 
 @{
     ViewData["Title"] = $"Detalle de OT #{Model.Id}";
@@ -58,9 +58,20 @@
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
             <i class="bi bi-pencil-square"></i> Editar OT
         </a>
-        <a asp-action="Index" class="btn btn-secondary ms-2">
-            <i class="bi bi-arrow-left"></i> Volver
-        </a>
+
+        @* Botón "Volver" según rol *@
+        @if (User.IsInRole("Administrador"))
+        {
+            <a asp-action="Index" class="btn btn-secondary ms-2">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        }
+        else if (User.IsInRole("Empleado"))
+        {
+            <a asp-action="MisOTs" class="btn btn-secondary ms-2">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        }
     </div>
 </div>
 

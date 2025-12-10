@@ -48,5 +48,11 @@ namespace TallerBecerraAguilera.Controllers
 
             return RedirectToAction("Login", "Usuarios");
         }
+
+        public IActionResult Restringido()
+        {
+            ViewData["Title"] = "Acceso Denegado";
+            return View();
+        }
     }
 }

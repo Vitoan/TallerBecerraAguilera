@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TallerBecerraAguilera.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
+    
+    [Authorize(Roles = "Administrador")]
     public class ClientesController : Controller
     {
         private readonly ClienteRepositorio _clienteRepositorio;
