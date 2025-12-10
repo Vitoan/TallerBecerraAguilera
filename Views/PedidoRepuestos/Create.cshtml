@@ -9,35 +9,35 @@
         <div class="col-md-6">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">➕ Agregar ítem al Pedido #@Model.PedidoId</h5>
+                    <h5 class="mb-0">➕ Agregar ítem al Pedido #@Model.pedido_id</h5>
                 </div>
                 <div class="card-body">
                     <form asp-action="Create" method="post">
                         
-                        <input type="hidden" asp-for="PedidoId" />
+                        <input type="hidden" asp-for="pedido_id" />
                         
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="form-group mb-3">
-                            <label asp-for="RepuestoId" class="control-label fw-bold">Repuesto</label>
-                            <select asp-for="RepuestoId" class="form-select" asp-items="ViewBag.Repuestos">
+                            <label asp-for="repuesto_id" class="control-label fw-bold">Repuesto</label>
+                            <select asp-for="repuesto_id" class="form-select" asp-items="ViewBag.Repuestos">
                                 <option value="">-- Seleccione un repuesto --</option>
                             </select>
-                            <span asp-validation-for="RepuestoId" class="text-danger"></span>
+                            <span asp-validation-for="repuesto_id" class="text-danger"></span>
                             <small class="text-muted">Seleccione del inventario actual.</small>
                         </div>
 
                         <div class="form-group mb-4">
-                            <label asp-for="CantidadSolicitada" class="control-label fw-bold">Cantidad a Pedir</label>
-                            <input asp-for="CantidadSolicitada" type="number" min="1" class="form-control" />
-                            <span asp-validation-for="CantidadSolicitada" class="text-danger"></span>
+                            <label asp-for="cantidad_solicitada" class="control-label fw-bold">Cantidad a Pedir</label>
+                            <input asp-for="cantidad_solicitada" type="number" min="1" class="form-control" />
+                            <span asp-validation-for="cantidad_solicitada" class="text-danger"></span>
                         </div>
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-success">
                                 <i class="bi bi-check-lg"></i> Agregar al Pedido
                             </button>
-                            <a asp-controller="PedidosRepuestos" asp-action="Details" asp-route-id="@Model.PedidoId" class="btn btn-secondary">
+                            <a asp-controller="PedidosRepuestos" asp-action="Details" asp-route-id="@Model.pedido_id" class="btn btn-secondary">
                                 Cancelar y Volver
                             </a>
                         </div>

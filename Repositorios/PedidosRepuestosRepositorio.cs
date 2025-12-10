@@ -20,7 +20,12 @@ namespace TallerBecerraAguilera.Repositorios
 
         public async Task<PedidosRepuestos?> GetByIdAsync(int id)
         {
-            return await _context.PedidosRepuestos.FindAsync(id);
+            return await _context.PedidosRepuestos
+            .Include(p => p.Proveedor)
+            .Include(p => p.Empleado)
+            .Include(p => p.Detalles) // Carga los detalles
+                .ThenInclude(d => d.Repuesto) // Carga el repuesto de cada detalle
+            .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<int> AddAsync(PedidosRepuestos pedido)

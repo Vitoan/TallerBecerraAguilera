@@ -43,7 +43,7 @@ namespace TallerBecerraAguilera.Data
 
             // === CLAVES COMPUESTAS (Relaciones Muchos a Muchos) ===
             modelBuilder.Entity<PedidoRepuestos>()
-                .HasKey(pr => new { pr.PedidoId, pr.RepuestoId });
+                .HasKey(pr => new { pr.pedido_id, pr.repuesto_id });
 
             modelBuilder.Entity<OtRepuestos>()
                 .HasKey(or => new { or.OtId, or.RepuestoId });

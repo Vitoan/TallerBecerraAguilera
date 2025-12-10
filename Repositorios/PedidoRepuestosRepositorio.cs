@@ -18,7 +18,7 @@ namespace TallerBecerraAguilera.Repositorios
         public async Task<IEnumerable<PedidoRepuestos>> GetByPedidoIdAsync(int pedidoId)
         {
             return await _context.PedidoRepuestos
-                .Where(p => p.PedidoId == pedidoId)
+                .Where(p => p.pedido_id == pedidoId)
                 .ToListAsync();
         }
 
@@ -31,11 +31,11 @@ namespace TallerBecerraAguilera.Repositorios
         public async Task RecibirRepuestoAsync(int pedidoId, int repuestoId, int cantidad)
         {
             var item = await _context.PedidoRepuestos
-                .FirstOrDefaultAsync(p => p.PedidoId == pedidoId && p.RepuestoId == repuestoId);
+                .FirstOrDefaultAsync(p => p.pedido_id == pedidoId && p.repuesto_id == repuestoId);
 
             if (item != null)
             {
-                item.CantidadRecibida += cantidad;
+                item.cantidad_recibida += cantidad;
                 await _context.SaveChangesAsync();
                 await _repuestoRepo.AumentarStockAsync(repuestoId, cantidad);
             }

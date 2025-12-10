@@ -44,7 +44,7 @@ namespace TallerBecerraAguilera.Models
 
         // --- Relación con Detalles (Muchos a Muchos) ---
         // Esto permite acceder a la lista de repuestos del pedido
-        public ICollection<PedidoRepuestos>? Detalles { get; set; }
+        public ICollection<PedidoRepuestos> Detalles { get; set; }
 
         [Display(Name = "Creado")]
         public DateTime? Created_at { get; set; } = DateTime.Now;

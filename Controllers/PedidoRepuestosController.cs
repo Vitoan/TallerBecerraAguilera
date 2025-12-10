@@ -20,7 +20,7 @@ namespace TallerBecerraAguilera.Controllers
         public async Task<IActionResult> Create(int pedidoId)
         {
             // Creamos el modelo inicializado con el ID del padre para no perderlo
-            var modelo = new PedidoRepuestos { PedidoId = pedidoId };
+            var modelo = new PedidoRepuestos { pedido_id = pedidoId };
 
             // CORRECCIÓN IMPORTANTE: Tu modelo 'Repuestos' usa "Descripcion", no "Nombre".
             ViewBag.Repuestos = new SelectList(await _repuestoRepo.GetAllAsync(), "Id", "Descripcion");
@@ -53,7 +53,7 @@ namespace TallerBecerraAguilera.Controllers
 
             // CAMBIO CLAVE: Al guardar, volvemos a los DETALLES del Pedido Padre
             // para ver la lista completa actualizada.
-            return RedirectToAction("Details", "PedidosRepuestos", new { id = item.PedidoId });
+            return RedirectToAction("Details", "PedidosRepuestos", new { id = item.pedido_id });
         }
     }
 }

@@ -1,40 +1,39 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema; // Necesario para [ForeignKey]
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace TallerBecerraAguilera.Models
 {
-    [PrimaryKey(nameof(PedidoId), nameof(RepuestoId))]
-    [Index(nameof(RepuestoId))]
+    [PrimaryKey(nameof(pedido_id), nameof(repuesto_id))]
+    [Index(nameof(repuesto_id))]
     public class PedidoRepuestos
     {
         [Display(Name = "Pedido")]
-        public int PedidoId { get; set; }
+        public int pedido_id { get; set; }
 
-        // Propiedad de Navegación hacia la cabecera del pedido
-        [ForeignKey("PedidoId")]
+        // FK correcta
+        [ForeignKey(nameof(pedido_id))]
         public PedidosRepuestos? Pedido { get; set; }
 
         [Display(Name = "Repuesto")]
-        public int RepuestoId { get; set; }
+        public int repuesto_id { get; set; }
 
-        // Propiedad de Navegación hacia el Repuesto (Vital para mostrar el Nombre/Descripción)
-        [ForeignKey("RepuestoId")]
+        // FK correcta
+        [ForeignKey(nameof(repuesto_id))]
         public Repuestos? Repuesto { get; set; }
 
         [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "La cantidad solicitada debe ser mayor a 0")]
+        [Range(1, int.MaxValue)]
         [Display(Name = "Cantidad solicitada")]
-        public int CantidadSolicitada { get; set; }
+        public int cantidad_solicitada { get; set; }
 
-        [Required]
         [Range(0, int.MaxValue)]
         [Display(Name = "Cantidad recibida")]
-        public int CantidadRecibida { get; set; } = 0;
+        public int cantidad_recibida { get; set; } = 0;
 
         public override string ToString()
         {
-            return $"Pedido {PedidoId} - Rep {RepuestoId} | Solicitado: {CantidadSolicitada}";
+            return $"Pedido {pedido_id} - Rep {repuesto_id}";
         }
     }
 }

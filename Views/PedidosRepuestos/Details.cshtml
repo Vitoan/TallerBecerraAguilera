@@ -66,11 +66,11 @@
                                 <strong>@item.Repuesto?.Descripcion</strong> <br/>
                                 <small class="text-muted">Cód: @item.Repuesto?.Codigo</small>
                             </td>
-                            <td class="text-center">@item.CantidadSolicitada</td>
+                            <td class="text-center">@item.cantidad_solicitada</td>
                             <td class="text-center">
                                 @if(Model.Estado == EstadoPedido.Recibido)
                                 {
-                                    <span class="badge bg-success">@item.CantidadRecibida</span>
+                                    <span class="badge bg-success">@item.cantidad_recibida</span>
                                 }
                                 else
                                 {
