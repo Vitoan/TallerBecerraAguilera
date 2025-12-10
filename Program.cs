@@ -11,29 +11,29 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+// 1. Configuración de la Base de Datos (MySQL)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")!));
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<OrdenTrabajoRepositorio, OrdenTrabajoRepositorio>();
-builder.Services.AddScoped<ClienteRepositorio, ClienteRepositorio>();
-builder.Services.AddScoped<VehiculoRepositorio, VehiculoRepositorio>();
-builder.Services.AddScoped<HerramientaRepositorio, HerramientaRepositorio>();
-builder.Services.AddScoped<RepuestoRepositorio, RepuestoRepositorio>();
-builder.Services.AddScoped<PedidosRepuestosRepositorio, PedidosRepuestosRepositorio>();
-builder.Services.AddScoped<PedidoRepuestosRepositorio, PedidoRepuestosRepositorio>();
-builder.Services.AddScoped<ProveedorRepositorio, ProveedorRepositorio>();
-builder.Services.AddScoped<EmpleadoRepositorio, EmpleadoRepositorio>();
-builder.Services.AddScoped<PedidosRepuestosRepositorio, PedidosRepuestosRepositorio>();
-builder.Services.AddScoped<PedidoRepuestosRepositorio, PedidoRepuestosRepositorio>();
-builder.Services.AddScoped<UsuarioRepositorio, UsuarioRepositorio>();
+// 2. Inyección de Dependencias (Repositorios)
+builder.Services.AddScoped<OrdenTrabajoRepositorio>();
+builder.Services.AddScoped<ClienteRepositorio>();
+builder.Services.AddScoped<VehiculoRepositorio>();
+builder.Services.AddScoped<HerramientaRepositorio>();
+builder.Services.AddScoped<RepuestoRepositorio>();
+builder.Services.AddScoped<PedidosRepuestosRepositorio>();
+builder.Services.AddScoped<PedidoRepuestosRepositorio>();
+builder.Services.AddScoped<ProveedorRepositorio>();
+builder.Services.AddScoped<EmpleadoRepositorio>();
+builder.Services.AddScoped<UsuarioRepositorio>();
 
-
+// Servicio para Hashing de Contraseñas
 builder.Services.AddScoped<PasswordHasher<Usuarios>>();
 
+// 3. Configuración de Políticas de Autorización
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
@@ -41,7 +41,7 @@ builder.Services.AddAuthorization(options =>
         .Build();
 });
 
-
+// 4. Configuración de Autenticación (Cookies + JWT)
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -54,7 +54,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         var secret = configuration["TokenAuthentication:SecretKey"];
         if (string.IsNullOrEmpty(secret))
-            throw new Exception("Falta configurar TokenAuthentication:SecretKey");
+            throw new Exception("Falta configurar 'TokenAuthentication:SecretKey' en appsettings.json");
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -67,25 +68,36 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 
-builder.Services.AddAuthorization();
-
 var app = builder.Build();
 
+// Pipeline de Manejo de Errores
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
+// =========================================================================
+// 🚀 INICIALIZACIÓN DE DATOS (CREACIÓN AUTOMÁTICA DEL ADMIN)
+// =========================================================================
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var db = services.GetRequiredService<ApplicationDbContext>();
     var hasher = services.GetRequiredService<PasswordHasher<Usuarios>>();
+    
+    // Aplica migraciones pendientes si las hay
     db.Database.Migrate();
+
+    // 👉 AQUÍ ESTÁN TUS CREDENCIALES POR DEFECTO
+    // Si no pones nada en appsettings.json, usará "admin@taller.local" y "Admin123!"
     var adminEmail = configuration["SeedAdmin:Email"] ?? "admin@taller.local";
     var adminPassword = configuration["SeedAdmin:Password"] ?? "Admin123!";
+
+    // Buscamos si ya existe el usuario
     var admin = db.Set<Usuarios>().FirstOrDefault(u => u.email == adminEmail);
+
+    // Solo entramos aquí si el usuario NO existe en la base de datos
     if (admin == null)
     {
         admin = new Usuarios
@@ -96,17 +108,24 @@ using (var scope = app.Services.CreateScope())
             Created_at = DateTime.Now,
             Updated_at = DateTime.Now
         };
+
+        // Generamos el hash CORRECTO usando el servicio PasswordHasher
         admin.password_hash = hasher.HashPassword(admin, adminPassword);
+        
         db.Set<Usuarios>().Add(admin);
         db.SaveChanges();
+        Console.WriteLine($"[SISTEMA] Usuario Admin creado exitosamente. Email: {adminEmail}");
     }
 }
+// =========================================================================
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
+
+app.UseAuthentication(); // <- Importante: Identifica QUIÉN es el usuario
+app.UseAuthorization();  // <- Importante: Verifica QUÉ puede hacer
 
 app.MapControllerRoute(
     name: "default",
