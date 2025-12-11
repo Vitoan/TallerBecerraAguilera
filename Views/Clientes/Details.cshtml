@@ -57,13 +57,13 @@
                 @foreach (var vehiculo in Model.Vehiculos)
                 {
                     <tr>
-                        <td>@vehiculo.Patente</td>
-                        <td>@vehiculo.Marca</td>
-                        <td>@vehiculo.Modelo</td>
-                        <td>@vehiculo.Anio</td>
-                        <td>@vehiculo.Tipo</td>
+                        <td>@vehiculo.patente</td>
+                        <td>@vehiculo.marca</td>
+                        <td>@vehiculo.modelo</td>
+                        <td>@vehiculo.anio</td>
+                        <td>@vehiculo.tipo</td>
                         <td>
-                            <a asp-controller="Vehiculos" asp-action="Details" asp-route-id="@vehiculo.Id" class="btn btn-sm btn-info">Ver Detalle</a>
+                            <a asp-controller="Vehiculos" asp-action="Details" asp-route-id="@vehiculo.id" class="btn btn-sm btn-info">Ver Detalle</a>
                         </td>
                     </tr>
                 }

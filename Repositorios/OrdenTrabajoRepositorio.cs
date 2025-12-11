@@ -99,7 +99,7 @@ namespace TallerBecerraAguilera.Repositorios
         public async Task<int> GetStockCriticoCountAsync()
         {
             return await _context.Repuestos
-                .CountAsync(r => r.CantidadStock <= r.StockMinimo && r.StockMinimo > 0);
+                .CountAsync(r => r.cantidadStock <= r.stockMinimo && r.stockMinimo > 0);
         }
 
         public async Task<int> GetCountByEmpleadoAndEstadoAsync(int empleadoId, EstadoOrden estado)

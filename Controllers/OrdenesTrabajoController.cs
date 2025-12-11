@@ -28,9 +28,9 @@ namespace TallerBecerraAguilera.Controllers
             var vehiculos = await _otRepositorio.GetAllVehiculosAsync();
             var vehiculoList = vehiculos.Select(v => new
             {
-                v.Id,
+                v.id,
                 // Formato: "Patente - Cliente Nombre Completo"
-                DisplayName = $"{v.Patente} - {v.Cliente?.Nombre} {v.Cliente?.Apellido}" 
+                DisplayName = $"{v.patente} - {v.Cliente?.Nombre} {v.Cliente?.Apellido}" 
             }).ToList();
             
             ViewBag.VehiculoId = new SelectList(vehiculoList, "Id", "DisplayName", selectedVehiculo);

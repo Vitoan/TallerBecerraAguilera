@@ -18,9 +18,9 @@
         <dl class="row">
             <dt class="col-sm-3">Vehículo</dt>
             <dd class="col-sm-9">
-                <strong>@Model.Vehiculo?.Patente</strong> (@Model.Vehiculo?.Marca @Model.Vehiculo?.Modelo)
+                <strong>@Model.Vehiculo?.patente</strong> (@Model.Vehiculo?.marca @Model.Vehiculo?.modelo)
                 <br/>
-                Cliente: <a asp-controller="Clientes" asp-action="Details" asp-route-id="@Model.Vehiculo?.ClienteId">@Model.Vehiculo?.Cliente?.NombreCompleto</a>
+                Cliente: <a asp-controller="Clientes" asp-action="Details" asp-route-id="@Model.Vehiculo?.clienteId">@Model.Vehiculo?.Cliente?.NombreCompleto</a>
             </dd>
 
             <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Empleado)</dt>

@@ -35,7 +35,7 @@ namespace TallerBecerraAguilera.ViewComponents
                 DescripcionFalla = o.DescripcionFalla,
                 FechaIngreso = o.FechaIngreso,
                 Estado = o.Estado.ToString(),
-                Patente = $"{o.Vehiculo?.Marca} {o.Vehiculo?.Modelo} ({o.Vehiculo?.Patente})",
+                Patente = $"{o.Vehiculo?.marca} {o.Vehiculo?.modelo} ({o.Vehiculo?.patente})",
                 EmpleadoAsignado = o.Empleado?.NombreCompleto ?? ""
             }).ToList();
 

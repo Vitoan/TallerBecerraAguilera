@@ -30,11 +30,11 @@ namespace TallerBecerraAguilera.Controllers.Api
             // No devolvemos la entidad completa (con relaciones cíclicas o datos privados).
             // Creamos una lista anónima limpia solo con lo que la API necesita.
             var resultado = repuestos.Select(r => new {
-                Id = r.Id,
-                Codigo = r.Codigo,
-                Descripcion = r.Descripcion,
-                Stock = r.CantidadStock,
-                Precio = r.PrecioUnitario,
+                Id = r.id,
+                Codigo = r.codigo,
+                Descripcion = r.descripcion,
+                Stock = r.cantidadStock,
+                Precio = r.precioUnitario,
                 Proveedor = r.Proveedor?.Nombre ?? "Sin proveedor"
             });
 

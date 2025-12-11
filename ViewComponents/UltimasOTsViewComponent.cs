@@ -27,7 +27,7 @@ namespace TallerBecerraAguilera.ViewComponents
                     DescripcionFalla = o.DescripcionFalla,
                     FechaIngreso = o.FechaIngreso,
                     Estado = o.Estado.ToString(),
-                    Patente = o.Vehiculo != null ? o.Vehiculo.Patente : "S/P",
+                    Patente = o.Vehiculo != null ? o.Vehiculo.patente : "S/P",
                     EmpleadoAsignado = o.Empleado != null ? $"{o.Empleado.Nombre} {o.Empleado.Apellido}" : "Sin Asignar"
                 })
                 .ToListAsync();
