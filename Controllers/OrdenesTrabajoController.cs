@@ -153,11 +153,13 @@ namespace TallerBecerraAguilera.Controllers
         }
 
         [Authorize(Roles = "Empleado")]
-        public async Task<IActionResult> MisOTs()
+        public async Task<IActionResult> MisOTs(int? pageNumber)
         {
             var userId = int.Parse(User.FindFirst("Id")!.Value);
 
-            var ots = await _otRepositorio.GetByEmpleadoAsync(userId);
+            int pageSize = 5;
+
+            var ots = await _otRepositorio.GetByEmpleadoPaginatedAsync(userId, pageNumber ?? 1, pageSize);
 
             return View(ots);
         }

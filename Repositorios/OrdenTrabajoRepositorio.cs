@@ -118,5 +118,18 @@ namespace TallerBecerraAguilera.Repositorios
                 .OrderByDescending(o => o.FechaIngreso)
                 .ToListAsync();
         }
+
+        public async Task<PaginatedList<OrdenesTrabajo>> GetByEmpleadoPaginatedAsync(int empleadoId, int pageIndex, int pageSize)
+        {
+            var query = _context.OrdenesTrabajo
+                .Where(o => o.EmpleadoId == empleadoId)
+                .Include(o => o.Vehiculo)
+                    .ThenInclude(v => v!.Cliente)
+                .Include(o => o.Empleado)
+                .OrderByDescending(o => o.FechaIngreso)
+                .AsQueryable();
+
+            return await PaginatedList<OrdenesTrabajo>.CreateAsync(query, pageIndex, pageSize);
+        }
     }
 }
