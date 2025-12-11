@@ -1,40 +1,84 @@
-@model IEnumerable<TallerBecerraAguilera.Models.Empleados>
+@using TallerBecerraAguilera.Helpers
+@model PaginatedList<TallerBecerraAguilera.Models.Empleados>
+
 @{
     ViewData["Title"] = "Empleados";
 }
 
-<h1>Empleados</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">Empleados</h1>
 
-<p>
-    <a class="btn btn-primary" asp-action="Create">Nuevo Empleado</a>
-</p>
+    <a class="btn btn-primary" asp-action="Create">
+        <i class="bi bi-person-plus-fill me-1"></i> Nuevo Empleado
+    </a>
+</div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(m => m.First().Nombre)</th>
-            <th>@Html.DisplayNameFor(m => m.First().Apellido)</th>
-            <th>@Html.DisplayNameFor(m => m.First().Dni)</th>
-            <th>@Html.DisplayNameFor(m => m.First().Telefono)</th>
-            <th>@Html.DisplayNameFor(m => m.First().UsuarioId)</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach(var item in Model)
-    {
-        <tr>
-            <td>@item.Nombre</td>
-            <td>@item.Apellido</td>
-            <td>@item.Dni</td>
-            <td>@item.Telefono</td>
-            <td>@item.UsuarioId</td>
-            <td>
-                <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Ver</a>
-                <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover text-center align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.First().Nombre)</th>
+                    <th>@Html.DisplayNameFor(m => m.First().Apellido)</th>
+                    <th>@Html.DisplayNameFor(m => m.First().Dni)</th>
+                    <th>@Html.DisplayNameFor(m => m.First().Telefono)</th>
+                    <th>@Html.DisplayNameFor(m => m.First().UsuarioId)</th>
+                    <th style="width: 180px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Nombre</td>
+                    <td>@item.Apellido</td>
+                    <td>@item.Dni</td>
+                    <td>@item.Telefono</td>
+                    <td>
+                        @if (item.UsuarioId == null)
+                        {
+                            <span class="badge bg-secondary">Sin usuario</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">ID @item.UsuarioId</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-sm btn-outline-info" asp-action="Details" asp-route-id="@item.Id" title="Ver">
+                                <i class="bi bi-eye-fill"></i>
+                            </a>
+                            <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id" title="Editar">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id" title="Eliminar">
+                                <i class="bi bi-trash-fill"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="fw-bold">
+        Página @Model.PageIndex de @Model.TotalPages
+    </div>
+    <div class="btn-group">
+        <a asp-action="Index"
+           asp-route-pageNumber="@(Model.PageIndex - 1)"
+           class="btn btn-outline-primary @(!Model.HasPreviousPage ? "disabled" : "")">
+            <i class="bi bi-chevron-left"></i> Anterior
+        </a>
+
+        <a asp-action="Index"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           class="btn btn-outline-primary @(!Model.HasNextPage ? "disabled" : "")">
+            Siguiente <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+</div>

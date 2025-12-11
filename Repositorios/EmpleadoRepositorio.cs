@@ -1,6 +1,8 @@
 using TallerBecerraAguilera.Models;
 using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Data;
+using TallerBecerraAguilera.Helpers;
+
 
 namespace TallerBecerraAguilera.Repositorios
 {
@@ -51,6 +53,16 @@ namespace TallerBecerraAguilera.Repositorios
                 _context.Empleados.Remove(empleado);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<PaginatedList<Empleados>> GetAllPaginatedAsync(int pageIndex, int pageSize)
+        {
+            var query = _context.Empleados
+                .OrderBy(e => e.Nombre)
+                .ThenBy(e => e.Apellido)
+                .AsQueryable();
+
+            return await PaginatedList<Empleados>.CreateAsync(query, pageIndex, pageSize);
         }
     }
 }

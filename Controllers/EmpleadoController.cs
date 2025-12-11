@@ -17,9 +17,10 @@ namespace TallerBecerraAguilera.Controllers
         }
 
         // GET: Empleados
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber)
         {
-            var empleados = await _repo.GetAllAsync();
+            int pageSize = 10;
+            var empleados = await _repo.GetAllPaginatedAsync(pageNumber ?? 1, pageSize);
             return View(empleados);
         }
 
