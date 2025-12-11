@@ -1,4 +1,5 @@
-@model IEnumerable<TallerBecerraAguilera.Models.PedidosRepuestos>
+@using TallerBecerraAguilera.Helpers
+@model PaginatedList<TallerBecerraAguilera.Models.PedidosRepuestos>
 
 @{
     ViewData["Title"] = "Pedidos de Repuestos";
@@ -22,8 +23,8 @@
 {
         <tr>
             <td>@item.Id</td>
-            <td>@item.ProveedorId</td>
-            <td>@item.EmpleadoId</td>
+            <td>@item.Proveedor?.Nombre</td>
+            <td>@item.Empleado?.NombreCompleto</td>
             <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
             <td>@item.Estado</td>
             <td>
@@ -44,5 +45,25 @@
 }
     </tbody>
 </table>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <div>
+        Página @Model.PageIndex de @Model.TotalPages
+    </div>
+
+    <div>
+        <a asp-action="Index"
+           asp-route-pageNumber="@(Model.PageIndex - 1)"
+           class="btn btn-outline-primary @(!Model.HasPreviousPage ? "disabled" : "")">
+           <i class="bi bi-arrow-left"></i> Anterior
+        </a>
+
+        <a asp-action="Index"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           class="btn btn-outline-primary @(!Model.HasNextPage ? "disabled" : "")">
+            Siguiente <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</div>
 
 <a asp-action="Create" class="btn btn-success mt-3">Nuevo Pedido</a>

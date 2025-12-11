@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
 using TallerBecerraAguilera.Data;
+using TallerBecerraAguilera.Helpers;
 
 public class UsuariosController : Controller
 {
@@ -111,10 +112,16 @@ public class UsuariosController : Controller
     }
 
     [Authorize(Roles = "Administrador")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int pageNumber = 1)
     {
-        var lista = await _repo.ObtenerTodos();
-        return View(lista);
+        int pageSize = 10;
+
+        var query = _repo.Query()
+                         .OrderBy(u => u.email);
+
+        var paginated = PaginatedList<Usuarios>.CreateAsync(query, pageNumber, pageSize);
+        
+        return View(paginated);
     }
 
     [Authorize(Roles = "Administrador")]

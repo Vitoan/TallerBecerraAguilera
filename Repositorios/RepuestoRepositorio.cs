@@ -6,6 +6,13 @@ namespace TallerBecerraAguilera.Repositorios
 {
     public class RepuestoRepositorio
     {
+        public IQueryable<Repuestos> Query()
+        {
+            return _context.Repuestos
+                .Include(r => r.Proveedor)
+                .AsQueryable();
+        }
+
         private readonly ApplicationDbContext _context;
 
         public RepuestoRepositorio(ApplicationDbContext context)

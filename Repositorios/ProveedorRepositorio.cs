@@ -9,6 +9,11 @@ namespace TallerBecerraAguilera.Repositorios
 {
     public class ProveedorRepositorio
     {
+        public IQueryable<Proveedores> Query()
+        {
+            return _context.Proveedores.AsQueryable();
+        }   
+
         private readonly ApplicationDbContext _context;
 
         public ProveedorRepositorio(ApplicationDbContext context)

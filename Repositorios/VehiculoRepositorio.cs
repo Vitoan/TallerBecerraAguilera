@@ -7,6 +7,13 @@ namespace TallerBecerraAguilera.Repositorios
 {
     public class VehiculoRepositorio 
     {
+        public IQueryable<Vehiculos> Query()
+        {
+            return _context.Vehiculos
+                .Include(v => v.Cliente)
+                .AsQueryable(); 
+        }
+
         private readonly ApplicationDbContext _context;
 
         public VehiculoRepositorio(ApplicationDbContext context)

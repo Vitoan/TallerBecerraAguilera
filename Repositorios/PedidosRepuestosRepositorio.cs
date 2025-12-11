@@ -50,5 +50,13 @@ namespace TallerBecerraAguilera.Repositorios
                 await _context.SaveChangesAsync();
             }
         }
+
+        public IQueryable<PedidosRepuestos> Query()
+        {
+            return _context.PedidosRepuestos
+                .Include(p => p.Proveedor)
+                .Include(p => p.Empleado)
+                .AsQueryable();
+        }
     }
 }

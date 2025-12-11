@@ -1,4 +1,5 @@
-@model List<TallerBecerraAguilera.Models.Usuarios>
+@using TallerBecerraAguilera.Helpers
+@model PaginatedList<TallerBecerraAguilera.Models.Usuarios>
 
 <h1 class="mb-3">Usuarios</h1>
 
@@ -29,3 +30,23 @@
         }
     </tbody>
 </table>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="fw-bold">
+        Página @Model.PageIndex de @Model.TotalPages
+    </div>
+
+    <div class="btn-group">
+        <a asp-action="Index"
+           asp-route-pageNumber="@(Model.PageIndex - 1)"
+           class="btn btn-outline-primary @(!Model.HasPreviousPage ? "disabled" : "")">
+            <i class="bi bi-chevron-left"></i> Anterior
+        </a>
+
+        <a asp-action="Index"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           class="btn btn-outline-primary @(!Model.HasNextPage ? "disabled" : "")">
+            Siguiente <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+</div>

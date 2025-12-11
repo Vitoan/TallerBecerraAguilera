@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
-using System.Security.Claims; // Necesario para User.FindFirst
+using System.Security.Claims;
+using TallerBecerraAguilera.Helpers; // Necesario para User.FindFirst
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -22,9 +23,16 @@ namespace TallerBecerraAguilera.Controllers
             _empleadoRepo = empleadoRepo;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1)
         {
-            return View(await _repo.GetAllAsync());
+            int pageSize = 10;
+
+            var query = _repo.Query()
+                             .OrderByDescending(p => p.Fecha);
+
+            var paginated = await PaginatedList<PedidosRepuestos>.CreateAsync(query, pageNumber, pageSize);
+
+            return View(paginated);
         }
 
         public async Task<IActionResult> Details(int id)

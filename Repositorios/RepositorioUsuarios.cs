@@ -6,6 +6,11 @@ namespace TallerBecerraAguilera.Repositorios
 {
     public class UsuarioRepositorio
     {
+        public IQueryable<Usuarios> Query()
+        {
+            return _context.Usuarios.AsQueryable();
+        }
+
         private readonly ApplicationDbContext _context;
 
         public UsuarioRepositorio(ApplicationDbContext context)

@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
 using System.Threading.Tasks; 
-using Microsoft.EntityFrameworkCore; // Necesario para DbUpdateConcurrencyException
+using Microsoft.EntityFrameworkCore;
+using TallerBecerraAguilera.Helpers; // Necesario para DbUpdateConcurrencyException
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -16,9 +17,16 @@ namespace TallerBecerraAguilera.Controllers
         }
 
         // GET: Proveedores/Index (LISTAR TODOS)
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1)
         {
-            return View(await _repo.GetAllAsync());
+            int pageSize = 10;
+
+            var query = _repo.Query()
+                             .OrderBy(p => p.Nombre);
+            
+            var paginated = await PaginatedList<Proveedores>.CreateAsync(query, pageNumber, pageSize);
+
+            return View(paginated);
         }
         
         // GET: Proveedores/Details/5 (VISTA DETALLES)

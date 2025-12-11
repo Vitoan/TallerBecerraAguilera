@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
 // NECESARIO para DbUpdateConcurrencyException y otros errores de EF Core.
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.EntityFrameworkCore;
+using TallerBecerraAguilera.Helpers;
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -19,10 +20,16 @@ namespace TallerBecerraAguilera.Controllers
         // ===========================
         // GET: Vehiculos (Listar)
         // ===========================
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1)
         {
-            var vehiculos = await _vehiculoRepositorio.GetAllAsync();
-            return View(vehiculos);
+            int pageSize = 10;
+
+            var query = _vehiculoRepositorio.Query()
+                                            .OrderBy(v => v.Patente);
+
+            var paginated = PaginatedList<Vehiculos>.CreateAsync(query, pageNumber, pageSize);
+
+            return View(paginated);
         }
 
         // ===========================

@@ -1,42 +1,67 @@
-@model IEnumerable<TallerBecerraAguilera.Models.Repuestos>
+@using TallerBecerraAguilera.Helpers
+@model PaginatedList<TallerBecerraAguilera.Models.Repuestos>
 
 @{
     ViewData["Title"] = "Repuestos";
 }
 
-<h2>Repuestos</h2>
-
-<p>
+<div class="d-sm-flex align-items-center justify-content-between mb-3">
+    <h2>@ViewData["Title"]</h2>
     <a class="btn btn-primary" asp-action="Create">Agregar Repuesto</a>
-</p>
+</div>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Código</th>
-            <th>Descripción</th>
-            <th>Stock</th>
-            <th>Stock Mínimo</th>
-            <th>Precio</th>
-            <th>Proveedor</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model)
-{
-        <tr>
-            <td>@item.Id</td>
-            <td>@item.Descripcion</td>
-            <td>@item.CantidadStock</td>
-            <td>@item.StockMinimo</td>
-            <td>@item.PrecioUnitario</td>
-            <td>@item.Proveedor?.Nombre</td>
-            <td>
-                <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th>Stock</th>
+                        <th>Stock Mínimo</th>
+                        <th>Precio</th>
+                        <th>Proveedor</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Codigo</td>
+                        <td>@item.Descripcion</td>
+                        <td>@item.CantidadStock</td>
+                        <td>@item.StockMinimo</td>
+                        <td>@item.PrecioUnitario.ToString("C")</td>
+                        <td>@item.Proveedor?.Nombre</td>
+                        <td>
+                            <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="fw-bold">
+        Página @Model.PageIndex de @Model.TotalPages
+    </div>
+    <div class="btn-group">
+        <a asp-action="Index"
+           asp-route-pageNumber="@(Model.PageIndex - 1)"
+           class="btn btn-outline-primary @(!Model.HasPreviousPage ? "disabled" : "")">
+            <i class="bi bi-chevron-left"></i> Anterior
+        </a>
+
+        <a asp-action="Index"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           class="btn btn-outline-primary @(!Model.HasNextPage ? "disabled" : "")">
+            Siguiente <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+</div>

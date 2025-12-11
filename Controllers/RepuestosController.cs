@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using TallerBecerraAguilera.Helpers;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
 
@@ -16,9 +17,16 @@ namespace TallerBecerraAguilera.Controllers
             _proveedorRepo = proveedorRepo;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1)
         {
-            return View(await _repo.GetAllAsync());
+            int pageSize = 10;
+
+            var query = _repo.Query()
+                             .OrderBy(r => r.Codigo);
+            
+            var paginated = PaginatedList<Repuestos>.CreateAsync(query, pageNumber, pageSize);
+
+            return View(paginated);
         }
 
         public async Task<IActionResult> Create()
