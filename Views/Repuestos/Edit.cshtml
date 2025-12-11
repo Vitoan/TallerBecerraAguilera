@@ -1,41 +1,98 @@
 @model TallerBecerraAguilera.Models.Repuestos
 
+@{
+    ViewData["Title"] = "Editar Repuesto";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
 <h2>Editar Repuesto</h2>
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="id"/>
 
-    <div class="form-group">
-        <label>Código</label>
+    <div class="form-group mb-3">
+        <label asp-for="codigo"></label>
         <input asp-for="codigo" class="form-control" />
+        <span asp-validation-for="codigo" class="text-danger"></span>
     </div>
 
-
-    <div class="form-group">
-        <label>Descripción</label>
+    <div class="form-group mb-3">
+        <label asp-for="descripcion"></label>
         <input asp-for="descripcion" class="form-control" />
+        <span asp-validation-for="descripcion" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label>Precio Unitario</label>
+    <div class="form-group mb-3">
+        <label asp-for="precioUnitario"></label>
         <input asp-for="precioUnitario" class="form-control" />
+        <span asp-validation-for="precioUnitario" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label>Stock</label>
+    <div class="form-group mb-3">
+        <label asp-for="cantidadStock"></label>
         <input asp-for="cantidadStock" class="form-control" />
+        <span asp-validation-for="cantidadStock" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label>Stock Mínimo</label>
+    <div class="form-group mb-3">
+        <label asp-for="stockMinimo"></label>
         <input asp-for="stockMinimo" class="form-control" />
+        <span asp-validation-for="stockMinimo" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label>Proveedor</label>
-        <select asp-for="proveedorId" asp-items="ViewBag.ProveedorId" class="form-control"></select>
+        <select asp-for="proveedorId" class="form-select" id="buscadorProveedores">
+            @if (Model.Proveedor != null)
+            {
+                <option value="@Model.Proveedor.Id" selected="selected">@Model.Proveedor.Nombre</option>
+            }
+        </select>
+        <span asp-validation-for="proveedorId" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Guardar</button>
     <a asp-action="Index" class="btn btn-secondary">Volver</a>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var proveedorId = '@Model.Proveedor?.Id';
+            var proveedorNombre = '@Model.Proveedor?.Nombre';
+
+            $('#buscadorProveedores').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Seleccione un proveedor',
+                minimumInputLength: 1,
+                allowClear: true,
+                language: {
+                    noResults: function() { return "No se encontraron proveedores"; },
+                    searching: function() { return "Buscando..." }
+                },
+                ajax: {
+                    url: '@Url.Action("BuscarProveedores", "Repuestos")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return { term: params.term };
+                    },
+                    processResults: function(data) {
+                        return { results: data.results };
+                    },
+                    cache: true
+                }
+            });
+
+            if(proveedorId) {
+                var option = new Option(proveedorNombre, proveedorId, true, true);
+                $('#buscadorProveedores').append(option).trigger('change');
+            }
+        });
+    </script>
+}

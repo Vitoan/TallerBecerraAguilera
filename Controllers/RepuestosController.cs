@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Helpers;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
@@ -31,7 +32,6 @@ namespace TallerBecerraAguilera.Controllers
 
         public async Task<IActionResult> Create()
         {
-            ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre");
             return View();
         }
 
@@ -40,7 +40,6 @@ namespace TallerBecerraAguilera.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre");
                 return View(repuesto);
             }
 
@@ -51,7 +50,7 @@ namespace TallerBecerraAguilera.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var repuesto = await _repo.GetByIdAsync(id);
-            ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre", repuesto?.proveedorId);
+            if (repuesto == null) return NotFound();
             return View(repuesto);
         }
 
@@ -60,7 +59,6 @@ namespace TallerBecerraAguilera.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre", repuesto.proveedorId);
                 return View(repuesto);
             }
 
@@ -79,6 +77,19 @@ namespace TallerBecerraAguilera.Controllers
         {
             await _repo.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BuscarProveedores(string term)
+        {
+            var proveedores = await _proveedorRepo.Query()
+                .Where(p => p.Nombre.Contains(term))
+                .Select(p => new {
+                    id = p.Id,
+                    text = p.Nombre
+                }).ToListAsync();
+
+            return Json(new { results = proveedores });
         }
     }
 }
