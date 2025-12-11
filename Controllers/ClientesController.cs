@@ -8,7 +8,8 @@ using Microsoft.EntityFrameworkCore;
 namespace TallerBecerraAguilera.Controllers
 {
     using Microsoft.AspNetCore.Authorization;
-    
+    using TallerBecerraAguilera.Helpers;
+
     [Authorize(Roles = "Administrador")]
     public class ClientesController : Controller
     {
@@ -20,10 +21,15 @@ namespace TallerBecerraAguilera.Controllers
         }
 
         // GET: Clientes (LISTAR TODOS)
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1)
         {
-            var clientes = await _clienteRepositorio.GetAllAsync();
-            return View(clientes);
+            int pageSize = 10;
+
+            var query = _clienteRepositorio.Query();
+
+            var paginated = await PaginatedList<Clientes>.CreateAsync(query, pageNumber, pageSize);
+            
+            return View(paginated);
         }
 
         // GET: Clientes/Details/5 (VISTA DETALLES)

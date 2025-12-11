@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
+using TallerBecerraAguilera.Helpers;
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -17,15 +18,19 @@ namespace TallerBecerraAguilera.Controllers
             _imgRepo = imgRepo;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1)
         {
-            // Incluye imágenes para mostrar miniaturas
-            var herramientas = await _repo.Query()
-                .Include(h => h.Imagenes)
-                .ToListAsync();
+            int pageSize = 10;
 
-            return View(herramientas);
+            var query = _repo.Query()
+                .Include(h => h.Imagenes)
+                .OrderBy(h => h.Nombre);
+
+            var paginated = await PaginatedList<Herramientas>.CreateAsync(query, pageNumber, pageSize);
+
+            return View(paginated);
         }
+
 
         public IActionResult Create()
         {

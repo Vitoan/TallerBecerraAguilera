@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis; // Necesario para ICollection
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Mvc.ModelBinding; // Necesario para ICollection
 
 namespace TallerBecerraAguilera.Models
 {
@@ -46,7 +47,8 @@ namespace TallerBecerraAguilera.Models
         // --- Relación con Detalles (Muchos a Muchos) ---
         // Esto permite acceder a la lista de repuestos del pedido
         [AllowNull]
-        public ICollection<PedidoRepuestos> Detalles { get; set; }
+        [BindNever]
+        public ICollection<PedidoRepuestos> Detalles { get; set; } = new List<PedidoRepuestos>();
 
         [Display(Name = "Creado")]
         public DateTime? Created_at { get; set; } = DateTime.Now;

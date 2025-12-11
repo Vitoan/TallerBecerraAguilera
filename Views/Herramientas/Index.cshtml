@@ -1,46 +1,109 @@
-@model IEnumerable<TallerBecerraAguilera.Models.Herramientas>
+@using TallerBecerraAguilera.Helpers;
+@model PaginatedList<TallerBecerraAguilera.Models.Herramientas>
 
-<h2>Herramientas</h2>
-
-<p>
-    <a asp-action="Create" class="btn btn-primary">Nueva Herramienta</a>
-</p>
-
-<table class="table table-striped align-middle">
-    <thead>
-        <tr>
-            <th>Foto</th>
-            <th>Código</th>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Ubicación</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model)
-{
-        <tr>
-            <td>
-                @if (item.Imagenes != null && item.Imagenes.Any())
-                {
-                    <img src="@item.Imagenes.First().Url" width="70" height="70" style="object-fit:cover;border-radius:6px;" />
-                }
-                else
-                {
-                    <span class="text-muted">Sin imagen</span>
-                }
-            </td>
-            <td>@item.Codigo</td>
-            <td>@item.Nombre</td>
-            <td>@item.Estado</td>
-            <td>@item.Ubicacion</td>
-            <td>
-                <a asp-controller="ImagenHerramientas" asp-action="Index" asp-route-herramientaId="@item.Id" class="btn btn-info btn-sm">Imágenes</a>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Editar</a>
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Eliminar</a>
-            </td>
-        </tr>
+@{
+    ViewData["Title"] = "Herramientas";
 }
-    </tbody>
-</table>
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">🔧 Herramientas</h1>
+    <a asp-action="Create" class="btn btn-primary btn-icon-split">
+        <span class="icon"><i class="bi bi-plus-circle"></i></span>
+        <span class="text">Nueva Herramienta</span>
+    </a>
+</div>
+
+@if (TempData["success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Foto</th>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                        <th>Ubicación</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (item.Imagenes != null && item.Imagenes.Any())
+                                {
+                                    <img src="@item.Imagenes.First().Url"
+                                         width="70" height="70"
+                                         class="rounded"
+                                         style="object-fit:cover;" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic">Sin imagen</span>
+                                }
+                            </td>
+                            <td>@item.Codigo</td>
+                            <td>@item.Nombre</td>
+                            <td>
+                                <span class="badge 
+                                    @(item.Estado == EstadoHerramienta.Disponible ? "bg-success" :
+                                      item.Estado == EstadoHerramienta.EnUso ? "bg-warning" :
+                                      "bg-danger")">
+                                    @item.Estado
+                                </span>
+                            </td>
+                            <td>@item.Ubicacion</td>
+                            <td class="text-center">
+                                <a asp-controller="ImagenHerramientas" asp-action="Index"
+                                   asp-route-herramientaId="@item.Id"
+                                   class="btn btn-sm btn-info me-1">
+                                    <i class="bi bi-images"></i> <span class="d-none d-md-inline">Imágenes</span>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-warning me-1">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINACIÓN -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+                Página @Model.PageIndex de @Model.TotalPages
+            </div>
+
+            <div>
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   class="btn btn-outline-primary @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <i class="bi bi-arrow-left"></i> Anterior
+                </a>
+
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   class="btn btn-outline-primary @(!Model.HasNextPage ? "disabled" : "")">
+                    Siguiente <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>

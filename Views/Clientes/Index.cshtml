@@ -1,4 +1,5 @@
-@model List<TallerBecerraAguilera.Models.Clientes>
+@using TallerBecerraAguilera.Helpers
+@model PaginatedList<TallerBecerraAguilera.Models.Clientes>
 
 @{
     ViewData["Title"] = "Clientes";
@@ -12,26 +13,25 @@
     </a>
 </div>
 
-@* Mensaje de éxito/error *@
 @if (TempData["Mensaje"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         @TempData["Mensaje"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
 <div class="card shadow mb-4">
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-hover table-bordered align-middle" id="dataTable" width="100%" cellspacing="0">
+            <table class="table table-hover table-bordered align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th>@Html.DisplayNameFor(model => model.First().Nombre)</th>
-                        <th>@Html.DisplayNameFor(model => model.First().Apellido)</th>
-                        <th>@Html.DisplayNameFor(model => model.First().Dni)</th>
-                        <th>@Html.DisplayNameFor(model => model.First().Telefono)</th>
-                        <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+                        <th>@Html.DisplayNameFor(m => m.First().Nombre)</th>
+                        <th>@Html.DisplayNameFor(m => m.First().Apellido)</th>
+                        <th>@Html.DisplayNameFor(m => m.First().Dni)</th>
+                        <th>@Html.DisplayNameFor(m => m.First().Telefono)</th>
+                        <th>@Html.DisplayNameFor(m => m.First().Email)</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -39,19 +39,19 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Apellido)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Dni)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Telefono)</td>
-                            <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                            <td>@item.Nombre</td>
+                            <td>@item.Apellido</td>
+                            <td>@item.Dni</td>
+                            <td>@item.Telefono</td>
+                            <td>@item.Email</td>
                             <td class="text-center">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning me-1" title="Editar">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning me-1">
                                     <i class="bi bi-pencil-square"></i> <span class="d-none d-md-inline">Editar</span>
                                 </a>
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info me-1" title="Detalles">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info me-1">
                                     <i class="bi bi-info-circle"></i> <span class="d-none d-md-inline">Detalles</span>
                                 </a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Eliminar">
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">
                                     <i class="bi bi-trash"></i> <span class="d-none d-md-inline">Eliminar</span>
                                 </a>
                             </td>
@@ -59,6 +59,26 @@
                     }
                 </tbody>
             </table>
+        </div>
+
+        <!-- PAGINACIÓN -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+                Página @Model.PageIndex de @Model.TotalPages
+            </div>
+            <div>
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   class="btn btn-outline-primary @(!Model.HasPreviousPage ? "disabled" : "")">
+                    <i class="bi bi-arrow-left"></i> Anterior
+                </a>
+
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   class="btn btn-outline-primary @(!Model.HasNextPage ? "disabled" : "")">
+                    Siguiente <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
         </div>
     </div>
 </div>

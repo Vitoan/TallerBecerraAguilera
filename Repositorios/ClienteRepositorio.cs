@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Data;
 using TallerBecerraAguilera.Models;
+using TallerBecerraAguilera.Helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
@@ -9,6 +10,11 @@ namespace TallerBecerraAguilera.Repositorios
 {
     public class ClienteRepositorio
     {
+        public IQueryable<Clientes> Query()
+        {
+            return _context.Clientes.AsQueryable();
+        }
+
         public async Task<List<Clientes>> BuscarPorTerminoAsync(string term)
         {
             if (string.IsNullOrEmpty(term)) 
