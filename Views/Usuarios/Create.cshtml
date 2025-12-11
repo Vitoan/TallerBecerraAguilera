@@ -1,25 +1,47 @@
 @model TallerBecerraAguilera.Models.Usuarios
+@{
+    ViewData["Title"] = "Crear Usuario";
 
-<h1>Nuevo Usuario</h1>
+    var empleados = ViewBag.Empleados as List<TallerBecerraAguilera.Models.Empleados> ?? new();
+}
 
-<form method="post">
-    <div class="mb-3">
-        <label>Email</label>
+<h1>Crear Usuario</h1>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    
+    <div class="form-group">
+        <label asp-for="email"></label>
         <input asp-for="email" class="form-control" />
+        <span asp-validation-for="email" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label>Contraseña</label>
-        <input type="password" name="password" class="form-control" />
+    <div class="form-group">
+        <label asp-for="password_hash">Contraseña</label>
+        <input asp-for="password_hash" class="form-control" type="password" />
+        <span asp-validation-for="password_hash" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label>Rol</label>
-        <select asp-for="rol" class="form-select">
-            <option>Administrador</option>
-            <option>Empleado</option>
+    <div class="form-group">
+        <label asp-for="rol"></label>
+        <select asp-for="rol" class="form-control">
+            <option value="Empleado">Empleado</option>
+            <option value="Administrador">Administrador</option>
+        </select>
+        <span asp-validation-for="rol" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <label>Asignar Empleado (opcional)</label>
+        <select name="EmpleadoId" class="form-control">
+            <option value="">-- Sin asignar --</option>
+            @foreach (var e in empleados)
+            {
+                <option value="@e.Id">@e.NombreCompleto</option>
+            }
         </select>
     </div>
 
-    <button class="btn btn-primary">Guardar</button>
+    <button type="submit" class="btn btn-success mt-3">Crear</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Cancelar</a>
 </form>

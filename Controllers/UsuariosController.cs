@@ -1,4 +1,3 @@
-// Controllers/UsuariosController.cs
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -8,23 +7,28 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
+using TallerBecerraAguilera.Data;
 
 public class UsuariosController : Controller
 {
     private readonly UsuarioRepositorio _repo;
     private readonly PasswordHasher<Usuarios> _hasher;
     private readonly IConfiguration _config;
+    private readonly ApplicationDbContext _context;
 
     public UsuariosController(
         UsuarioRepositorio repo,
         PasswordHasher<Usuarios> hasher,
-        IConfiguration config)
+        IConfiguration config,
+        ApplicationDbContext context)
     {
         _repo = repo;
         _hasher = hasher;
         _config = config;
+        _context = context;
     }
 
     [AllowAnonymous]
@@ -114,24 +118,53 @@ public class UsuariosController : Controller
     }
 
     [Authorize(Roles = "Administrador")]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
+        ViewBag.Empleados = await _context.Empleados
+            .Where(e => e.UsuarioId == null)
+            .OrderBy(e => e.Nombre)
+            .ThenBy(e => e.Apellido)
+            .ToListAsync();
+
         return View();
     }
 
     [Authorize(Roles = "Administrador")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Usuarios model, string password)
+    public async Task<IActionResult> Create(Usuarios model, string password_hash, int? EmpleadoId)
     {
-        if (string.IsNullOrWhiteSpace(password))
+        if (string.IsNullOrWhiteSpace(password_hash))
         {
-            ModelState.AddModelError("password", "La contraseña es obligatoria.");
+            ModelState.AddModelError("password_hash", "La contraseña es obligatoria.");
+
+            ViewBag.Empleados = await _context.Empleados
+                .Where(e => e.UsuarioId == null)
+                .ToListAsync();
+
             return View(model);
         }
 
-        model.password_hash = _hasher.HashPassword(model, password);
+        model.password_hash = _hasher.HashPassword(model, password_hash);
         await _repo.Crear(model);
+
+        if (EmpleadoId.HasValue)
+        {
+            var empleado = await _context.Empleados.FindAsync(EmpleadoId.Value);
+
+            if (empleado != null)
+            {
+                if (empleado.UsuarioId != null)
+                {
+                    empleado.UsuarioId = null;
+                    TempData["Info"] = "El empleado tenía otro usuario asignado. Se reemplazó correctamente.";
+                }
+
+                empleado.UsuarioId = model.id;
+                await _context.SaveChangesAsync();
+            }
+        }
+
         return RedirectToAction("Index");
     }
 
@@ -140,13 +173,23 @@ public class UsuariosController : Controller
     {
         var user = await _repo.ObtenerPorId(id);
         if (user == null) return NotFound();
+
+        ViewBag.Empleados = await _context.Empleados
+            .OrderBy(e => e.Nombre)
+            .ThenBy(e => e.Apellido)
+            .ToListAsync();
+
+        var asignado = await _context.Empleados
+            .FirstOrDefaultAsync(e => e.UsuarioId == user.id);
+        
+        ViewBag.empleadoActual = asignado?.Id;
         return View(user);
     }
 
     [Authorize(Roles = "Administrador")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Usuarios model)
+    public async Task<IActionResult> Edit(Usuarios model, int? EmpleadoId)
     {
         var user = await _repo.ObtenerPorId(model.id);
         if (user == null) return NotFound();
@@ -157,6 +200,31 @@ public class UsuariosController : Controller
             user.avatar_path = model.avatar_path;
 
         await _repo.Actualizar(user);
+
+        var empleadoActual = await _context.Empleados.FirstOrDefaultAsync(e => e.UsuarioId == model.id);
+
+        if (empleadoActual != null && EmpleadoId != empleadoActual.Id)
+        {
+            empleadoActual.UsuarioId = null;
+        }
+
+        if (EmpleadoId.HasValue)
+        {
+            var nuevoEmpleado = await _context.Empleados.FindAsync(EmpleadoId.Value);
+
+            if (nuevoEmpleado != null)
+            {
+                if (nuevoEmpleado.UsuarioId != null && nuevoEmpleado.UsuarioId != user.id)
+                {
+                    nuevoEmpleado.UsuarioId = null;
+                    TempData["Info"] = "El empleado estaba asignado a otro usuario. Se reasignó correctamente.";
+                }
+
+                nuevoEmpleado.UsuarioId = user.id;
+            }
+        }
+
+        await _context.SaveChangesAsync();
         return RedirectToAction("Index");
     }
 

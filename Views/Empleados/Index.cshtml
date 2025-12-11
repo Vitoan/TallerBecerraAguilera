@@ -1,0 +1,40 @@
+@model IEnumerable<TallerBecerraAguilera.Models.Empleados>
+@{
+    ViewData["Title"] = "Empleados";
+}
+
+<h1>Empleados</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Nuevo Empleado</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.First().Nombre)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Apellido)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Dni)</th>
+            <th>@Html.DisplayNameFor(m => m.First().Telefono)</th>
+            <th>@Html.DisplayNameFor(m => m.First().UsuarioId)</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var item in Model)
+    {
+        <tr>
+            <td>@item.Nombre</td>
+            <td>@item.Apellido</td>
+            <td>@item.Dni</td>
+            <td>@item.Telefono</td>
+            <td>@item.UsuarioId</td>
+            <td>
+                <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Ver</a>
+                <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

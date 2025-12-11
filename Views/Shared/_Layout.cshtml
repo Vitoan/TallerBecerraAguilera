@@ -79,6 +79,9 @@
                     
                     <li class="nav-item"><a class="nav-link @(currentController == "Usuarios" ? "active" : "")"
                         asp-controller="Usuarios" asp-action="Index">👥 Usuarios</a></li>
+
+                    <li class="nav-item"><a class="nav-link @(currentController == "Empleados" ? "active" : "")"
+                        asp-controller="Empleados" asp-action="Index">🧑‍🔧 Empleados</a></li>
                 }
 
                 @if (User.IsInRole("Empleado"))
