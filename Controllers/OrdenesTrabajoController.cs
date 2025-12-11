@@ -73,8 +73,6 @@ namespace TallerBecerraAguilera.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create()
         {
-            // Prepara los SelectLists para la vista
-            await PopulateDropDownsAsync();
             // Pre-llena la fecha de ingreso y el estado
             var ot = new OrdenesTrabajo { 
                 FechaIngreso = DateTime.Today,
@@ -95,7 +93,6 @@ namespace TallerBecerraAguilera.Controllers
                 return RedirectToAction(nameof(Index));
             }
             
-            await PopulateDropDownsAsync(ot.VehiculoId, ot.EmpleadoId);
             return View(ot);
         }
         
@@ -103,10 +100,10 @@ namespace TallerBecerraAguilera.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
+
             var ot = await _otRepositorio.GetByIdAsync(id.Value);
             if (ot == null) return NotFound();
             
-            await PopulateDropDownsAsync(ot.VehiculoId, ot.EmpleadoId);
             return View(ot);
         }
         
@@ -136,7 +133,6 @@ namespace TallerBecerraAguilera.Controllers
                 return RedirectToAction(nameof(Index));
             }
             
-            await PopulateDropDownsAsync(ot.VehiculoId, ot.EmpleadoId);
             return View(ot);
         }
         
@@ -187,6 +183,28 @@ namespace TallerBecerraAguilera.Controllers
 
             TempData["Mensaje"] = $"Estado de OT #{ot.Id} actualizado a {ot.Estado}";
             return RedirectToAction(nameof(MisOTs));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BuscarVehiculos(string term)
+        {
+            var vehiculos = await _otRepositorio.GetAllVehiculosAsync();
+            var results = vehiculos
+                .Where(v => v.patente.Contains(term))
+                .Select(v => new { id = v.id, text = $"{v.patente} - {v.Cliente?.Nombre} {v.Cliente?.Apellido}" })
+                .ToList();
+            return Json(new { results });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BuscarEmpleados(string term)
+        {
+            var empleados = await _otRepositorio.GetAllEmpleadosAsync();
+            var results = empleados
+                .Where(e => e.Nombre.Contains(term) || e.Apellido.Contains(term))
+                .Select(e => new { id = e.Id, text = $"{e.Nombre} {e.Apellido}" })
+                .ToList();
+            return Json(new { results });
         }
     }
 }
