@@ -4,11 +4,24 @@ using TallerBecerraAguilera.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using TallerBecerraAguilera.Helpers;
 
 namespace TallerBecerraAguilera.Repositorios
 {
     public class OrdenTrabajoRepositorio
     {
+        public async Task<PaginatedList<OrdenesTrabajo>> GetAllPaginatedAsync(int pageIndex, int pageSize)
+        {
+            // Preparamos la consulta pero NO la ejecutamos todavía (no usamos ToListAsync aquí)
+            var query = _context.OrdenesTrabajo
+                .Include(o => o.Vehiculo).ThenInclude(v => v!.Cliente)
+                .Include(o => o.Empleado)
+                .OrderByDescending(o => o.FechaIngreso) // Ordenamos por fecha (las más nuevas primero)
+                .AsQueryable();
+
+            // El helper se encarga de ejecutar el SQL con LIMIT y OFFSET
+            return await PaginatedList<OrdenesTrabajo>.CreateAsync(query, pageIndex, pageSize);
+        }
         private readonly ApplicationDbContext _context;
 
         public OrdenTrabajoRepositorio(ApplicationDbContext context)

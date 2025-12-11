@@ -51,9 +51,13 @@ namespace TallerBecerraAguilera.Controllers
         // CRUD ACTIONS
         // ===========================
         
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber)
         {
-            var ots = await _otRepositorio.GetAllAsync();
+            int pageSize = 1; // Cantidad de órdenes por página (puedes cambiarlo a 10)
+            
+            // Llamamos al nuevo método del repositorio
+            var ots = await _otRepositorio.GetAllPaginatedAsync(pageNumber ?? 1, pageSize);
+            
             return View(ots);
         }
 

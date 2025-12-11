@@ -1,5 +1,5 @@
-@model List<TallerBecerraAguilera.Models.OrdenesTrabajo>
-@using TallerBecerraAguilera.Models
+@using TallerBecerraAguilera.Helpers 
+@model PaginatedList<TallerBecerraAguilera.Models.OrdenesTrabajo>
 
 @{
     ViewData["Title"] = "Órdenes de Trabajo";
@@ -26,17 +26,17 @@
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
-                        <th>@Html.DisplayNameFor(model => model.First().Id)</th>
-                        <th>@Html.DisplayNameFor(model => model.First().Vehiculo)</th>
-                        <th>@Html.DisplayNameFor(model => model.First().Empleado)</th>
-                        <th>@Html.DisplayNameFor(model => model.First().FechaIngreso)</th>
-                        <th>@Html.DisplayNameFor(model => model.First().Estado)</th>
+                        <th>OT #</th>
+                        <th>Vehículo</th>
+                        <th>Empleado</th>
+                        <th>Fecha Ingreso</th>
+                        <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-@foreach (var item in Model)
-{
+                @foreach (var item in Model)
+                {
                     <tr>
                         <td>@item.Id</td>
                         <td>@item.Vehiculo?.Patente <small class="text-muted">(@item.Vehiculo?.Cliente?.NombreCompleto)</small></td>
@@ -59,23 +59,42 @@
                             </a>
                         </td>
                     </tr>
-}
+                }
                 </tbody>
             </table>
         </div>
+        
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+                Página @Model.PageIndex de @Model.TotalPages
+            </div>
+            <div>
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   class="btn btn-outline-primary @(!Model.HasPreviousPage ? "disabled" : "")">
+                   <i class="bi bi-arrow-left"></i> Anterior
+                </a>
+                
+                <a asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   class="btn btn-outline-primary @(!Model.HasNextPage ? "disabled" : "")">
+                   Siguiente <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        
     </div>
 </div>
 
 @functions {
-    // Helper para asignar clases de Bootstrap según el estado
-    public string GetBadgeClass(EstadoOrden estado)
+    public string GetBadgeClass(TallerBecerraAguilera.Models.EstadoOrden estado)
     {
         return estado switch
         {
-            EstadoOrden.Pendiente => "bg-secondary",
-            EstadoOrden.EnReparacion => "bg-primary",
-            EstadoOrden.Finalizada => "bg-warning text-dark",
-            EstadoOrden.Entregada => "bg-success",
+            TallerBecerraAguilera.Models.EstadoOrden.Pendiente => "bg-secondary",
+            TallerBecerraAguilera.Models.EstadoOrden.EnReparacion => "bg-primary",
+            TallerBecerraAguilera.Models.EstadoOrden.Finalizada => "bg-warning text-dark",
+            TallerBecerraAguilera.Models.EstadoOrden.Entregada => "bg-success",
             _ => "bg-light text-dark",
         };
     }
