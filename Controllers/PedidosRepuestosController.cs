@@ -116,24 +116,8 @@ namespace TallerBecerraAguilera.Controllers
 
             ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre", pedido.ProveedorId);
 
-            // Lógica de usuario
-            var claimId = User.FindFirst("Id");
-            // Nota: Aquí podrías manejar si claimId es null, pero asumimos auth activa
-            var usuarioId = int.Parse(claimId!.Value); 
-            var empleado = await _empleadoRepo.GetByUsuarioIdAsync(usuarioId);
-
-            if (User.IsInRole("Admin"))
-            {
-                ViewBag.EmpleadoId = new SelectList(await _empleadoRepo.GetAllAsync(), "Id", "NombreCompleto", pedido.EmpleadoId);
-            }
-            else
-            {
-                if (empleado == null)
-                    return BadRequest("No existe un empleado asociado a este usuario.");
-
-                ViewBag.EmpleadoId = empleado.Id;
-            }
-
+            ViewBag.EmpleadoId = new SelectList(await _empleadoRepo.GetAllAsync(), "Id", "NombreCompleto", pedido.EmpleadoId);
+            
             return View(pedido);
         }
 
@@ -143,27 +127,12 @@ namespace TallerBecerraAguilera.Controllers
         {
             if (id != pedido.Id) return NotFound();
 
-            var claimId = User.FindFirst("Id");
-            var usuarioId = int.Parse(claimId!.Value);
-            var empleado = await _empleadoRepo.GetByUsuarioIdAsync(usuarioId);
-
-            if (!User.IsInRole("Admin"))
-            {
-                if (empleado == null)
-                    return BadRequest("No existe un empleado asociado a este usuario.");
-
-                pedido.EmpleadoId = empleado.Id;
-            }
-
             if (!ModelState.IsValid)
             {
                 ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre", pedido.ProveedorId);
 
-                if (User.IsInRole("Admin"))
-                    ViewBag.EmpleadoId = new SelectList(await _empleadoRepo.GetAllAsync(), "Id", "NombreCompleto", pedido.EmpleadoId);
-                else
-                    ViewBag.EmpleadoId = empleado?.Id;
-
+                ViewBag.EmpleadoId = new SelectList(await _empleadoRepo.GetAllAsync(), "Id", "NombreCompleto", pedido.EmpleadoId);
+                
                 return View(pedido);
             }
 
