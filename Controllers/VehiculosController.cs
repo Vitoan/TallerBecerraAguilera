@@ -2,12 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
+using Microsoft.AspNetCore.Authorization;
 // NECESARIO para DbUpdateConcurrencyException y otros errores de EF Core.
 using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Helpers;
 
 namespace TallerBecerraAguilera.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     public class VehiculosController : Controller
     {
         private readonly VehiculoRepositorio _vehiculoRepositorio;

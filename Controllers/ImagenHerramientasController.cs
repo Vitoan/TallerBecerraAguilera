@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -21,6 +22,7 @@ namespace TallerBecerraAguilera.Controllers
         }
 
         // ★★ NUEVO: Pantalla de subida
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create(int herramientaId)
         {
             var modelo = new ImagenHerramienta
@@ -32,6 +34,7 @@ namespace TallerBecerraAguilera.Controllers
 
         // ★★ NUEVO: POST del formulario Create
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ImagenHerramienta modelo)
         {
@@ -47,6 +50,7 @@ namespace TallerBecerraAguilera.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Subir(int herramientaId, IFormFile archivo)
         {
             if (archivo == null)
@@ -64,6 +68,7 @@ namespace TallerBecerraAguilera.Controllers
             return RedirectToAction("Index", new { herramientaId });
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Eliminar(int id, int herramientaId)
         {
             await _repo.EliminarAsync(id);

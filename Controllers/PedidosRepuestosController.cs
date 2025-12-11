@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
+using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using TallerBecerraAguilera.Helpers; // Necesario para User.FindFirst
 
@@ -107,6 +108,7 @@ namespace TallerBecerraAguilera.Controllers
             return RedirectToAction(nameof(Details), new { id = nuevoId });
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id)
         {
             var pedido = await _repo.GetByIdAsync(id);
@@ -136,6 +138,7 @@ namespace TallerBecerraAguilera.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id, PedidosRepuestos pedido)
         {
             if (id != pedido.Id) return NotFound();

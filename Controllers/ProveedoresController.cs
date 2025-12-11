@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
+using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks; 
 using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Helpers; // Necesario para DbUpdateConcurrencyException
 
 namespace TallerBecerraAguilera.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     public class ProveedoresController : Controller
     {
         private readonly ProveedorRepositorio _repo;

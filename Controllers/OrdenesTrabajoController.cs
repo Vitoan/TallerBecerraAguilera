@@ -51,6 +51,7 @@ namespace TallerBecerraAguilera.Controllers
         // CRUD ACTIONS
         // ===========================
         
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index(int? pageNumber)
         {
             int pageSize = 1; // Cantidad de órdenes por página (puedes cambiarlo a 10)
@@ -69,6 +70,7 @@ namespace TallerBecerraAguilera.Controllers
             return View(ot);
         }
         
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create()
         {
             // Prepara los SelectLists para la vista
@@ -82,6 +84,7 @@ namespace TallerBecerraAguilera.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("VehiculoId,EmpleadoId,DescripcionFalla,FechaIngreso,FechaEstimadaEntrega,Estado,HorasEstimadas")] OrdenesTrabajo ot)
         {
@@ -96,6 +99,7 @@ namespace TallerBecerraAguilera.Controllers
             return View(ot);
         }
         
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -107,6 +111,7 @@ namespace TallerBecerraAguilera.Controllers
         }
         
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         [ValidateAntiForgeryToken]
         // Incluimos Created_at para mantener la fecha de creación original
         public async Task<IActionResult> Edit(int id, [Bind("Id,VehiculoId,EmpleadoId,DescripcionFalla,FechaIngreso,FechaEstimadaEntrega,Estado,HorasEstimadas,Created_at")] OrdenesTrabajo ot)
@@ -135,6 +140,7 @@ namespace TallerBecerraAguilera.Controllers
             return View(ot);
         }
         
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -144,6 +150,7 @@ namespace TallerBecerraAguilera.Controllers
         }
         
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Administrador")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

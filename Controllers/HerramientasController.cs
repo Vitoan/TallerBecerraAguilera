@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
 using TallerBecerraAguilera.Helpers;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -31,7 +33,7 @@ namespace TallerBecerraAguilera.Controllers
             return View(paginated);
         }
 
-
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             ViewBag.Estados = new SelectList(Enum.GetValues(typeof(EstadoHerramienta)));
@@ -39,6 +41,7 @@ namespace TallerBecerraAguilera.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Herramientas herramienta)
         {
@@ -58,6 +61,7 @@ namespace TallerBecerraAguilera.Controllers
             return View(herramienta);
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id)
         {
             var herramienta = await _repo.GetByIdAsync(id);
@@ -69,6 +73,7 @@ namespace TallerBecerraAguilera.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Herramientas herramienta)
         {
@@ -86,6 +91,7 @@ namespace TallerBecerraAguilera.Controllers
             return View(herramienta);
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int id)
         {
             var herramienta = await _repo.GetByIdAsync(id);
@@ -95,6 +101,7 @@ namespace TallerBecerraAguilera.Controllers
             return View(herramienta);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
