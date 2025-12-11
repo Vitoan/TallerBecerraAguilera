@@ -1,8 +1,6 @@
 @model TallerBecerraAguilera.Models.Usuarios
 @{
     ViewData["Title"] = "Crear Usuario";
-
-    var empleados = ViewBag.Empleados as List<TallerBecerraAguilera.Models.Empleados> ?? new();
 }
 
 <h1>Crear Usuario</h1>
@@ -10,19 +8,19 @@
 <form asp-action="Create" method="post">
     <div asp-validation-summary="All" class="text-danger"></div>
     
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="email"></label>
         <input asp-for="email" class="form-control" />
         <span asp-validation-for="email" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="password_hash">Contraseña</label>
         <input asp-for="password_hash" class="form-control" type="password" />
         <span asp-validation-for="password_hash" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="rol"></label>
         <select asp-for="rol" class="form-control">
             <option value="Empleado">Empleado</option>
@@ -31,17 +29,48 @@
         <span asp-validation-for="rol" class="text-danger"></span>
     </div>
 
-    <div class="form-group mt-3">
+    <div class="form-group mb-3">
         <label>Asignar Empleado (opcional)</label>
-        <select name="EmpleadoId" class="form-control">
-            <option value="">-- Sin asignar --</option>
-            @foreach (var e in empleados)
-            {
-                <option value="@e.Id">@e.NombreCompleto</option>
-            }
+        <select name="EmpleadoId" class="form-select" id="buscadorEmpleados">
+            <option value="">Escriba para buscar...</option>
         </select>
     </div>
 
     <button type="submit" class="btn btn-success mt-3">Crear</button>
     <a asp-action="Index" class="btn btn-secondary mt-3">Cancelar</a>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#buscadorEmpleados').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Seleccione un empleado',
+                minimumInputLength: 1,
+                allowClear: true,
+                language: {
+                    noResults: function() { return "No se encontraron empleados"; },
+                    searching: function() { return "Buscando..." }
+                },
+                ajax: {
+                    url: '@Url.Action("BuscarEmpleados", "Usuarios")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return { term: params.term };
+                    },
+                    processResults: function(data) {
+                        return { results: data.results };
+                    },
+                    cache: true
+                }
+            });
+        });
+    </script>
+}

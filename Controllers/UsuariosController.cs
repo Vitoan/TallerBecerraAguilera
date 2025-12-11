@@ -127,12 +127,6 @@ public class UsuariosController : Controller
     [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> Create()
     {
-        ViewBag.Empleados = await _context.Empleados
-            .Where(e => e.UsuarioId == null)
-            .OrderBy(e => e.Nombre)
-            .ThenBy(e => e.Apellido)
-            .ToListAsync();
-
         return View();
     }
 
@@ -144,11 +138,7 @@ public class UsuariosController : Controller
         if (string.IsNullOrWhiteSpace(password_hash))
         {
             ModelState.AddModelError("password_hash", "La contraseña es obligatoria.");
-
-            ViewBag.Empleados = await _context.Empleados
-                .Where(e => e.UsuarioId == null)
-                .ToListAsync();
-
+            
             return View(model);
         }
 
@@ -181,15 +171,11 @@ public class UsuariosController : Controller
         var user = await _repo.ObtenerPorId(id);
         if (user == null) return NotFound();
 
-        ViewBag.Empleados = await _context.Empleados
-            .OrderBy(e => e.Nombre)
-            .ThenBy(e => e.Apellido)
-            .ToListAsync();
-
         var asignado = await _context.Empleados
             .FirstOrDefaultAsync(e => e.UsuarioId == user.id);
         
         ViewBag.empleadoActual = asignado?.Id;
+        ViewBag.EmpleadoNombre = asignado?.NombreCompleto;
         return View(user);
     }
 
@@ -357,4 +343,23 @@ public class UsuariosController : Controller
         TempData["Success"] = "Avatar actualizado correctamente.";
         return RedirectToAction("Perfil");
     }
+
+    [Authorize(Roles = "Administrador")]
+    [HttpGet]
+    public async Task<IActionResult> BuscarEmpleados(string term)
+    {
+        var empleados = await _context.Empleados
+            .Where(e => e.Nombre.Contains(term) || e.Apellido.Contains(term))
+            .Where(e => e.UsuarioId == null) // opcional, solo empleados sin usuario asignado
+            .OrderBy(e => e.Nombre)
+            .ThenBy(e => e.Apellido)
+            .Select(e => new
+            {
+                id = e.Id,
+                text = e.Nombre + " " + e.Apellido
+            }).ToListAsync();
+
+        return Json(new { results = empleados });
+    }
+
 }

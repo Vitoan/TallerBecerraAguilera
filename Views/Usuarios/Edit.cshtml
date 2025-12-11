@@ -1,9 +1,6 @@
 @model TallerBecerraAguilera.Models.Usuarios
 @{
     ViewData["Title"] = "Editar Usuario";
-
-    var empleados = ViewBag.Empleados as List<TallerBecerraAguilera.Models.Empleados> ?? new();
-    int? empleadoActual = ViewBag.EmpleadoActual as int?;
 }
 
 <h1>Editar Usuario</h1>
@@ -11,13 +8,13 @@
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="id" />
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="email"></label>
         <input asp-for="email" class="form-control" />
         <span asp-validation-for="email" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group mb-3">
         <label asp-for="rol"></label>
         <select asp-for="rol" class="form-control">
             <option value="Empleado">Empleado</option>
@@ -26,21 +23,13 @@
         <span asp-validation-for="rol" class="text-danger"></span>
     </div>
 
-    <div class="form-group mt-3">
+    <div class="form-group mb-3">
         <label>Empleado asignado</label>
-        <select name="empleadoId" class="form-control">
-            <option value="">-- Sin asignar --</option>
-
-            @foreach (var e in empleados)
+        <select name="EmpleadoId" class="form-select" id="buscadorEmpleados">
+            @* Si ya tiene empleado asignado, lo mostramos seleccionado *@
+            @if (ViewBag.EmpleadoActual != null)
             {
-                if (empleadoActual == e.Id)
-                {
-                    <option value="@e.Id" selected="selected">@e.NombreCompleto</option>
-                }
-                else
-                {
-                    <option value="@e.Id">@e.NombreCompleto</option>
-                }
+                <option value="@ViewBag.EmpleadoActual" selected="selected">@ViewBag.EmpleadoNombre</option>
             }
         </select>
     </div>
@@ -48,3 +37,46 @@
     <button type="submit" class="btn btn-success mt-3">Guardar</button>
     <a asp-action="Index" class="btn btn-secondary mt-3">Cancelar</a>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var empleadoId = '@ViewBag.EmpleadoActual';
+            var empleadoNombre = '@ViewBag.EmpleadoNombre';
+
+            $('#buscadorEmpleados').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Seleccione un empleado',
+                minimumInputLength: 1,
+                allowClear: true,
+                language: {
+                    noResults: function() { return "No se encontraron empleados"; },
+                    searching: function() { return "Buscando..." }
+                },
+                ajax: {
+                    url: '@Url.Action("BuscarEmpleados", "Usuarios")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return { term: params.term };
+                    },
+                    processResults: function(data) {
+                        return { results: data.results };
+                    },
+                    cache: true
+                }
+            });
+
+            if(empleadoId) {
+                var option = new Option(empleadoNombre, empleadoId, true, true);
+                $('#buscadorEmpleados').append(option).trigger('change');
+            }
+        });
+    </script>
+}
