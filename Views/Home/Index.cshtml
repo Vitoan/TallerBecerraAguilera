@@ -1,4 +1,13 @@
-﻿@{
+﻿<!--@* --- CÓDIGO TEMPORAL PARA VER EL TOKEN --- *@
+@if (TempData["jwt"] != null)
+{
+    <div class="alert alert-info">
+        <strong>Tu Token JWT (Cópialo):</strong>
+        <textarea class="form-control" rows="3">@TempData["jwt"]</textarea>
+    </div>
+}
+@* ---------------------------------------- *@ -->
+@{
     ViewData["Title"] = "Dashboard";
 }
 
