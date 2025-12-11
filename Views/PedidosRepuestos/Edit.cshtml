@@ -1,33 +1,110 @@
 @model TallerBecerraAguilera.Models.PedidosRepuestos
 
 @{
-    ViewData["Title"] = "Editar Pedido";
+    ViewData["Title"] = $"Editar Pedido #{Model.Id}";
+    var esAdmin = User.IsInRole("Administrador");
 }
 
-<h2>Editar Pedido</h2>
+<h2>@ViewData["Title"]</h2>
 
 <form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
 
-    <div class="mb-3">
+    <div class="form-group mb-3">
         <label>Proveedor</label>
-        <select class="form-control" asp-for="ProveedorId" asp-items="ViewBag.ProveedorId"></select>
+        <select asp-for="ProveedorId" class="form-control" id="buscadorProveedores">
+            <option value="">Escriba para buscar proveedor...</option>
+        </select>
+        <span asp-validation-for="ProveedorId" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <label>Empleado</label>
-        <select class="form-control" asp-for="EmpleadoId" asp-items="ViewBag.EmpleadoId"></select>
-    </div>
+    @if (esAdmin)
+    {
+        <div class="form-group mb-3">
+            <label>Empleado</label>
+            <select asp-for="EmpleadoId" class="form-control" id="buscadorEmpleados">
+                <option value="">Escriba para buscar empleado...</option>
+            </select>
+            <span asp-validation-for="EmpleadoId" class="text-danger"></span>
+        </div>
+    }
+    else
+    {
+        <input type="hidden" asp-for="EmpleadoId" value="@ViewBag.EmpleadoId" />
+    }
 
-    <div class="mb-3">
+    <div class="form-group mb-3">
         <label>Estado</label>
         <select class="form-control" asp-for="Estado">
             <option value="Pendiente">Pendiente</option>
             <option value="Recibido">Recibido</option>
             <option value="Cancelado">Cancelado</option>
         </select>
+        <span asp-validation-for="Estado" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-success">Guardar</button>
-    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Volver</a>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Preselección del proveedor
+            var proveedorId = '@Model.ProveedorId';
+            var proveedorTexto = '@(Model.Proveedor != null ? Model.Proveedor.Nombre : "")';
+            if (proveedorId) {
+                var option = new Option(proveedorTexto, proveedorId, true, true);
+                $('#buscadorProveedores').append(option).trigger('change');
+            }
+
+            // Inicializar Select2 para proveedores
+            $('#buscadorProveedores').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Seleccione un proveedor',
+                minimumInputLength: 1,
+                ajax: {
+                    url: '@Url.Action("GetProveedores", "PedidosRepuestos")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) { return { term: params.term }; },
+                    processResults: function (data) { return { results: data.results }; },
+                    cache: true
+                }
+            });
+
+            // Solo admin: preselección e inicialización empleados
+            @if (esAdmin)
+            {
+                <text>
+                var empleadoId = '@Model.EmpleadoId';
+                var empleadoTexto = '@(Model.Empleado != null ? $"{Model.Empleado.Nombre} {Model.Empleado.Apellido}" : "")';
+                if (empleadoId) {
+                    var option = new Option(empleadoTexto, empleadoId, true, true);
+                    $('#buscadorEmpleados').append(option).trigger('change');
+                }
+
+                $('#buscadorEmpleados').select2({
+                    theme: 'bootstrap-5',
+                    placeholder: 'Seleccione un empleado',
+                    minimumInputLength: 1,
+                    ajax: {
+                        url: '@Url.Action("GetEmpleados", "PedidosRepuestos")',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) { return { term: params.term }; },
+                        processResults: function (data) { return { results: data.results }; },
+                        cache: true
+                    }
+                });
+                </text>
+            }
+        });
+    </script>
+}

@@ -55,7 +55,7 @@ namespace TallerBecerraAguilera.Controllers
             var usuarioId = int.Parse(claimId.Value);
             var empleado = await _empleadoRepo.GetByUsuarioIdAsync(usuarioId);
 
-            if (User.IsInRole("Admin"))
+            if (User.IsInRole("Administrador"))
             {
                 ViewBag.EmpleadoId = new SelectList(await _empleadoRepo.GetAllAsync(), "Id", "NombreCompleto");
             }
@@ -81,7 +81,7 @@ namespace TallerBecerraAguilera.Controllers
             var usuarioId = int.Parse(claimId.Value);
             var empleado = await _empleadoRepo.GetByUsuarioIdAsync(usuarioId);
 
-            if (!User.IsInRole("Admin"))
+            if (!User.IsInRole("Administrador"))
             {
                 if (empleado == null)
                     return BadRequest("No existe un empleado asociado a este usuario.");
@@ -93,7 +93,7 @@ namespace TallerBecerraAguilera.Controllers
             {
                 ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre");
 
-                if (User.IsInRole("Admin"))
+                if (User.IsInRole("Administrador"))
                     ViewBag.EmpleadoId = new SelectList(await _empleadoRepo.GetAllAsync(), "Id", "NombreCompleto");
                 else
                     ViewBag.EmpleadoId = empleado?.Id;
@@ -147,6 +147,28 @@ namespace TallerBecerraAguilera.Controllers
             
             // Redirigimos a Details para ver el cambio reflejado en contexto
             return RedirectToAction(nameof(Details), new { id = pedidoId });
+        }
+
+        public async Task<IActionResult> GetProveedores(string search)
+        {
+            var proveedores = await _proveedorRepo.GetAllAsync();
+            var filtered = proveedores
+                .Where(p => string.IsNullOrEmpty(search) || p.Nombre.Contains(search, StringComparison.OrdinalIgnoreCase))
+                .Select(p => new { id = p.Id, text = p.Nombre });
+
+            return Json(new { results = filtered});
+        }
+
+        public async Task<IActionResult> GetEmpleados(string search)
+        {
+            var empleados = await _empleadoRepo.GetAllAsync();
+            var filtered = empleados
+                .Where(e => string.IsNullOrEmpty(search) ||
+                            e.Nombre.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                            e.Apellido.Contains(search, StringComparison.OrdinalIgnoreCase))
+                .Select(e => new { id = e.Id, text = $"{e.Nombre} {e.Apellido}" });
+
+            return Json(new { results = filtered });
         }
     }
 }

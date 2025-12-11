@@ -23,7 +23,12 @@ namespace TallerBecerraAguilera.Controllers
             var modelo = new PedidoRepuestos { pedido_id = pedidoId };
 
             // CORRECCIÓN IMPORTANTE: Tu modelo 'Repuestos' usa "Descripcion", no "Nombre".
-            ViewBag.Repuestos = new SelectList(await _repuestoRepo.GetAllAsync(), "Id", "Descripcion");
+            ViewBag.Repuestos = (await _repuestoRepo.GetAllAsync())
+                .Select(r => new SelectListItem
+                {
+                    Value = r.id.ToString(),
+                    Text = r.descripcion
+                }).ToList();
             
             return View(modelo);
         }
@@ -35,7 +40,12 @@ namespace TallerBecerraAguilera.Controllers
             if (!ModelState.IsValid)
             {
                 // Si falla, recargamos la lista. Nota: "Descripcion" aquí también.
-                ViewBag.Repuestos = new SelectList(await _repuestoRepo.GetAllAsync(), "Id", "Descripcion");
+                ViewBag.Repuestos = (await _repuestoRepo.GetAllAsync())
+                    .Select(r => new SelectListItem
+                    {
+                        Value = r.id.ToString(),
+                        Text = r.descripcion
+                    }).ToList();
                 return View(item);
             }
 
@@ -47,7 +57,12 @@ namespace TallerBecerraAguilera.Controllers
             {
                 // Si intentan agregar el mismo repuesto dos veces, capturamos el error
                 ModelState.AddModelError("", "Este repuesto ya está en la lista. Edítalo en lugar de agregarlo de nuevo.");
-                ViewBag.Repuestos = new SelectList(await _repuestoRepo.GetAllAsync(), "Id", "Descripcion");
+                ViewBag.Repuestos = (await _repuestoRepo.GetAllAsync())
+                    .Select(r => new SelectListItem
+                    {
+                        Value = r.id.ToString(),
+                        Text = r.descripcion
+                    }).ToList();
                 return View(item);
             }
 
