@@ -27,7 +27,7 @@ namespace TallerBecerraAguilera.Controllers
             var query = _vehiculoRepositorio.Query()
                                             .OrderBy(v => v.patente);
 
-            var paginated = PaginatedList<Vehiculos>.CreateAsync(query, pageNumber, pageSize);
+            var paginated = await PaginatedList<Vehiculos>.CreateAsync(query, pageNumber, pageSize);
 
             return View(paginated);
         }

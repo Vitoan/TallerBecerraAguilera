@@ -107,8 +107,8 @@ using (var scope = app.Services.CreateScope())
             email = adminEmail,
             rol = "Administrador",
             avatar_path = "/uploads/avatars/default.jpg",
-            Created_at = DateTime.Now,
-            Updated_at = DateTime.Now
+            created_at = DateTime.Now,
+            updated_at = DateTime.Now
         };
 
         // Generamos el hash CORRECTO usando el servicio PasswordHasher

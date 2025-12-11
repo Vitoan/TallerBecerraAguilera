@@ -24,7 +24,7 @@ namespace TallerBecerraAguilera.Controllers
             var query = _repo.Query()
                              .OrderBy(r => r.codigo);
             
-            var paginated = PaginatedList<Repuestos>.CreateAsync(query, pageNumber, pageSize);
+            var paginated =await PaginatedList<Repuestos>.CreateAsync(query, pageNumber, pageSize);
 
             return View(paginated);
         }

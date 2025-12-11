@@ -25,10 +25,10 @@ namespace TallerBecerraAguilera.Controllers
         private async Task PopulateDropDownsAsync(object? selectedVehiculo = null, object? selectedEmpleado = null)
         {
             // Dropdown de Vehículos (Patente y Cliente)
-            var vehiculos = await _otRepositorio.GetAllVehiculosAsync();
+            var vehiculos = await _otRepositorio.GetAllVehiculosAsync() ?? new List<Vehiculos>();
             var vehiculoList = vehiculos.Select(v => new
             {
-                v.id,
+                Id = v.id,
                 // Formato: "Patente - Cliente Nombre Completo"
                 DisplayName = $"{v.patente} - {v.Cliente?.Nombre} {v.Cliente?.Apellido}" 
             }).ToList();

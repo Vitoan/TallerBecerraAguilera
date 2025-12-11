@@ -119,7 +119,7 @@ public class UsuariosController : Controller
         var query = _repo.Query()
                          .OrderBy(u => u.email);
 
-        var paginated = PaginatedList<Usuarios>.CreateAsync(query, pageNumber, pageSize);
+        var paginated = await PaginatedList<Usuarios>.CreateAsync(query, pageNumber, pageSize);
         
         return View(paginated);
     }
