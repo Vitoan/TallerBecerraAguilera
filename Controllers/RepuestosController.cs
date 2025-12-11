@@ -22,7 +22,7 @@ namespace TallerBecerraAguilera.Controllers
             int pageSize = 10;
 
             var query = _repo.Query()
-                             .OrderBy(r => r.Codigo);
+                             .OrderBy(r => r.codigo);
             
             var paginated = PaginatedList<Repuestos>.CreateAsync(query, pageNumber, pageSize);
 
@@ -51,7 +51,7 @@ namespace TallerBecerraAguilera.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var repuesto = await _repo.GetByIdAsync(id);
-            ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre", repuesto?.ProveedorId);
+            ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre", repuesto?.proveedorId);
             return View(repuesto);
         }
 
@@ -60,7 +60,7 @@ namespace TallerBecerraAguilera.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre", repuesto.ProveedorId);
+                ViewBag.ProveedorId = new SelectList(await _proveedorRepo.GetAllAsync(), "Id", "Nombre", repuesto.proveedorId);
                 return View(repuesto);
             }
 

@@ -29,15 +29,15 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.Codigo</td>
-                        <td>@item.Descripcion</td>
-                        <td>@item.CantidadStock</td>
-                        <td>@item.StockMinimo</td>
-                        <td>@item.PrecioUnitario.ToString("C")</td>
+                        <td>@item.codigo</td>
+                        <td>@item.descripcion</td>
+                        <td>@item.cantidadStock</td>
+                        <td>@item.stockMinimo</td>
+                        <td>@item.precioUnitario.ToString("C")</td>
                         <td>@item.Proveedor?.Nombre</td>
                         <td>
-                            <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                            <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.id">Editar</a>
+                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.id">Eliminar</a>
                         </td>
                     </tr>
                 }

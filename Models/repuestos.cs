@@ -6,35 +6,35 @@ namespace TallerBecerraAguilera.Models
     public class Repuestos
     {
         [Key]
-        public int Id { get; set; }
+        public int id { get; set; }
 
         [Required, StringLength(50)]
         [Column("codigo")]
-        public string Codigo { get; set; } = string.Empty;
+        public string codigo { get; set; } = string.Empty;
 
         [Required, StringLength(200)]
         [Column("descripcion")]
-        public string Descripcion { get; set; } = string.Empty;
+        public string descripcion { get; set; } = string.Empty;
 
         [Required]
         [Column("precio_unitario", TypeName = "decimal(10,2)")]
-        public decimal PrecioUnitario { get; set; }
+        public decimal precioUnitario { get; set; }
 
         [Column("cantidad_stock")]
-        public int CantidadStock { get; set; }
+        public int cantidadStock { get; set; }
 
         [Column("stock_minimo")]
-        public int StockMinimo { get; set; }
+        public int stockMinimo { get; set; }
 
         [Column("proveedor_id")]
-        public int? ProveedorId { get; set; }
+        public int? proveedorId { get; set; }
 
         public Proveedores? Proveedor { get; set; }
 
         [Column("created_at")]
-        public DateTime? Created_at { get; set; }
+        public DateTime? created_at { get; set; }
 
         [Column("updated_at")]
-        public DateTime? Updated_at { get; set; }
+        public DateTime? updated_at { get; set; }
     }
 }

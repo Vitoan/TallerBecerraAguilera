@@ -25,7 +25,7 @@ namespace TallerBecerraAguilera.Controllers
             int pageSize = 10;
 
             var query = _vehiculoRepositorio.Query()
-                                            .OrderBy(v => v.Patente);
+                                            .OrderBy(v => v.patente);
 
             var paginated = PaginatedList<Vehiculos>.CreateAsync(query, pageNumber, pageSize);
 
@@ -63,10 +63,10 @@ namespace TallerBecerraAguilera.Controllers
         public async Task<IActionResult> Create(Vehiculos vehiculo)
         {
             // Poner patente en mayúsculas para consistencia y búsqueda
-            vehiculo.Patente = vehiculo.Patente.ToUpper();
+            vehiculo.patente = vehiculo.patente.ToUpper();
 
             // 1. Validar unicidad de Patente
-            if (await _vehiculoRepositorio.GetByPatenteAsync(vehiculo.Patente) != null)
+            if (await _vehiculoRepositorio.GetByPatenteAsync(vehiculo.patente) != null)
             {
                 ModelState.AddModelError("Patente", "La patente ya está registrada en el sistema.");
             }
@@ -78,7 +78,7 @@ namespace TallerBecerraAguilera.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            await PopulateClientesDropDownList(vehiculo.ClienteId);
+            await PopulateClientesDropDownList(vehiculo.clienteId);
             return View(vehiculo);
         }
 
@@ -92,7 +92,7 @@ namespace TallerBecerraAguilera.Controllers
             var vehiculo = await _vehiculoRepositorio.GetByIdAsync(id.Value);
             if (vehiculo == null) return NotFound();
 
-            await PopulateClientesDropDownList(vehiculo.ClienteId);
+            await PopulateClientesDropDownList(vehiculo.clienteId);
             return View(vehiculo);
         }
 
@@ -103,21 +103,21 @@ namespace TallerBecerraAguilera.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Vehiculos vehiculo)
         {
-            if (id != vehiculo.Id) return NotFound();
+            if (id != vehiculo.id) return NotFound();
 
             // Poner patente en mayúsculas para consistencia
-            vehiculo.Patente = vehiculo.Patente.ToUpper();
+            vehiculo.patente = vehiculo.patente.ToUpper();
 
             if (ModelState.IsValid)
             {
                 // 2. Validación de unicidad de patente en la edición
-                var existingVehiculo = await _vehiculoRepositorio.GetByPatenteAsync(vehiculo.Patente);
+                var existingVehiculo = await _vehiculoRepositorio.GetByPatenteAsync(vehiculo.patente);
 
                 // Si existe un vehículo con esa patente Y NO es el vehículo que estamos editando
-                if (existingVehiculo != null && existingVehiculo.Id != vehiculo.Id)
+                if (existingVehiculo != null && existingVehiculo.id != vehiculo.id)
                 {
                     ModelState.AddModelError("Patente", "La patente ya está registrada para otro vehículo.");
-                    await PopulateClientesDropDownList(vehiculo.ClienteId);
+                    await PopulateClientesDropDownList(vehiculo.clienteId);
                     return View(vehiculo);
                 }
 
@@ -128,7 +128,7 @@ namespace TallerBecerraAguilera.Controllers
                 }
                 catch (DbUpdateConcurrencyException) // <--- ERROR CORREGIDO con el 'using'
                 {
-                    if (await _vehiculoRepositorio.ExistsAsync(vehiculo.Id) == false)
+                    if (await _vehiculoRepositorio.ExistsAsync(vehiculo.id) == false)
                     {
                         return NotFound();
                     }
@@ -137,7 +137,7 @@ namespace TallerBecerraAguilera.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            await PopulateClientesDropDownList(vehiculo.ClienteId);
+            await PopulateClientesDropDownList(vehiculo.clienteId);
             return View(vehiculo);
         }
 

@@ -41,7 +41,7 @@ namespace TallerBecerraAguilera.Repositorios
 
         public async Task Actualizar(Usuarios user)
         {
-            user.Updated_at = DateTime.Now;
+            user.updated_at = DateTime.Now;
             _context.Usuarios.Update(user);
             await _context.SaveChangesAsync();
         }

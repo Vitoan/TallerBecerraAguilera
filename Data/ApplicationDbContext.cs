@@ -46,14 +46,14 @@ namespace TallerBecerraAguilera.Data
                 .HasKey(pr => new { pr.pedido_id, pr.repuesto_id });
 
             modelBuilder.Entity<OtRepuestos>()
-                .HasKey(or => new { or.OtId, or.RepuestoId });
+                .HasKey(or => new { or.ot_id, or.repuesto_id });
 
             modelBuilder.Entity<OtHerramientas>()
-                .HasKey(oh => new { oh.OtId, oh.HerramientaId });
+                .HasKey(oh => new { oh.ot_id, oh.herramienta_id });
 
             // === ÍNDICES Y UNICIDAD ===
             modelBuilder.Entity<Vehiculos>()
-                .HasIndex(v => v.Patente)
+                .HasIndex(v => v.patente)
                 .IsUnique();
 
             // ⚠️ NOTA: He ELIMINADO todas las configuraciones de .HasConversion<string>()

@@ -31,7 +31,7 @@ namespace TallerBecerraAguilera.Repositorios
         {
             return await _context.Repuestos
                 .Include(r => r.Proveedor)
-                .FirstOrDefaultAsync(r => r.Id == id);
+                .FirstOrDefaultAsync(r => r.id == id);
         }
 
         public async Task AddAsync(Repuestos repuesto)
@@ -58,13 +58,13 @@ namespace TallerBecerraAguilera.Repositorios
 
         public async Task<bool> ExistsAsync(int id)
         {
-            return await _context.Repuestos.AnyAsync(r => r.Id == id);
+            return await _context.Repuestos.AnyAsync(r => r.id == id);
         }
 
         public async Task<int> ContarStockCritico()
         {
             return await _context.Repuestos
-                .CountAsync(r => r.CantidadStock <= r.StockMinimo && r.StockMinimo > 0);
+                .CountAsync(r => r.cantidadStock <= r.stockMinimo && r.stockMinimo > 0);
         }
 
         public async Task AumentarStockAsync(int repuestoId, int cantidad)
@@ -72,7 +72,7 @@ namespace TallerBecerraAguilera.Repositorios
             var repuesto = await _context.Repuestos.FindAsync(repuestoId);
             if (repuesto != null)
             {
-                repuesto.CantidadStock += cantidad;
+                repuesto.cantidadStock += cantidad;
                 await _context.SaveChangesAsync();
             }
         }
@@ -80,9 +80,9 @@ namespace TallerBecerraAguilera.Repositorios
         public async Task DescontarStockAsync(int repuestoId, int cantidad)
         {
             var repuesto = await _context.Repuestos.FindAsync(repuestoId);
-            if (repuesto != null && repuesto.CantidadStock >= cantidad)
+            if (repuesto != null && repuesto.cantidadStock >= cantidad)
             {
-                repuesto.CantidadStock -= cantidad;
+                repuesto.cantidadStock -= cantidad;
                 await _context.SaveChangesAsync();
             }
         }

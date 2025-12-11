@@ -26,10 +26,10 @@ namespace TallerBecerraAguilera.Models
         public string? avatar_path { get; set; } = "/uploads/avatars/default.jpg";
 
         [Display(Name = "Creado")]
-        public DateTime? Created_at { get; set; } = DateTime.Now;
+        public DateTime? created_at { get; set; } = DateTime.Now;
 
         [Display(Name = "Actualizado")]
-        public DateTime? Updated_at { get; set; } = DateTime.Now;
+        public DateTime? updated_at { get; set; } = DateTime.Now;
 
         public override string ToString()
         {

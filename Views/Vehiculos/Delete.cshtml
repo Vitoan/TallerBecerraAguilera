@@ -4,12 +4,12 @@
 
 <h3>¿Seguro que querés eliminar este vehículo?</h3>
 
-<p><b>Patente:</b> @Model.Patente</p>
-<p><b>Marca:</b> @Model.Marca</p>
-<p><b>Modelo:</b> @Model.Modelo</p>
+<p><b>Patente:</b> @Model.patente</p>
+<p><b>Marca:</b> @Model.marca</p>
+<p><b>Modelo:</b> @Model.modelo</p>
 
 <form asp-action="Delete">
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="id" />
     <button type="submit" class="btn btn-danger">Eliminar</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 </form>

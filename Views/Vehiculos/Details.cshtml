@@ -2,12 +2,12 @@
 
 <h1>Detalle Vehículo</h1>
 
-<p><b>Patente:</b> @Model.Patente</p>
-<p><b>Marca:</b> @Model.Marca</p>
-<p><b>Modelo:</b> @Model.Modelo</p>
-<p><b>Año:</b> @Model.Anio</p>
-<p><b>Tipo:</b> @Model.Tipo</p>
+<p><b>Patente:</b> @Model.patente</p>
+<p><b>Marca:</b> @Model.marca</p>
+<p><b>Modelo:</b> @Model.modelo</p>
+<p><b>Año:</b> @Model.anio</p>
+<p><b>Tipo:</b> @Model.tipo</p>
 <p><b>Cliente:</b> @Model.Cliente?.Nombre @Model.Cliente?.Apellido</p>
 
-<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+<a asp-action="Edit" asp-route-id="@Model.id" class="btn btn-primary">Editar</a>
 <a asp-action="Index" class="btn btn-secondary">Volver</a>

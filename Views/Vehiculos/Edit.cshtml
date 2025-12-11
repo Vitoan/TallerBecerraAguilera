@@ -3,28 +3,28 @@
 <h1>Editar Vehículo</h1>
 
 <form asp-action="Edit">
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="id" />
 
     <label>Patente</label>
-    <input asp-for="Patente" class="form-control" />
+    <input asp-for="patente" class="form-control" />
 
     <label>Marca</label>
-    <input asp-for="Marca" class="form-control" />
+    <input asp-for="marca" class="form-control" />
 
     <label>Modelo</label>
-    <input asp-for="Modelo" class="form-control" />
+    <input asp-for="modelo" class="form-control" />
 
     <label>Año</label>
-    <input asp-for="Anio" class="form-control" />
+    <input asp-for="anio" class="form-control" />
 
     <label>Tipo</label>
-    <select asp-for="Tipo" class="form-control" asp-items="Html.GetEnumSelectList<TipoVehiculo>()"></select>
+    <select asp-for="tipo" class="form-control" asp-items="Html.GetEnumSelectList<TipoVehiculo>()"></select>
 
     <label>Cliente</label>
-    <select asp-for="ClienteId" class="form-control" asp-items="ViewBag.ClienteId"></select>
+    <select asp-for="clienteId" class="form-control" asp-items="ViewBag.ClienteId"></select>
 
     <label>Observaciones</label>
-    <textarea asp-for="Observaciones" class="form-control"></textarea>
+    <textarea asp-for="observaciones" class="form-control"></textarea>
 
     <br />
     <button type="submit" class="btn btn-primary">Guardar</button>

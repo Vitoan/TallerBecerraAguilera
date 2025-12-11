@@ -34,14 +34,14 @@ namespace TallerBecerraAguilera.Repositorios
         {
             return await _context.Vehiculos
                 .Include(v => v.Cliente)
-                .FirstOrDefaultAsync(v => v.Id == id);
+                .FirstOrDefaultAsync(v => v.id == id);
         }
 
         // Obtener un vehículo por patente (útil para validaciones)
         public async Task<Vehiculos?> GetByPatenteAsync(string patente)
         {
             return await _context.Vehiculos
-                .FirstOrDefaultAsync(v => v.Patente == patente);
+                .FirstOrDefaultAsync(v => v.patente == patente);
         }
 
         // Agregar un nuevo vehículo
@@ -71,7 +71,7 @@ namespace TallerBecerraAguilera.Repositorios
 
         public async Task<bool> ExistsAsync(int id)
         {
-            return await _context.Vehiculos.AnyAsync(v => v.Id == id);
+            return await _context.Vehiculos.AnyAsync(v => v.id == id);
         }
 
         // Obtener todos los clientes (necesario para el DropDownList en Create/Edit)

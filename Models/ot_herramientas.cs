@@ -3,31 +3,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TallerBecerraAguilera.Models
 {
-    [PrimaryKey(nameof(OtId), nameof(HerramientaId))]
-    [Index(nameof(HerramientaId))]
-    [Index(nameof(EmpleadoId))]
+    [PrimaryKey(nameof(ot_id), nameof(herramienta_id))]
+    [Index(nameof(herramienta_id))]
+    [Index(nameof(empleado_id))]
     public class OtHerramientas
     {
         [Display(Name = "Orden de Trabajo")]
-        public int OtId { get; set; }
+        public int ot_id { get; set; }
 
         [Display(Name = "Herramienta")]
-        public int HerramientaId { get; set; }
+        public int herramienta_id { get; set; }
 
         [Required]
         [Display(Name = "Fecha de préstamo")]
-        public DateTime FechaPrestamo { get; set; } = DateTime.Now;
+        public DateTime fecha_prestamo { get; set; } = DateTime.Now;
 
         [Display(Name = "Fecha de devolución")]
-        public DateTime? FechaDevolucion { get; set; }
+        public DateTime? fecha_devolucion { get; set; }
 
         [Required]
         [Display(Name = "Empleado responsable")]
-        public int EmpleadoId { get; set; }
+        public int empleado_id { get; set; }
 
         public override string ToString()
         {
-            return $"OT {OtId} -> Herramienta {HerramientaId} (Prestada: {FechaPrestamo})";
+            return $"OT {ot_id} -> Herramienta {herramienta_id} (Prestada: {fecha_prestamo})";
         }
     }
 }
