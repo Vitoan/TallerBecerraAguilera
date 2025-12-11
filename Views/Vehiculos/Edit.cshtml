@@ -1,32 +1,95 @@
 @model TallerBecerraAguilera.Models.Vehiculos
 
+@{
+    ViewData["Title"] = "Editar Vehículo";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
 <h1>Editar Vehículo</h1>
 
 <form asp-action="Edit">
     <input type="hidden" asp-for="id" />
 
-    <label>Patente</label>
-    <input asp-for="patente" class="form-control" />
+    <div class="form-group mb-3">
+        <label asp-for="patente" class="control-label"></label>
+        <input asp-for="patente" class="form-control" />
+        <span asp-validation-for="patente" class="text-danger"></span>
+    </div>
 
-    <label>Marca</label>
-    <input asp-for="marca" class="form-control" />
+    <div class="form-group mb-3">
+        <label asp-for="marca" class="control-label"></label>
+        <input asp-for="marca" class="form-control" />
+        <span asp-validation-for="marca" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group mb-3">
+        <label asp-for="modelo" class="control-label"></label>
+        <input asp-for="modelo" class="form-control" />
+        <span asp-validation-for="modelo" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group mb-3">
+        <label asp-for="anio" class="control-label"></label>
+        <input asp-for="anio" class="form-control" />
+        <span asp-validation-for="anio" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group mb-3">
+        <label asp-for="tipo" class="control-label"></label>
+        <select asp-for="tipo" class="form-control" asp-items="Html.GetEnumSelectList<TallerBecerraAguilera.Models.TipoVehiculo>()"></select>
+        <span asp-validation-for="tipo" class="text-danger"></span>
+    </div>
 
-    <label>Modelo</label>
-    <input asp-for="modelo" class="form-control" />
+    <div class="form-group mb-3">
+        <label asp-for="clienteId" class="control-label">Cliente (Busque por Nombre o DNI)</label>
+        <select asp-for="clienteId" class="form-select" id="buscadorClientes"></select>
+        <span asp-validation-for="clienteId" class="text-danger"></span>
+    </div>
 
-    <label>Año</label>
-    <input asp-for="anio" class="form-control" />
+    <div class="form-group mb-3">
+        <label asp-for="observaciones" class="control-label"></label>
+        <textarea asp-for="observaciones" class="form-control"></textarea>
+    </div>
 
-    <label>Tipo</label>
-    <select asp-for="tipo" class="form-control" asp-items="Html.GetEnumSelectList<TipoVehiculo>()"></select>
-
-    <label>Cliente</label>
-    <select asp-for="clienteId" class="form-control" asp-items="ViewBag.ClienteId"></select>
-
-    <label>Observaciones</label>
-    <textarea asp-for="observaciones" class="form-control"></textarea>
-
-    <br />
     <button type="submit" class="btn btn-primary">Guardar</button>
     <a asp-action="Index" class="btn btn-secondary">Volver</a>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            var clienteId = '@Model.Cliente?.Id';
+            var clienteNombre = '@Model.Cliente?.NombreCompleto'.replace(/'/g, "\\'");
+
+            $('#buscadorClientes').select2({
+                theme: 'bootstrap-5',
+                language: {
+                    noResults: function() { return "No se encontraron clientes"; },
+                    searching: function() { return "Buscando..." }
+                },
+                ajax: {
+                    url: '@Url.Action("BuscarClientes", "Clientes")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) { return { term: params.term }; },
+                    processResults: function (data) { return { results: data.results }; },
+                    cache: true
+                },
+                placeholder: 'Seleccione un cliente',
+                minimumInputLength: 1,
+                allowClear: true
+            });
+
+            if(clienteId) {
+                var option = new Option(clienteNombre, clienteId, true, true);
+                $('#buscadorClientes').append(option).trigger('change');
+            }
+        });
+    </script>
+}

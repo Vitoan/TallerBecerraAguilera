@@ -49,11 +49,7 @@ namespace TallerBecerraAguilera.Controllers
 
         // GET: Vehiculos/Create
         public IActionResult Create() // Quitamos el async y el Task porque ya no esperamos nada
-        {
-            // ELIMINAMOS O COMENTAMOS ESTA LÍNEA:
-            // await PopulateClientesDropDownList(); 
-            // Ya no enviamos la lista llena, el front la pedirá por demanda.
-            
+        { 
             return View();
         }
 
@@ -94,7 +90,6 @@ namespace TallerBecerraAguilera.Controllers
             var vehiculo = await _vehiculoRepositorio.GetByIdAsync(id.Value);
             if (vehiculo == null) return NotFound();
 
-            await PopulateClientesDropDownList(vehiculo.clienteId);
             return View(vehiculo);
         }
 
@@ -119,7 +114,6 @@ namespace TallerBecerraAguilera.Controllers
                 if (existingVehiculo != null && existingVehiculo.id != vehiculo.id)
                 {
                     ModelState.AddModelError("Patente", "La patente ya está registrada para otro vehículo.");
-                    await PopulateClientesDropDownList(vehiculo.clienteId);
                     return View(vehiculo);
                 }
 

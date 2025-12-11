@@ -54,9 +54,21 @@ namespace TallerBecerraAguilera.Repositorios
         // Actualizar un vehículo
         public async Task UpdateAsync(Vehiculos vehiculo)
         {
-            _context.Update(vehiculo);
+            var existingVehiculo = await _context.Vehiculos.FindAsync(vehiculo.id);
+            if (existingVehiculo == null)
+                throw new Exception("Vehículo no encontrado.");
+
+            existingVehiculo.patente = vehiculo.patente;
+            existingVehiculo.marca = vehiculo.marca;
+            existingVehiculo.modelo = vehiculo.modelo;
+            existingVehiculo.anio = vehiculo.anio;
+            existingVehiculo.tipo = vehiculo.tipo;
+            existingVehiculo.clienteId = vehiculo.clienteId;
+            existingVehiculo.observaciones = vehiculo.observaciones;
+
             await _context.SaveChangesAsync();
         }
+
 
         // Eliminar un vehículo
         public async Task DeleteAsync(int id)
