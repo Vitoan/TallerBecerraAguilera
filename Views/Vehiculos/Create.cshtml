@@ -1,43 +1,95 @@
 @model TallerBecerraAguilera.Models.Vehiculos
 
+@{
+    ViewData["Title"] = "Nuevo Vehículo";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
 <h1>Nuevo Vehículo</h1>
 
 <form asp-action="Create">
-    <div class="form-group">
-        <label>Patente</label>
+    <div class="form-group mb-3">
+        <label asp-for="Patente" class="control-label"></label>
         <input asp-for="Patente" class="form-control" />
+        <span asp-validation-for="Patente" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label>Marca</label>
+    <div class="form-group mb-3">
+        <label asp-for="Marca" class="control-label"></label>
         <input asp-for="Marca" class="form-control" />
+        <span asp-validation-for="Marca" class="text-danger"></span>
     </div>
-
-    <div class="form-group">
-        <label>Modelo</label>
+    
+    <div class="form-group mb-3">
+        <label asp-for="Modelo" class="control-label"></label>
         <input asp-for="Modelo" class="form-control" />
+        <span asp-validation-for="Modelo" class="text-danger"></span>
     </div>
-
-    <div class="form-group">
-        <label>Año</label>
+    
+    <div class="form-group mb-3">
+        <label asp-for="Anio" class="control-label"></label>
         <input asp-for="Anio" class="form-control" />
+        <span asp-validation-for="Anio" class="text-danger"></span>
+    </div>
+    
+     <div class="form-group mb-3">
+        <label asp-for="Tipo" class="control-label"></label>
+        <select asp-for="Tipo" class="form-control" asp-items="Html.GetEnumSelectList<TallerBecerraAguilera.Models.TipoVehiculo>()"></select>
+        <span asp-validation-for="Tipo" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label>Tipo</label>
-        <select asp-for="Tipo" class="form-control" asp-items="Html.GetEnumSelectList<TipoVehiculo>()"></select>
+    <div class="form-group mb-3">
+        <label asp-for="ClienteId" class="control-label">Cliente (Busque por Nombre o DNI)</label>
+        
+        <select asp-for="ClienteId" class="form-select" id="buscadorClientes">
+            <option value="">Escriba para buscar...</option>
+        </select>
+        
+        <span asp-validation-for="ClienteId" class="text-danger"></span>
     </div>
-
-    <div class="form-group">
-        <label>Cliente</label>
-        <select asp-for="ClienteId" class="form-control" asp-items="ViewBag.ClienteId"></select>
-    </div>
-
-    <div class="form-group">
-        <label>Observaciones</label>
+    <div class="form-group mb-3">
+        <label asp-for="Observaciones" class="control-label"></label>
         <textarea asp-for="Observaciones" class="form-control"></textarea>
     </div>
 
     <button type="submit" class="btn btn-primary">Guardar</button>
     <a asp-action="Index" class="btn btn-secondary">Volver</a>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('#buscadorClientes').select2({
+                theme: 'bootstrap-5', // Usar tema bootstrap
+                language: {
+                    noResults: function() { return "No se encontraron clientes"; },
+                    searching: function() { return "Buscando..."; }
+                },
+                ajax: {
+                    url: '@Url.Action("BuscarClientes", "Clientes")', // Llama a tu Controller
+                    dataType: 'json',
+                    delay: 250, // Espera 250ms al escribir
+                    data: function (params) {
+                        return {
+                            term: params.term // Envía lo que escribes como ?term=...
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results // Procesa la respuesta JSON
+                        };
+                    },
+                    cache: true
+                },
+                placeholder: 'Seleccione un cliente',
+                minimumInputLength: 1 // Empieza a buscar tras escribir 1 letra
+            });
+        });
+    </script>
+}

@@ -125,5 +125,21 @@ namespace TallerBecerraAguilera.Controllers
             TempData["Mensaje"] = "Cliente eliminado exitosamente.";
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Clientes/BuscarClientes?term=juan
+        [HttpGet]
+        public async Task<IActionResult> BuscarClientes(string term)
+        {
+            var clientes = await _clienteRepositorio.BuscarPorTerminoAsync(term);
+
+            // Select2 espera un formato específico: { results: [ { id: 1, text: 'Juan' }, ... ] }
+            var resultadoJson = clientes.Select(c => new 
+            { 
+                id = c.Id, 
+                text = $"{c.Apellido}, {c.Nombre} (DNI: {c.Dni})" 
+            });
+
+            return Json(new { results = resultadoJson });
+        }
     }
 }

@@ -9,6 +9,19 @@ namespace TallerBecerraAguilera.Repositorios
 {
     public class ClienteRepositorio
     {
+        public async Task<List<Clientes>> BuscarPorTerminoAsync(string term)
+        {
+            if (string.IsNullOrEmpty(term)) 
+                return new List<Clientes>();
+
+            return await _context.Clientes
+                .Where(c => c.Nombre.Contains(term) || 
+                            c.Apellido.Contains(term) || 
+                            c.Dni.Contains(term))
+                .OrderBy(c => c.Apellido)
+                .Take(10) // Limitamos a 10 para no saturar la red
+                .ToListAsync();
+        }
         private readonly ApplicationDbContext _context;
 
         public ClienteRepositorio(ApplicationDbContext context)

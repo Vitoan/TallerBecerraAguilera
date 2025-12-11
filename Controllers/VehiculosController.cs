@@ -38,12 +38,13 @@ namespace TallerBecerraAguilera.Controllers
             return View(vehiculo);
         }
 
-        // ===========================
-        // GET: Vehiculos/Create (Mostrar Formulario)
-        // ===========================
-        public async Task<IActionResult> Create()
+        // GET: Vehiculos/Create
+        public IActionResult Create() // Quitamos el async y el Task porque ya no esperamos nada
         {
-            await PopulateClientesDropDownList();
+            // ELIMINAMOS O COMENTAMOS ESTA LÍNEA:
+            // await PopulateClientesDropDownList(); 
+            // Ya no enviamos la lista llena, el front la pedirá por demanda.
+            
             return View();
         }
 
