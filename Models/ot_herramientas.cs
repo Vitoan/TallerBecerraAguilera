@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace TallerBecerraAguilera.Models
@@ -29,5 +30,16 @@ namespace TallerBecerraAguilera.Models
         {
             return $"OT {ot_id} -> Herramienta {herramienta_id} (Prestada: {fecha_prestamo})";
         }
+
+        // 🔥 Navegaciones con FK explícitas
+
+        [ForeignKey(nameof(ot_id))]
+        public OrdenesTrabajo? OrdenTrabajo { get; set; }
+
+        [ForeignKey(nameof(herramienta_id))]
+        public Herramientas? Herramienta { get; set; }
+
+        [ForeignKey(nameof(empleado_id))]
+        public Empleados? Empleado { get; set; }
     }
 }

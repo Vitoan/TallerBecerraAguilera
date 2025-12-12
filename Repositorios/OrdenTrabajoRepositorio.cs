@@ -131,5 +131,13 @@ namespace TallerBecerraAguilera.Repositorios
 
             return await PaginatedList<OrdenesTrabajo>.CreateAsync(query, pageIndex, pageSize);
         }
+
+        public async Task<List<OrdenesTrabajo>> ObtenerPorEmpleadoYEstadoAsync(int empleadoId, EstadoOrden estado)
+    {
+            return await _context.OrdenesTrabajo
+                .Where(o => o.EmpleadoId == empleadoId && o.Estado == estado)
+                .OrderBy(o => o.Id)
+                .ToListAsync();
+        }
     }
 }

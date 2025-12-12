@@ -1,0 +1,43 @@
+@model TallerBecerraAguilera.Models.OtHerramientas
+
+@{
+    ViewData["Title"] = "Agregar Herramienta a OT";
+
+    // La herramienta seleccionada
+    var herramienta = ViewBag.Herramienta as TallerBecerraAguilera.Models.Herramientas;
+
+    // Las OTs disponibles para el empleado en estado EnReparacion
+    var ots = ViewBag.OTs as List<TallerBecerraAguilera.Models.OrdenesTrabajo> ?? new List<TallerBecerraAguilera.Models.OrdenesTrabajo>();
+}
+
+<h3>Pedir prestada: @herramienta?.Nombre</h3>
+
+<form method="post" class="mt-3">
+
+    <!-- OT seleccionada -->
+    <div class="mb-3">
+        <label class="form-label">Orden de Trabajo</label>
+        <select asp-for="ot_id" class="form-select" required>
+            <option value="">Seleccionar...</option>
+            @foreach (var ot in ots)
+            {
+                <option value="@ot.Id">OT #@ot.Id - @ot.DescripcionFalla</option>
+            }
+        </select>
+    </div>
+
+    <!-- Herramienta (hidden) -->
+    <input type="hidden" asp-for="herramienta_id" value="@herramienta?.Id" />
+
+    <!-- Empleado logueado (hidden) -->
+    <input type="hidden" asp-for="empleado_id" />
+
+    <!-- Fecha de uso -->
+    <div class="mb-3">
+        <label class="form-label">Fecha de Uso</label>
+        <input asp-for="fecha_prestamo" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a asp-action="Index" asp-controller="Herramientas" class="btn btn-secondary">Cancelar</a>
+</form>

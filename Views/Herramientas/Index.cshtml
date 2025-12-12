@@ -1,16 +1,23 @@
 @using TallerBecerraAguilera.Helpers;
+@using Microsoft.AspNetCore.Identity
 @model PaginatedList<TallerBecerraAguilera.Models.Herramientas>
 
 @{
     ViewData["Title"] = "Herramientas";
+    var esAdmin = User.IsInRole("Administrador");
+    var esEmpleado = User.IsInRole("Empleado");
 }
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">🔧 Herramientas</h1>
-    <a asp-action="Create" class="btn btn-primary btn-icon-split">
-        <span class="icon"><i class="bi bi-plus-circle"></i></span>
-        <span class="text">Nueva Herramienta</span>
-    </a>
+
+    @if (esAdmin)
+    {
+        <a asp-action="Create" class="btn btn-primary btn-icon-split">
+            <span class="icon"><i class="bi bi-plus-circle"></i></span>
+            <span class="text">Nueva Herramienta</span>
+        </a>
+    }
 </div>
 
 @if (TempData["success"] != null)
@@ -23,6 +30,39 @@
 
 <div class="card shadow mb-4">
     <div class="card-body">
+
+        <!-- FILTRO POR ESTADO -->
+        <form method="get" class="mb-3">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <select class="form-select" name="estado">
+                        <option value="">-- Todas --</option>
+
+                        @foreach (var estado in Enum.GetValues(typeof(EstadoHerramienta)))
+                        {
+                            <option value="@estado"
+                                    selected="@(ViewBag.EstadoSeleccionado?.ToString() == estado.ToString())">
+                                @estado
+                            </option>
+                        }
+                    </select>
+
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Filtrar
+                    </button>
+                </div>
+
+                <div class="col-md-2">
+                    <a asp-action="Index" class="btn btn-secondary w-100">
+                        Limpiar
+                    </a>
+                </div>
+            </div>
+        </form>
+
         <div class="table-responsive">
             <table class="table table-hover align-middle table-bordered">
                 <thead class="table-light">
@@ -52,8 +92,10 @@
                                     <span class="text-muted fst-italic">Sin imagen</span>
                                 }
                             </td>
+
                             <td>@item.Codigo</td>
                             <td>@item.Nombre</td>
+
                             <td>
                                 <span class="badge 
                                     @(item.Estado == EstadoHerramienta.Disponible ? "bg-success" :
@@ -62,21 +104,43 @@
                                     @item.Estado
                                 </span>
                             </td>
+
                             <td>@item.Ubicacion</td>
+
                             <td class="text-center">
-                                <a asp-controller="ImagenHerramientas" asp-action="Index"
-                                   asp-route-herramientaId="@item.Id"
-                                   class="btn btn-sm btn-info me-1">
-                                    <i class="bi bi-images"></i> <span class="d-none d-md-inline">Imágenes</span>
-                                </a>
-                                <a asp-action="Edit" asp-route-id="@item.Id"
-                                   class="btn btn-sm btn-warning me-1">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@item.Id"
-                                   class="btn btn-sm btn-danger">
-                                    <i class="bi bi-trash"></i>
-                                </a>
+
+                                <!-- ADMINISTRADOR -->
+                                @if (esAdmin)
+                                {
+                                    <a asp-controller="ImagenHerramientas" asp-action="Index"
+                                       asp-route-herramientaId="@item.Id"
+                                       class="btn btn-sm btn-info me-1">
+                                        <i class="bi bi-images"></i> 
+                                        <span class="d-none d-md-inline">Imágenes</span>
+                                    </a>
+
+                                    <a asp-action="Edit" asp-route-id="@item.Id"
+                                       class="btn btn-sm btn-warning me-1">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <a asp-action="Delete" asp-route-id="@item.Id"
+                                       class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                }
+
+                                <!-- EMPLEADO -->
+                                @if (esEmpleado && item.Estado == EstadoHerramienta.Disponible)
+                                {
+                                    <a asp-controller="OtHerramientas"
+                                       asp-action="Create"
+                                       asp-route-herramientaId="@item.Id"
+                                       class="btn btn-sm btn-primary">
+                                        <i class="bi bi-hand-index"></i> Pedir prestada
+                                    </a>
+                                }
+
                             </td>
                         </tr>
                     }

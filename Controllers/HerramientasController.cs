@@ -20,16 +20,24 @@ namespace TallerBecerraAguilera.Controllers
             _imgRepo = imgRepo;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1)
+        public async Task<IActionResult> Index(EstadoHerramienta? estado, int pageNumber = 1)
         {
             int pageSize = 10;
 
-            var query = _repo.Query()
-                .Include(h => h.Imagenes)
-                .OrderBy(h => h.Nombre);
+            var query = _repo.Query().AsQueryable();
+
+            if (estado.HasValue)
+            {
+                query = query.Where(h => h.Estado == estado.Value);
+            }
+
+            query = query.Include(h => h.Imagenes);
+
+            query = query.OrderBy(h => h.Nombre);
 
             var paginated = await PaginatedList<Herramientas>.CreateAsync(query, pageNumber, pageSize);
 
+            ViewBag.EstadoSeleccionado = estado;
             return View(paginated);
         }
 

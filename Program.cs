@@ -31,6 +31,7 @@ builder.Services.AddScoped<ProveedorRepositorio>();
 builder.Services.AddScoped<EmpleadoRepositorio>();
 builder.Services.AddScoped<UsuarioRepositorio>();
 builder.Services.AddScoped<ImagenHerramientaRepositorio>();
+builder.Services.AddScoped<OtHerramientasRepositorio>();
 
 // Servicio para Hashing de Contraseñas
 builder.Services.AddScoped<PasswordHasher<Usuarios>>();

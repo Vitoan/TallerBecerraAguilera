@@ -1,0 +1,47 @@
+@model List<TallerBecerraAguilera.Models.OtHerramientas>
+
+@{
+    ViewData["Title"] = "Herramientas de la OT";
+    var ot = ViewBag.OT;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>🔧 Herramientas usadas en la OT #@ot.Id</h3>
+
+    <a asp-action="Create" asp-route-otId="@ot.Id" class="btn btn-primary">
+        Agregar Herramienta
+    </a>
+</div>
+
+<table class="table table-bordered table-striped align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>Herramienta</th>
+            <th>Estado</th>
+            <th>Empleado</th>
+            <th>Fecha Préstamo</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Herramienta?.Nombre</td>
+                <td>@item.Herramienta?.Estado</td>
+                <td>@item.Empleado?.Nombre @item.Empleado?.Apellido</td>
+                <td>@item.fecha_prestamo.ToString("dd/MM/yyyy")</td>
+                <td class="text-center">
+                    <a asp-action="Delete" asp-route-id="@item.ot_id" class="btn btn-sm btn-danger">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="OrdenesTrabajo" asp-action="Edit" asp-route-id="@ot.Id" class="btn btn-secondary">
+    Volver a la OT
+</a>

@@ -1,0 +1,51 @@
+@model List<TallerBecerraAguilera.Models.OtHerramientas>
+
+@{
+    ViewData["Title"] = "Mis Herramientas";
+}
+
+<h2 class="mb-3">🔧 Mis Herramientas Prestadas</h2>
+
+@if (TempData["success"] != null)
+{
+    <div class="alert alert-success">@TempData["success"]</div>
+}
+@if (TempData["error"] != null)
+{
+    <div class="alert alert-danger">@TempData["error"]</div>
+}
+
+<table class="table table-hover table-bordered align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>Herramienta</th>
+            <th>Código</th>
+            <th>OT</th>
+            <th>Fecha Préstamo</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Herramienta?.Nombre</td>
+                <td>@item.Herramienta?.Codigo</td>
+                <td>#@item.OrdenTrabajo?.Id</td>
+                <td>@item.fecha_prestamo.ToString("dd/MM/yyyy HH:mm")</td>
+
+                <td class="text-center">
+                    <form asp-action="Devolver" method="post" class="d-inline">
+                        <input type="hidden" name="otId" value="@item.ot_id" />
+                        <input type="hidden" name="herramientaId" value="@item.herramienta_id" />
+
+                        <button type="submit" class="btn btn-sm btn-success">
+                            <i class="bi bi-arrow-return-left"></i> Devolver
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

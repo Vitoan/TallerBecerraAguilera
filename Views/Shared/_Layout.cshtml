@@ -59,8 +59,16 @@
                     <li class="nav-item"><a class="nav-link @(currentController == "OrdenesTrabajo" ? "active" : "")"
                         asp-controller="OrdenesTrabajo" asp-action="Create">➕ Nueva OT</a></li>
 
-                    <li class="nav-item"><a class="nav-link @(currentController == "Herramientas" ? "active" : "")"
-                        asp-controller="Herramientas" asp-action="Index">🔧 Herramientas</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle @(currentController == "Herramientas" || currentController == "OtHerramientas" ? "active" : "")"
+                           href="#" id="menuHerramientasAdmin" role="button" data-bs-toggle="dropdown">
+                            🔧 Herramientas
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-controller="Herramientas" asp-action="Index">📋 Gestión de Herramientas</a></li>
+                            <li><a class="dropdown-item" asp-controller="OtHerramientas" asp-action="Index">🔁 Préstamos Registrados</a></li>
+                        </ul>
+                    </li>
 
                     <li class="nav-item"><a class="nav-link @(currentController == "Repuestos" ? "active" : "")"
                         asp-controller="Repuestos" asp-action="Index">📦 Inventario</a></li>
@@ -89,8 +97,16 @@
                     <li class="nav-item"><a class="nav-link @(currentController == "OrdenesTrabajo" ? "active" : "")"
                         asp-controller="OrdenesTrabajo" asp-action="MisOTs">📝 Mis Órdenes de Trabajo</a></li>
 
-                    <li class="nav-item"><a class="nav-link @(currentController == "Herramientas" ? "active" : "")"
-                        asp-controller="Herramientas" asp-action="Disponibles">🔧 Herramientas Disponibles</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle @(currentController == "Herramientas" || currentController == "OtHerramientas" ? "active" : "")"
+                           href="#" id="menuHerramientasEmpleado" role="button" data-bs-toggle="dropdown">
+                            🔧 Herramientas
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-controller="Herramientas" asp-action="Index">🔎 Herramientas Disponibles</a></li>
+                            <li><a class="dropdown-item" asp-controller="OtHerramientas" asp-action="MisHerramientas">📋 Mis Herramientas</a></li>
+                        </ul>
+                    </li>
 
                     <li class="nav-item"><a class="nav-link @(currentController == "Repuestos" ? "active" : "")"
                         asp-controller="Repuestos" asp-action="Catalogo">📦 Catálogo Repuestos</a></li>
