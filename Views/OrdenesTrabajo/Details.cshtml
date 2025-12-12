@@ -1,90 +1,116 @@
-@model TallerBecerraAguilera.Models.OrdenesTrabajo
+@model TallerBecerraAguilera.Models.PedidosRepuestos
 @using TallerBecerraAguilera.Models
-@using System.ComponentModel.DataAnnotations // Necesario para DisplayName
 
 @{
-    ViewData["Title"] = $"Detalle de OT #{Model.Id}";
+    ViewData["Title"] = "Detalle del Pedido #" + Model.Id;
+    bool puedeEditar = Model.Estado == EstadoPedido.Pendiente;
 }
 
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Detalle del Pedido #@Model.Id</h2>
+    <span class="badge bg-@(Model.Estado == EstadoPedido.Pendiente ? "warning" : "success") fs-5">
+        @Model.Estado
+    </span>
 </div>
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Información Principal</h6>
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Información General</h5>
     </div>
     <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">Vehículo</dt>
-            <dd class="col-sm-9">
-                <strong>@Model.Vehiculo?.patente</strong> (@Model.Vehiculo?.marca @Model.Vehiculo?.modelo)
-                <br/>
-                Cliente: <a asp-controller="Clientes" asp-action="Details" asp-route-id="@Model.Vehiculo?.clienteId">@Model.Vehiculo?.Cliente?.NombreCompleto</a>
-            </dd>
-
-            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Empleado)</dt>
-            <dd class="col-sm-9">
-                @Model.Empleado?.Nombre @Model.Empleado?.Apellido
-            </dd>
-
-            <hr class="my-3"/>
-            
-            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FechaIngreso)</dt>
-            <dd class="col-sm-3">@Model.FechaIngreso.ToString("dd/MM/yyyy")</dd>
-            
-            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FechaEstimadaEntrega)</dt>
-            <dd class="col-sm-3">@(Model.FechaEstimadaEntrega.HasValue ? Model.FechaEstimadaEntrega.Value.ToString("dd/MM/yyyy") : "N/A")</dd>
-
-            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Estado)</dt>
-            <dd class="col-sm-9">
-                 <span class="badge @GetBadgeClass(Model.Estado)">
-                    @Model.Estado
-                </span>
-            </dd>
-
-            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.HorasEstimadas)</dt>
-            <dd class="col-sm-9">
-                @(Model.HorasEstimadas.HasValue ? $"{Model.HorasEstimadas.Value:N2} horas" : "No estimado")
-            </dd>
-            
-            <hr class="my-3"/>
-            
-            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.DescripcionFalla)</dt>
-            <dd class="col-sm-9">@Html.DisplayFor(model => model.DescripcionFalla)</dd>
-        </dl>
-    </div>
-    <div class="card-footer">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
-            <i class="bi bi-pencil-square"></i> Editar OT
-        </a>
-
-        @* Botón "Volver" según rol *@
-        @if (User.IsInRole("Administrador"))
-        {
-            <a asp-action="Index" class="btn btn-secondary ms-2">
-                <i class="bi bi-arrow-left"></i> Volver
-            </a>
-        }
-        else if (User.IsInRole("Empleado"))
-        {
-            <a asp-action="MisOTs" class="btn btn-secondary ms-2">
-                <i class="bi bi-arrow-left"></i> Volver
-            </a>
-        }
+        <div class="row">
+            <div class="col-md-4"><strong>Proveedor:</strong> @(Model.Proveedor?.Nombre ?? "N/A")</div>
+            <div class="col-md-4"><strong>Fecha:</strong> @Model.Fecha.ToString("dd/MM/yyyy")</div>
+            <div class="col-md-4"><strong>Empleado:</strong> @(Model.Empleado?.NombreCompleto ?? "N/A")</div>
+        </div>
     </div>
 </div>
 
-@functions {
-    public string GetBadgeClass(EstadoOrden estado)
-    {
-        return estado switch
+<div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Repuestos Solicitados</h5>
+        @if (puedeEditar)
         {
-            EstadoOrden.Pendiente => "bg-secondary",
-            EstadoOrden.EnReparacion => "bg-primary",
-            EstadoOrden.Finalizada => "bg-warning text-dark",
-            EstadoOrden.Entregada => "bg-success",
-            _ => "bg-light text-dark",
-        };
-    }
-}
+            <a asp-controller="PedidoRepuestos" asp-action="Create" asp-route-pedidoId="@Model.Id" class="btn btn-light btn-sm">
+                Agregar Repuesto
+            </a>
+        }
+    </div>
+
+    <div class="card-body p-0">
+        <table class="table table-striped mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Repuesto</th>
+                    <th class="text-center">Cant. Solicitada</th>
+                    <th class="text-center">Cant. Recibida</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Detalles != null && Model.Detalles.Any())
+                {
+                    foreach (var item in Model.Detalles)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Repuesto?.descripcion</strong><br>
+                                <small class="text-muted">Cód: @item.Repuesto?.codigo</small>
+                            </td>
+                            <td class="text-center align-middle">@item.cantidad_solicitada</td>
+                            <td class="text-center align-middle">
+                                @if (Model.Estado == EstadoPedido.Recibido)
+                                {
+                                    <span class="badge bg-success">@item.cantidad_recibida</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                            <td class="text-end align-middle">
+                                @if (puedeEditar)
+                                {
+                                    <form action="/PedidoRepuestos/Delete" method="post">
+                                        <input name="pedidoId" value="@Model.Id" />
+                                        <input name="repuestoId" value="@item.repuesto_id" />
+                                        <button type="submit">Eliminar</button>
+                                    </form>
+
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">
+                            <em>No hay repuestos en este pedido aún.</em>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-secondary">Volver al listado</a>
+</div>

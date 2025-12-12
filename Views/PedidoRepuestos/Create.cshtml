@@ -2,52 +2,58 @@
 
 @{
     ViewData["Title"] = "Agregar Repuesto al Pedido";
+    var esAdmin = User.IsInRole("Administrador");
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">➕ Agregar ítem al Pedido #@Model.pedido_id</h5>
-                </div>
-                <div class="card-body">
-                    <form asp-action="Create" method="post">
-                        
-                        <input type="hidden" asp-for="pedido_id" />
-                        
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+<h2 class="fw-bold mb-4">@ViewData["Title"]</h2>
 
-                        <div class="form-group mb-3">
-                            <label asp-for="repuesto_id" class="control-label fw-bold">Repuesto</label>
-                            <select asp-for="repuesto_id" class="form-select" asp-items="ViewBag.Repuestos">
-                                <option value="">-- Seleccione un repuesto --</option>
-                            </select>
-                            <span asp-validation-for="repuesto_id" class="text-danger"></span>
-                            <small class="text-muted">Seleccione del inventario actual.</small>
-                        </div>
+<div class="card p-4 shadow-sm">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="pedido_id" />
 
-                        <div class="form-group mb-4">
-                            <label asp-for="cantidad_solicitada" class="control-label fw-bold">Cantidad a Pedir</label>
-                            <input asp-for="cantidad_solicitada" type="number" min="1" class="form-control" />
-                            <span asp-validation-for="cantidad_solicitada" class="text-danger"></span>
-                        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-check-lg"></i> Agregar al Pedido
-                            </button>
-                            <a asp-controller="PedidosRepuestos" asp-action="Details" asp-route-id="@Model.pedido_id" class="btn btn-secondary">
-                                Cancelar y Volver
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <div class="form-group mb-3">
+            <label>Repuesto</label>
+            <select asp-for="repuesto_id" class="form-control" id="buscadorRepuestos">
+                <option value="">Escriba para buscar repuesto...</option>
+            </select>
+            <span asp-validation-for="repuesto_id" class="text-danger"></span>
         </div>
-    </div>
+
+        <div class="form-group mb-4">
+            <label asp-for="cantidad_solicitada" class="control-label">Cantidad a Pedir</label>
+            <input asp-for="cantidad_solicitada" type="number" min="1" class="form-control" />
+            <span asp-validation-for="cantidad_solicitada" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Agregar al Pedido</button>
+        <a asp-action="Details" asp-controller="PedidosRepuestos" asp-route-id="@Model.pedido_id" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#buscadorRepuestos').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Seleccione un repuesto',
+                minimumInputLength: 1,
+                ajax: {
+                    url: '@Url.Action("GetRepuestos", "PedidoRepuestos")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) { return { term: params.term }; },
+                    processResults: function (data) { return { results: data.results }; },
+                    cache: true
+                }
+            });
+        });
+    </script>
 }
