@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-12-2025 a las 21:28:42
+-- Tiempo de generación: 12-12-2025 a las 01:21:42
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -28,13 +28,13 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `clientes` (
-  `id` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `apellido` varchar(100) NOT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `Id` int(11) NOT NULL,
+  `Nombre` varchar(100) NOT NULL,
+  `Apellido` varchar(100) NOT NULL,
+  `Telefono` varchar(20) DEFAULT NULL,
+  `Email` varchar(255) DEFAULT NULL,
+  `Created_at` datetime DEFAULT current_timestamp(),
+  `Updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `Dni` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -42,8 +42,8 @@ CREATE TABLE `clientes` (
 -- Volcado de datos para la tabla `clientes`
 --
 
-INSERT INTO `clientes` (`id`, `nombre`, `apellido`, `telefono`, `email`, `created_at`, `updated_at`, `Dni`) VALUES
-(1, 'Carlos', 'López', '351-1111111', 'carlos@cliente.com', '2025-11-05 22:58:39', '2025-12-07 13:13:42', '12345678'),
+INSERT INTO `clientes` (`Id`, `Nombre`, `Apellido`, `Telefono`, `Email`, `Created_at`, `Updated_at`, `Dni`) VALUES
+(1, 'Carlos', 'López', '351-1111111', 'carlos@cliente.com', '2025-11-05 22:58:39', '2025-12-10 18:37:15', '12345678'),
 (2, 'Ana', 'Gómez', '351-2222222', 'ana@cliente.com', '2025-11-05 22:58:39', '2025-12-07 13:13:49', '12123123'),
 (3, 'Martin Nahuel', 'Becerra', '02664304069', 'martinbecerrasl7@gmail.com', '2025-12-10 14:07:35', '2025-12-10 14:07:35', '47266622');
 
@@ -54,12 +54,12 @@ INSERT INTO `clientes` (`id`, `nombre`, `apellido`, `telefono`, `email`, `create
 --
 
 CREATE TABLE `empleados` (
-  `id` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `apellido` varchar(100) NOT NULL,
-  `dni` varchar(20) DEFAULT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `usuario_id` int(11) NOT NULL,
+  `Id` int(11) NOT NULL,
+  `Nombre` varchar(100) NOT NULL,
+  `Apellido` varchar(100) NOT NULL,
+  `Dni` varchar(20) DEFAULT NULL,
+  `Telefono` varchar(20) DEFAULT NULL,
+  `usuario_id` int(11) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -68,9 +68,13 @@ CREATE TABLE `empleados` (
 -- Volcado de datos para la tabla `empleados`
 --
 
-INSERT INTO `empleados` (`id`, `nombre`, `apellido`, `dni`, `telefono`, `usuario_id`, `created_at`, `updated_at`) VALUES
+INSERT INTO `empleados` (`Id`, `Nombre`, `Apellido`, `Dni`, `Telefono`, `usuario_id`, `created_at`, `updated_at`) VALUES
 (1, 'Admin', 'Taller', '11111111', '351-000000', 1, '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
-(2, 'Juan', 'Pérez', '30123456', '351-1234567', 2, '2025-11-05 22:58:39', '2025-11-05 22:58:39');
+(2, 'Juan', 'Pérez', '30123456', '351-1234567', 2, '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
+(3, 'Martin Nahuel', 'Becerra', '47266622', '02664304069', 3, '2025-12-11 14:57:56', '2025-12-11 15:32:23'),
+(6, 'Santiago Agustin', 'Becerra', '46072720', '026641697443', NULL, '2025-12-11 15:58:26', '2025-12-11 15:58:26'),
+(7, 'Maria Carolina', 'Becerra', '38731849', '02664334455', NULL, '2025-12-11 15:58:55', '2025-12-11 15:58:55'),
+(8, 'Ariel Ramon', 'Becerra', '23448180', '02664334760', 5, '2025-12-11 15:59:19', '2025-12-11 19:31:09');
 
 -- --------------------------------------------------------
 
@@ -79,20 +83,20 @@ INSERT INTO `empleados` (`id`, `nombre`, `apellido`, `dni`, `telefono`, `usuario
 --
 
 CREATE TABLE `herramientas` (
-  `id` int(11) NOT NULL,
-  `codigo` varchar(50) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
+  `Id` int(11) NOT NULL,
+  `Codigo` varchar(50) NOT NULL,
+  `Nombre` varchar(100) NOT NULL,
   `Estado` int(11) NOT NULL,
-  `ubicacion` varchar(100) DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `Ubicacion` varchar(100) DEFAULT NULL,
+  `Created_at` datetime DEFAULT current_timestamp(),
+  `Updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `herramientas`
 --
 
-INSERT INTO `herramientas` (`id`, `codigo`, `nombre`, `Estado`, `ubicacion`, `created_at`, `updated_at`) VALUES
+INSERT INTO `herramientas` (`Id`, `Codigo`, `Nombre`, `Estado`, `Ubicacion`, `Created_at`, `Updated_at`) VALUES
 (1, 'H001', 'Llave inglesa 10mm', 1, 'Estante A1', '2025-12-04 16:07:56', '2025-12-04 16:07:56'),
 (2, 'H002', 'Extractor de bujías', 1, 'Cajón B2', '2025-11-05 22:58:39', '2025-11-05 22:58:39');
 
@@ -141,7 +145,7 @@ CREATE TABLE `ordenes_trabajo` (
 
 INSERT INTO `ordenes_trabajo` (`id`, `descripcion_falla`, `fecha_ingreso`, `fecha_estimada_entrega`, `estado`, `horas_estimadas`, `vehiculo_id`, `empleado_id`, `created_at`, `updated_at`) VALUES
 (1, 'Cambio de aceite y filtro', '2025-11-05 22:58:39', '2025-11-10 12:00:00', 0, 2.50, 1, 2, '2025-11-05 22:58:39', '2025-12-10 10:44:27'),
-(2, 'Le gotea aceite', '2025-12-10 00:00:00', '2025-12-12 00:00:00', 0, 12.00, 3, 2, '2025-12-10 17:27:14', '2025-12-10 17:27:14');
+(2, 'Le gotea aceite', '2025-12-10 00:00:00', '2025-12-12 00:00:00', 1, 12.00, 3, 2, '2025-12-10 17:27:14', '2025-12-11 15:40:19');
 
 -- --------------------------------------------------------
 
@@ -190,13 +194,13 @@ INSERT INTO `ot_repuestos` (`ot_id`, `repuesto_id`, `cantidad_usada`) VALUES
 --
 
 CREATE TABLE `pedidos_repuestos` (
-  `id` int(11) NOT NULL,
-  `fecha` datetime NOT NULL DEFAULT current_timestamp(),
-  `estado` int(11) NOT NULL DEFAULT 0,
-  `proveedor_id` int(11) NOT NULL,
-  `empleado_id` int(11) NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `Id` int(11) NOT NULL,
+  `Fecha` datetime NOT NULL DEFAULT current_timestamp(),
+  `Estado` int(11) NOT NULL DEFAULT 0,
+  `Proveedor_id` int(11) NOT NULL,
+  `Empleado_id` int(11) NOT NULL,
+  `Created_at` datetime DEFAULT current_timestamp(),
+  `Updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `fecha_pedido` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -204,12 +208,15 @@ CREATE TABLE `pedidos_repuestos` (
 -- Volcado de datos para la tabla `pedidos_repuestos`
 --
 
-INSERT INTO `pedidos_repuestos` (`id`, `fecha`, `estado`, `proveedor_id`, `empleado_id`, `created_at`, `updated_at`, `fecha_pedido`) VALUES
+INSERT INTO `pedidos_repuestos` (`Id`, `Fecha`, `Estado`, `Proveedor_id`, `Empleado_id`, `Created_at`, `Updated_at`, `fecha_pedido`) VALUES
 (1, '2025-11-04 10:00:00', 2, 1, 2, '2025-11-05 22:58:39', '2025-12-10 11:45:40', '2025-12-07 22:01:01'),
-(2, '2025-12-10 11:41:29', 0, 1, 1, '2025-12-10 11:41:29', '2025-12-10 11:41:29', '2025-12-10 00:00:00'),
+(2, '2025-12-10 11:41:29', 2, 1, 1, '2025-12-10 11:41:29', '2025-12-11 19:00:01', '2025-12-10 00:00:00'),
 (3, '2025-12-10 11:44:38', 0, 1, 1, '2025-12-10 11:44:38', '2025-12-10 17:26:31', '2025-12-10 00:00:00'),
-(4, '2025-12-10 13:46:17', 0, 1, 1, '2025-12-10 13:46:17', '2025-12-10 14:05:39', '2025-12-10 00:00:00'),
-(5, '2025-12-10 16:41:43', 0, 1, 1, '2025-12-10 16:41:43', '2025-12-10 17:26:05', '2025-12-10 00:00:00');
+(4, '2025-12-10 13:46:17', 2, 1, 1, '2025-12-10 13:46:17', '2025-12-11 18:59:22', '2025-12-10 00:00:00'),
+(5, '2025-12-10 16:41:43', 2, 1, 1, '2025-12-10 16:41:43', '2025-12-11 18:59:14', '2025-12-10 00:00:00'),
+(6, '2025-12-11 16:38:59', 1, 1, 3, '2025-12-11 16:38:58', '2025-12-11 18:59:35', '2025-12-11 00:00:00'),
+(7, '2025-12-11 18:06:18', 2, 1, 2, '2025-12-11 18:06:18', '2025-12-11 18:59:06', '2025-12-11 00:00:00'),
+(8, '2025-12-11 20:27:42', 0, 1, 3, '2025-12-11 20:27:42', '2025-12-11 20:27:42', '2025-12-11 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -231,7 +238,11 @@ CREATE TABLE `pedido_repuestos` (
 INSERT INTO `pedido_repuestos` (`pedido_id`, `repuesto_id`, `cantidad_solicitada`, `cantidad_recibida`) VALUES
 (1, 2, 5, 0),
 (3, 1, 2, 0),
-(3, 3, 2, 0);
+(3, 3, 2, 0),
+(6, 3, 2, 0),
+(8, 1, 2, 0),
+(8, 2, 2, 0),
+(8, 3, 2, 0);
 
 -- --------------------------------------------------------
 
@@ -240,20 +251,20 @@ INSERT INTO `pedido_repuestos` (`pedido_id`, `repuesto_id`, `cantidad_solicitada
 --
 
 CREATE TABLE `proveedores` (
-  `id` int(11) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `contacto` varchar(100) DEFAULT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `condiciones_compra` text DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `Id` int(11) NOT NULL,
+  `Nombre` varchar(100) NOT NULL,
+  `Contacto` varchar(100) DEFAULT NULL,
+  `Telefono` varchar(20) DEFAULT NULL,
+  `Condiciones_compra` text DEFAULT NULL,
+  `Created_at` datetime DEFAULT current_timestamp(),
+  `Updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `proveedores`
 --
 
-INSERT INTO `proveedores` (`id`, `nombre`, `contacto`, `telefono`, `condiciones_compra`, `created_at`, `updated_at`) VALUES
+INSERT INTO `proveedores` (`Id`, `Nombre`, `Contacto`, `Telefono`, `Condiciones_compra`, `Created_at`, `Updated_at`) VALUES
 (1, 'AutoParts SRL', 'ventas@autoparts.com', '351-4444444', 'Pago a 30 días', '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
 (2, 'Arcor SRL', 'arcorsrl@gmail.com', '3549-304069', 'Pago con cheque menor o igual a 30 Días', '2025-12-10 14:02:36', '2025-12-10 14:02:36');
 
@@ -306,7 +317,9 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`id`, `email`, `password_hash`, `rol`, `avatar_path`, `created_at`, `updated_at`) VALUES
 (1, 'admin@taller.local', 'AQAAAAIAAYagAAAAEDSnXVDl9Vqy+GQON2Jw7Qpuive1C1Kf+uClaw5LtFWkA6oRfaZ3CQxGZJECcKoKjA==', 'Administrador', '/uploads/avatars/9db6db2a-51bf-47a3-a8fc-d08837f6dec4.jpg', '2025-12-10 10:38:41', '2025-12-10 16:25:25'),
-(2, 'empleado@taller.local', 'AQAAAAIAAYagAAAAEJnbdPIVJ2sZrK8EtO5RpIthyk7Ci+RmQ01conSWInbHjlEX4htKpUTJMaEL2+Mtkg==', 'Empleado', '/uploads/avatars/8b0a0b7b-9994-4e24-a8e6-e8a501b1c1ec.jpg', '2025-12-10 16:25:01', '2025-12-10 16:30:05');
+(2, 'empleado@taller.local', 'AQAAAAIAAYagAAAAEJnbdPIVJ2sZrK8EtO5RpIthyk7Ci+RmQ01conSWInbHjlEX4htKpUTJMaEL2+Mtkg==', 'Empleado', '/uploads/avatars/8b0a0b7b-9994-4e24-a8e6-e8a501b1c1ec.jpg', '2025-12-10 16:25:01', '2025-12-10 16:30:05'),
+(3, 'martinbecerrasl7@gmail.com', 'AQAAAAIAAYagAAAAEJYGSeKzEofy3hQ8eGcVPJHFnFobgFXeA8ALiNb2MDCdEtLC8X9ATSVpbn7Tsed/eg==', 'Administrador', '/uploads/avatars/35cca01c-f537-4bfd-af99-23059dfae55f.jpg', '2025-12-11 15:13:11', '2025-12-11 15:33:04'),
+(5, 'asd', 'AQAAAAIAAYagAAAAEImsgxEyW9NO4WzSJ+4xZMZ0xONKGwr8kiDAHzjrrTew7JmolyLCrMI+Uo6nYkWHfw==', 'Empleado', '/uploads/avatars/default.jpg', '2025-12-11 19:31:09', '2025-12-11 19:31:09');
 
 -- --------------------------------------------------------
 
@@ -334,7 +347,7 @@ CREATE TABLE `vehiculos` (
 INSERT INTO `vehiculos` (`id`, `patente`, `marca`, `modelo`, `anio`, `tipo`, `observaciones`, `cliente_id`, `created_at`, `updated_at`) VALUES
 (1, 'ABC123', 'Toyota', 'Corolla', '2020', 0, 'Cambio de aceite', 1, '2025-11-05 22:58:39', '2025-12-07 13:27:25'),
 (2, 'DEF456', 'Fiat', 'Cronos', '2022', 0, 'Frenos delanteros', 2, '2025-11-05 22:58:39', '2025-12-07 13:27:25'),
-(3, 'AA411LL', 'Chevrolet', 'Onix LTZ', '2016', 0, NULL, 3, '2025-12-10 14:08:08', '2025-12-10 14:08:08');
+(3, 'AA411LL', 'Chevrolet', 'Onix LTZ', '2016', 0, 'Ninguna', 3, '2025-12-10 14:08:08', '2025-12-11 19:29:45');
 
 -- --------------------------------------------------------
 
@@ -355,23 +368,23 @@ CREATE TABLE `__efmigrationshistory` (
 -- Indices de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`Id`),
   ADD UNIQUE KEY `IX_Clientes_Dni` (`Dni`);
 
 --
 -- Indices de la tabla `empleados`
 --
 ALTER TABLE `empleados`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`Id`),
   ADD UNIQUE KEY `usuario_id` (`usuario_id`),
-  ADD UNIQUE KEY `dni` (`dni`);
+  ADD UNIQUE KEY `dni` (`Dni`);
 
 --
 -- Indices de la tabla `herramientas`
 --
 ALTER TABLE `herramientas`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `codigo` (`codigo`),
+  ADD PRIMARY KEY (`Id`),
+  ADD UNIQUE KEY `codigo` (`Codigo`),
   ADD KEY `idx_herramientas_estado` (`Estado`);
 
 --
@@ -409,10 +422,10 @@ ALTER TABLE `ot_repuestos`
 -- Indices de la tabla `pedidos_repuestos`
 --
 ALTER TABLE `pedidos_repuestos`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `proveedor_id` (`proveedor_id`),
-  ADD KEY `empleado_id` (`empleado_id`),
-  ADD KEY `idx_pedidos_estado` (`estado`,`proveedor_id`);
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `proveedor_id` (`Proveedor_id`),
+  ADD KEY `empleado_id` (`Empleado_id`),
+  ADD KEY `idx_pedidos_estado` (`Estado`,`Proveedor_id`);
 
 --
 -- Indices de la tabla `pedido_repuestos`
@@ -425,7 +438,7 @@ ALTER TABLE `pedido_repuestos`
 -- Indices de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`Id`);
 
 --
 -- Indices de la tabla `repuestos`
@@ -466,19 +479,19 @@ ALTER TABLE `__efmigrationshistory`
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `empleados`
 --
 ALTER TABLE `empleados`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `herramientas`
 --
 ALTER TABLE `herramientas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `imagenherramientas`
@@ -496,13 +509,13 @@ ALTER TABLE `ordenes_trabajo`
 -- AUTO_INCREMENT de la tabla `pedidos_repuestos`
 --
 ALTER TABLE `pedidos_repuestos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
 --
 ALTER TABLE `proveedores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `repuestos`
@@ -514,7 +527,7 @@ ALTER TABLE `repuestos`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `vehiculos`
