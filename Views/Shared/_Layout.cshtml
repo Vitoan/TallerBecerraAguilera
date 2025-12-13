@@ -5,158 +5,215 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Taller Becerra Aguilera</title>
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6C63FF', // Púrpura vibrante
+                        primaryDark: '#5a52d5',
+                        secondary: '#F3F4F6', // Fondo gris claro
+                        dark: '#1F2937',      // Texto oscuro
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
     <style>
-        .avatar-circle {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-            cursor: pointer;
-        }
-        .dropdown-menu-end {
-            right: 0;
-            left: auto;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        /* Pequeño hack para que los inputs de Bootstrap (si los usas) no se vean raros con Tailwind */
+        .form-control:focus { border-color: #6C63FF; box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25); }
     </style>
 </head>
-<body>
+<body class="bg-secondary text-gray-800 h-screen flex overflow-hidden">
 
-@using TallerBecerraAguilera.Data
-@using Microsoft.EntityFrameworkCore
-@inject ApplicationDbContext Db
+    @using TallerBecerraAguilera.Data
+    @using Microsoft.EntityFrameworkCore
+    @inject ApplicationDbContext Db
 
-@{
-    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+    @{
+        var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+        string avatarPath = "/uploads/avatars/default.jpg";
 
-    string avatarPath = "/uploads/avatars/default.jpg";
-
-    if (User.Identity != null && User.Identity.IsAuthenticated)
-    {
-        var userId = int.Parse(User.FindFirst("Id")!.Value);
-        var user = await Db.Usuarios.FirstOrDefaultAsync(u => u.id == userId);
-        if (user != null && !string.IsNullOrEmpty(user.avatar_path))
-            avatarPath = user.avatar_path;
+        if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            // Nota: Asegúrate que el Claim "Id" exista (lo agregamos en el paso del Login)
+            var claimId = User.FindFirst("Id");
+            if (claimId != null)
+            {
+                var userId = int.Parse(claimId.Value);
+                var user = await Db.Usuarios.FirstOrDefaultAsync(u => u.id == userId);
+                if (user != null && !string.IsNullOrEmpty(user.avatar_path))
+                    avatarPath = user.avatar_path;
+            }
+        }
     }
-}
 
-<nav class="navbar navbar-expand-lg navbar-dark" style="background:#111;border-bottom:3px solid #18a2b8;">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold text-info" asp-controller="Home" asp-action="Index">
-            🔧 Taller Becerra Aguilera
-        </a>
+    @functions {
+        string GetLinkClass(string current, string target) {
+            return current == target 
+                ? "bg-primary/10 text-primary border-r-4 border-primary font-semibold" 
+                : "text-gray-500 hover:bg-gray-50 hover:text-primary transition-colors duration-200";
+        }
+    }
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuTaller">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <aside class="w-64 bg-white shadow-xl flex-shrink-0 hidden md:flex flex-col z-20">
+        
+        <div class="h-20 flex items-center justify-center border-b border-gray-100">
+            <a asp-controller="Home" asp-action="Index" class="flex items-center gap-2 no-underline">
+                <div class="bg-primary text-white p-2 rounded-lg">
+                    <i class="bi bi-wrench-adjustable-circle-fill text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800 leading-tight">Taller</h1>
+                    <span class="text-xs text-primary font-medium tracking-wider">BECERRA AGUILERA</span>
+                </div>
+            </a>
+        </div>
 
-        <div class="collapse navbar-collapse" id="menuTaller">
-            <ul class="navbar-nav me-auto">
+        <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+            
+            <a href="@Url.Action("Index", "Home")" class="flex items-center px-4 py-3 rounded-lg mb-4 @GetLinkClass(currentController, "Home")">
+                <i class="bi bi-grid-1x2-fill mr-3 text-lg"></i>
+                <span>Dashboard</span>
+            </a>
 
-                @if (User.IsInRole("Administrador"))
-                {
-                    <li class="nav-item"><a class="nav-link @(currentController == "OrdenesTrabajo" ? "active" : "")"
-                        asp-controller="OrdenesTrabajo" asp-action="Create">➕ Nueva OT</a></li>
+            @if (User.IsInRole("Administrador"))
+            {
+                <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-2">Administración</p>
 
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle @(currentController == "Herramientas" || currentController == "OtHerramientas" ? "active" : "")"
-                           href="#" id="menuHerramientasAdmin" role="button" data-bs-toggle="dropdown">
-                            🔧 Herramientas
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" asp-controller="Herramientas" asp-action="Index">📋 Gestión de Herramientas</a></li>
-                            <li><a class="dropdown-item" asp-controller="OtHerramientas" asp-action="Index">🔁 Préstamos Registrados</a></li>
-                        </ul>
-                    </li>
+                <a href="@Url.Action("Create", "OrdenesTrabajo")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "OrdenesTrabajo")">
+                    <i class="bi bi-plus-circle-fill mr-3 text-lg text-green-500"></i>
+                    <span>Nueva OT</span>
+                </a>
 
-                    <li class="nav-item"><a class="nav-link @(currentController == "Repuestos" ? "active" : "")"
-                        asp-controller="Repuestos" asp-action="Index">📦 Inventario</a></li>
+                <a href="@Url.Action("Index", "Vehiculos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Vehiculos")">
+                    <i class="bi bi-car-front-fill mr-3 text-lg"></i>
+                    <span>Vehículos</span>
+                </a>
 
-                    <li class="nav-item"><a class="nav-link @(currentController == "PedidosRepuestos" ? "active" : "")"
-                        asp-controller="PedidosRepuestos" asp-action="Create">📩 Pedidos</a></li>
+                <a href="@Url.Action("Index", "Clientes")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Clientes")">
+                    <i class="bi bi-people-fill mr-3 text-lg"></i>
+                    <span>Clientes</span>
+                </a>
 
-                    <li class="nav-item"><a class="nav-link @(currentController == "Proveedores" ? "active" : "")"
-                        asp-controller="Proveedores" asp-action="Index">🏭 Proveedores</a></li>
+                <a href="@Url.Action("Index", "Empleados")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Empleados")">
+                    <i class="bi bi-person-badge-fill mr-3 text-lg"></i>
+                    <span>Empleados</span>
+                </a>
+                
+                <a href="@Url.Action("Index", "Usuarios")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Usuarios")">
+                    <i class="bi bi-shield-lock-fill mr-3 text-lg"></i>
+                    <span>Usuarios</span>
+                </a>
 
-                    <li class="nav-item"><a class="nav-link @(currentController == "Clientes" ? "active" : "")"
-                        asp-controller="Clientes" asp-action="Index">👤 Clientes</a></li>
+                <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-6">Inventario & Taller</p>
 
-                    <li class="nav-item"><a class="nav-link @(currentController == "Vehiculos" ? "active" : "")"
-                        asp-controller="Vehiculos" asp-action="Index">🚗 Vehículos</a></li>
-                    
-                    <li class="nav-item"><a class="nav-link @(currentController == "Usuarios" ? "active" : "")"
-                        asp-controller="Usuarios" asp-action="Index">👥 Usuarios</a></li>
+                <a href="@Url.Action("Index", "Repuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Repuestos")">
+                    <i class="bi bi-box-seam-fill mr-3 text-lg"></i>
+                    <span>Inventario</span>
+                </a>
+                
+                <a href="@Url.Action("Index", "Herramientas")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Herramientas")">
+                    <i class="bi bi-tools mr-3 text-lg"></i>
+                    <span>Herramientas</span>
+                </a>
+                
+                 <a href="@Url.Action("Create", "PedidosRepuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "PedidosRepuestos")">
+                    <i class="bi bi-cart-fill mr-3 text-lg"></i>
+                    <span>Pedidos Compra</span>
+                </a>
+                
+                <a href="@Url.Action("Index", "Proveedores")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Proveedores")">
+                    <i class="bi bi-building-fill mr-3 text-lg"></i>
+                    <span>Proveedores</span>
+                </a>
+            }
 
-                    <li class="nav-item"><a class="nav-link @(currentController == "Empleados" ? "active" : "")"
-                        asp-controller="Empleados" asp-action="Index">🧑‍🔧 Empleados</a></li>
-                }
+            @if (User.IsInRole("Empleado"))
+            {
+                <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-2">Mi Trabajo</p>
 
-                @if (User.IsInRole("Empleado"))
-                {
-                    <li class="nav-item"><a class="nav-link @(currentController == "OrdenesTrabajo" ? "active" : "")"
-                        asp-controller="OrdenesTrabajo" asp-action="MisOTs">📝 Mis Órdenes de Trabajo</a></li>
+                <a href="@Url.Action("MisOTs", "OrdenesTrabajo")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "OrdenesTrabajo")">
+                    <i class="bi bi-clipboard-check-fill mr-3 text-lg"></i>
+                    <span>Mis Órdenes</span>
+                </a>
 
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle @(currentController == "Herramientas" || currentController == "OtHerramientas" ? "active" : "")"
-                           href="#" id="menuHerramientasEmpleado" role="button" data-bs-toggle="dropdown">
-                            🔧 Herramientas
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" asp-controller="Herramientas" asp-action="Index">🔎 Herramientas Disponibles</a></li>
-                            <li><a class="dropdown-item" asp-controller="OtHerramientas" asp-action="MisHerramientas">📋 Mis Herramientas</a></li>
-                        </ul>
-                    </li>
+                <a href="@Url.Action("Index", "Herramientas")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Herramientas")">
+                    <i class="bi bi-tools mr-3 text-lg"></i>
+                    <span>Herramientas</span>
+                </a>
 
-                    <li class="nav-item"><a class="nav-link @(currentController == "Repuestos" ? "active" : "")"
-                        asp-controller="Repuestos" asp-action="Catalogo">📦 Catálogo Repuestos</a></li>
+                <a href="@Url.Action("Catalogo", "Repuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Repuestos")">
+                    <i class="bi bi-search mr-3 text-lg"></i>
+                    <span>Catálogo Repuestos</span>
+                </a>
+                
+                <a href="@Url.Action("Create", "PedidosRepuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "PedidosRepuestos")">
+                    <i class="bi bi-cart-plus-fill mr-3 text-lg"></i>
+                    <span>Solicitar Repuesto</span>
+                </a>
+            }
 
-                    <li class="nav-item"><a class="nav-link @(currentController == "PedidosRepuestos" ? "active" : "")"
-                        asp-controller="PedidosRepuestos" asp-action="Create">📩 Nuevo Pedido</a></li>
-                }
+        </nav>
 
-            </ul>
-
-            <div class="d-flex align-items-center">
-                @if (User.Identity != null && User.Identity.IsAuthenticated)
-                {
-                    <div class="dropdown">
-                        <img src="@avatarPath" class="avatar-circle dropdown-toggle"
-                             id="avatarDropdown" data-bs-toggle="dropdown" />
-
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" asp-controller="Usuarios" asp-action="Perfil">Perfil</a></li>
-                            <li><hr class="dropdown-divider" /></li>
-                            <li><a class="dropdown-item text-danger" asp-controller="Usuarios" asp-action="Logout">Cerrar sesión</a></li>
-                        </ul>
+        <div class="p-4 border-t border-gray-100 bg-gray-50">
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <div class="flex items-center gap-3">
+                    <img src="@avatarPath" class="w-10 h-10 rounded-full object-cover border-2 border-primary shadow-sm" alt="Avatar">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-gray-800 truncate">@User.Identity.Name</p>
+                        <a href="@Url.Action("Perfil", "Usuarios")" class="text-xs text-gray-500 hover:text-primary truncate block">Ver Perfil</a>
                     </div>
-                }
-                else
-                {
-                    <a asp-controller="Usuarios" asp-action="Login" class="btn btn-primary">Iniciar sesión</a>
-                }
+                    <a href="@Url.Action("Logout", "Usuarios")" title="Cerrar Sesión" class="text-gray-400 hover:text-red-500 transition-colors">
+                        <i class="bi bi-box-arrow-right text-xl"></i>
+                    </a>
+                </div>
+            }
+            else
+            {
+                 <a asp-controller="Usuarios" asp-action="Login" class="block w-full text-center bg-primary text-white py-2 rounded-lg shadow hover:bg-indigo-700 transition font-medium">
+                     Iniciar Sesión
+                 </a>
+            }
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-hidden relative">
+        
+        <header class="h-16 bg-white shadow-sm flex items-center justify-between px-4 md:hidden z-10">
+            <span class="text-lg font-bold text-primary">Taller BA</span>
+            <button class="text-gray-600 text-2xl focus:outline-none">
+                <i class="bi bi-list"></i>
+            </button>
+        </header>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-8">
+            <div class="max-w-7xl mx-auto">
+                @RenderBody()
             </div>
 
-        </div>
+            <footer class="mt-10 text-center text-xs text-gray-400 py-4">
+                &copy; @DateTime.Now.Year - Taller Becerra Aguilera
+            </footer>
+        </main>
     </div>
-</nav>
 
-<div class="container-fluid mt-3">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
-
-<footer class="border-top footer text-muted">
-    <div class="container-fluid">
-        &copy; @DateTime.Now.Year - Taller Becerra Aguilera
-    </div>
-</footer>
-
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
-
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

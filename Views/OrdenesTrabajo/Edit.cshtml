@@ -4,82 +4,97 @@
     ViewData["Title"] = $"Editar OT #{Model.Id}";
 }
 
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
-</div>
+<div class="max-w-5xl mx-auto">
+    
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Editar Orden #@Model.Id</h2>
+            <p class="text-sm text-gray-500">Modifique los detalles de la orden de trabajo existente.</p>
+        </div>
+        <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-mono font-bold">
+    Creada: @(Model.Created_at.HasValue ? Model.Created_at.Value.ToString("dd/MM/yyyy") : "N/A")
+</span>
+    </div>
 
-<div class="card shadow mb-4">
-    <div class="card-body">
-        <form asp-action="Edit" method="post">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+        <form asp-action="Edit" method="post" class="space-y-6">
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="Created_at" />
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            
+            <div asp-validation-summary="ModelOnly" class="bg-red-50 text-red-600 p-4 rounded-lg text-sm mb-4 border border-red-100"></div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label>Vehículo</label>
-                        <select asp-for="VehiculoId" class="form-control" id="buscadorVehiculos">
-                            <option value="">Escriba para buscar vehículo...</option>
+            <div>
+                <h3 class="text-xs font-bold text-primary uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">Datos de Asignación</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Vehículo</label>
+                        <select asp-for="VehiculoId" class="w-full" id="buscadorVehiculos">
+                            <option value="">Buscar vehículo...</option>
                         </select>
-                        <span asp-validation-for="VehiculoId" class="text-danger"></span>
+                        <span asp-validation-for="VehiculoId" class="text-xs text-red-500 mt-1 block"></span>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group mb-3">
-                        <label>Empleado</label>
-                        <select asp-for="EmpleadoId" class="form-control" id="buscadorEmpleados">
-                            <option value="">Escriba para buscar empleado...</option>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mecánico Asignado</label>
+                        <select asp-for="EmpleadoId" class="w-full" id="buscadorEmpleados">
+                            <option value="">Buscar empleado...</option>
                         </select>
-                        <span asp-validation-for="EmpleadoId" class="text-danger"></span>
+                        <span asp-validation-for="EmpleadoId" class="text-xs text-red-500 mt-1 block"></span>
                     </div>
                 </div>
             </div>
 
-            <hr />
+            <div>
+                <h3 class="text-xs font-bold text-primary uppercase tracking-wider mb-4 border-b border-gray-100 pb-2 mt-4">Detalles y Estado</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div>
+                        <label asp-for="FechaIngreso" class="block text-sm font-medium text-gray-700 mb-1">Fecha Ingreso</label>
+                        <input asp-for="FechaIngreso" type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-gray-700" 
+                               value="@Model.FechaIngreso.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="FechaIngreso" class="text-xs text-red-500 mt-1 block"></span>
+                    </div>
 
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group mb-3">
-                        <label asp-for="FechaIngreso" class="control-label"></label>
-                        <input asp-for="FechaIngreso" type="date" class="form-control" value="@Model.FechaIngreso.ToString("yyyy-MM-dd")" />
-                        <span asp-validation-for="FechaIngreso" class="text-danger"></span>
+                    <div>
+                        <label asp-for="FechaEstimadaEntrega" class="block text-sm font-medium text-gray-700 mb-1">Entrega Estimada</label>
+                        <input asp-for="FechaEstimadaEntrega" type="date" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-gray-700" 
+                               value="@(Model.FechaEstimadaEntrega.HasValue ? Model.FechaEstimadaEntrega.Value.ToString("yyyy-MM-dd") : "")" />
+                        <span asp-validation-for="FechaEstimadaEntrega" class="text-xs text-red-500 mt-1 block"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Estado" class="block text-sm font-medium text-gray-700 mb-1">Estado Actual</label>
+                        <select asp-for="Estado" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors bg-white text-gray-700" 
+                                asp-items="Html.GetEnumSelectList<TallerBecerraAguilera.Models.EstadoOrden>()"></select>
+                        <span asp-validation-for="Estado" class="text-xs text-red-500 mt-1 block"></span>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="form-group mb-3">
-                        <label asp-for="FechaEstimadaEntrega" class="control-label"></label>
-                        <input asp-for="FechaEstimadaEntrega" type="date" class="form-control" value="@(Model.FechaEstimadaEntrega.HasValue ? Model.FechaEstimadaEntrega.Value.ToString("yyyy-MM-dd") : "")" />
-                        <span asp-validation-for="FechaEstimadaEntrega" class="text-danger"></span>
-                    </div>
+
+                <div class="mb-6">
+                    <label asp-for="DescripcionFalla" class="block text-sm font-medium text-gray-700 mb-1">Descripción de la Falla / Trabajo Realizado</label>
+                    <textarea asp-for="DescripcionFalla" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-gray-700"></textarea>
+                    <span asp-validation-for="DescripcionFalla" class="text-xs text-red-500 mt-1 block"></span>
                 </div>
-                <div class="col-md-4">
-                    <div class="form-group mb-3">
-                        <label asp-for="Estado" class="control-label"></label>
-                        <select asp-for="Estado" class="form-control" asp-items="Html.GetEnumSelectList<TallerBecerraAguilera.Models.EstadoOrden>()"></select>
-                        <span asp-validation-for="Estado" class="text-danger"></span>
+
+                <div class="w-full md:w-1/3">
+                    <label asp-for="HorasEstimadas" class="block text-sm font-medium text-gray-700 mb-1">Horas Trabajadas / Estimadas</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="bi bi-clock text-gray-400"></i>
+                        </div>
+                        <input asp-for="HorasEstimadas" type="number" step="0.5" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-gray-700" />
                     </div>
+                    <span asp-validation-for="HorasEstimadas" class="text-xs text-red-500 mt-1 block"></span>
                 </div>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="DescripcionFalla" class="control-label"></label>
-                <textarea asp-for="DescripcionFalla" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="DescripcionFalla" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-4">
-                <label asp-for="HorasEstimadas" class="control-label"></label>
-                <input asp-for="HorasEstimadas" type="number" step="0.01" class="form-control" />
-                <span asp-validation-for="HorasEstimadas" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-4">
-                <button type="submit" class="btn btn-warning">
-                    <i class="fas fa-save"></i> Guardar Cambios
+            <div class="flex items-center gap-4 pt-6 border-t border-gray-100 mt-6">
+                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-xl shadow-sm font-medium transition flex items-center gap-2">
+                    <i class="bi bi-check-lg text-lg"></i> Guardar Cambios
                 </button>
-                <a asp-action="Index" class="btn btn-secondary ms-2">
-                    <i class="fas fa-arrow-left"></i> Volver a la Lista
+                <a asp-action="Index" class="text-gray-500 hover:text-gray-700 font-medium px-4 py-2 rounded-xl hover:bg-gray-100 transition">
+                    Cancelar
                 </a>
             </div>
         </form>
@@ -92,11 +107,32 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    <style>
+        /* === TUNEADO DE SELECT2 PARA QUE SE PAREZCA A TAILWIND === */
+        .select2-container .select2-selection--single {
+            height: 42px !important; 
+            border-color: #d1d5db !important; 
+            border-radius: 0.5rem !important; 
+            padding-top: 6px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top: 8px !important;
+        }
+        .select2-container--default .select2-selection--single:focus {
+            border-color: #6C63FF !important; 
+            outline: none;
+        }
+    </style>
+
     <script>
         $(document).ready(function () {
-            // Preselección en Edit
+            // ============================================
+            // 1. Lógica de Pre-selección (CRÍTICO EN EDIT)
+            // ============================================
             var vehiculoId = '@Model.VehiculoId';
+            // Nota: usamos 'patente' minúscula y 'Cliente?.Nombre'
             var vehiculoTexto = '@(Model.Vehiculo != null ? $"{Model.Vehiculo.patente} - {Model.Vehiculo.Cliente?.Nombre} {Model.Vehiculo.Cliente?.Apellido}" : "")';
+            
             if (vehiculoId) {
                 var option = new Option(vehiculoTexto, vehiculoId, true, true);
                 $('#buscadorVehiculos').append(option).trigger('change');
@@ -104,15 +140,20 @@
 
             var empleadoId = '@Model.EmpleadoId';
             var empleadoTexto = '@(Model.Empleado != null ? $"{Model.Empleado.Nombre} {Model.Empleado.Apellido}" : "")';
+            
             if (empleadoId) {
                 var option = new Option(empleadoTexto, empleadoId, true, true);
                 $('#buscadorEmpleados').append(option).trigger('change');
             }
 
-            // Inicializamos Select2 con AJAX
+            // ============================================
+            // 2. Inicialización de Select2 (Sin theme bootstrap)
+            // ============================================
+            
             $('#buscadorVehiculos').select2({
-                theme: 'bootstrap-5',
                 placeholder: 'Seleccione un vehículo',
+                allowClear: true,
+                width: '100%',
                 minimumInputLength: 1,
                 ajax: {
                     url: '@Url.Action("BuscarVehiculos", "OrdenesTrabajo")',
@@ -125,8 +166,9 @@
             });
 
             $('#buscadorEmpleados').select2({
-                theme: 'bootstrap-5',
                 placeholder: 'Seleccione un empleado',
+                allowClear: true,
+                width: '100%',
                 minimumInputLength: 1,
                 ajax: {
                     url: '@Url.Action("BuscarEmpleados", "OrdenesTrabajo")',

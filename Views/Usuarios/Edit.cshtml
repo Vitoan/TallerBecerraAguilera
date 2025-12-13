@@ -1,60 +1,118 @@
 @model TallerBecerraAguilera.Models.Usuarios
+
 @{
     ViewData["Title"] = "Editar Usuario";
 }
 
-<h1>Editar Usuario</h1>
-
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="id" />
-
-    <div class="form-group mb-3">
-        <label asp-for="email"></label>
-        <input asp-for="email" class="form-control" />
-        <span asp-validation-for="email" class="text-danger"></span>
+<div class="max-w-2xl mx-auto">
+    
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Editar Usuario</h2>
+            <p class="text-sm text-gray-500">Modifique los datos de acceso y permisos.</p>
+        </div>
+        <div class="bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-xs font-bold border border-amber-100 flex items-center gap-2">
+            <i class="bi bi-pencil-square"></i> Modo Edición
+        </div>
     </div>
 
-    <div class="form-group mb-3">
-        <label asp-for="rol"></label>
-        <select asp-for="rol" class="form-control">
-            <option value="Empleado">Empleado</option>
-            <option value="Administrador">Administrador</option>
-        </select>
-        <span asp-validation-for="rol" class="text-danger"></span>
-    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+        <form asp-action="Edit" method="post" class="space-y-6">
+            <input type="hidden" asp-for="id" />
+            
+            <div asp-validation-summary="ModelOnly" class="bg-red-50 text-red-600 p-4 rounded-lg text-sm mb-4 border border-red-100"></div>
 
-    <div class="form-group mb-3">
-        <label>Empleado asignado</label>
-        <select name="EmpleadoId" class="form-select" id="buscadorEmpleados">
-            @* Si ya tiene empleado asignado, lo mostramos seleccionado *@
-            @if (ViewBag.EmpleadoActual != null)
-            {
-                <option value="@ViewBag.EmpleadoActual" selected="selected">@ViewBag.EmpleadoNombre</option>
-            }
-        </select>
-    </div>
+            <div>
+                <label asp-for="email" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="bi bi-envelope text-gray-400"></i>
+                    </div>
+                    <input asp-for="email" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-gray-700" />
+                </div>
+                <span asp-validation-for="email" class="text-xs text-red-500 mt-1 block"></span>
+            </div>
 
-    <button type="submit" class="btn btn-success mt-3">Guardar</button>
-    <a asp-action="Index" class="btn btn-secondary mt-3">Cancelar</a>
-</form>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label asp-for="rol" class="block text-sm font-medium text-gray-700 mb-1">Rol de Usuario</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="bi bi-shield-lock text-gray-400"></i>
+                        </div>
+                        <select asp-for="rol" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors bg-white text-gray-700 appearance-none">
+                            <option value="Empleado">Empleado</option>
+                            <option value="Administrador">Administrador</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <i class="bi bi-chevron-down text-xs text-gray-500"></i>
+                        </div>
+                    </div>
+                    <span asp-validation-for="rol" class="text-xs text-red-500 mt-1 block"></span>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Vincular a Empleado</label>
+                    <select name="EmpleadoId" class="w-full" id="buscadorEmpleados">
+                         @if (ViewBag.EmpleadoActual != null)
+                        {
+                            <option value="@ViewBag.EmpleadoActual" selected="selected">@ViewBag.EmpleadoNombre</option>
+                        }
+                        else 
+                        {
+                            <option value="">Buscar empleado...</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 pt-6 border-t border-gray-100 mt-6">
+                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-xl shadow-sm font-medium transition flex items-center gap-2 w-full justify-center md:w-auto">
+                    <i class="bi bi-check-lg text-lg"></i> Guardar Cambios
+                </button>
+                <a asp-action="Index" class="text-gray-500 hover:text-gray-700 font-medium px-4 py-2 rounded-xl hover:bg-gray-100 transition w-full text-center md:w-auto">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <style>
+        /* === TUNEADO DE SELECT2 PARA QUE SE PAREZCA A TAILWIND === */
+        .select2-container .select2-selection--single {
+            height: 42px !important; 
+            border-color: #d1d5db !important; 
+            border-radius: 0.5rem !important; 
+            padding-top: 6px;
+            padding-left: 6px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top: 8px !important;
+            right: 8px !important;
+        }
+        .select2-container--default .select2-selection--single:focus {
+            border-color: #6C63FF !important; 
+            outline: none;
+        }
+    </style>
+
     <script>
         $(document).ready(function() {
             var empleadoId = '@ViewBag.EmpleadoActual';
             var empleadoNombre = '@ViewBag.EmpleadoNombre';
 
             $('#buscadorEmpleados').select2({
-                theme: 'bootstrap-5',
-                placeholder: 'Seleccione un empleado',
-                minimumInputLength: 1,
+                placeholder: 'Buscar empleado...',
                 allowClear: true,
+                width: '100%',
+                minimumInputLength: 1,
                 language: {
                     noResults: function() { return "No se encontraron empleados"; },
                     searching: function() { return "Buscando..." }
@@ -73,9 +131,13 @@
                 }
             });
 
-            if(empleadoId) {
-                var option = new Option(empleadoNombre, empleadoId, true, true);
-                $('#buscadorEmpleados').append(option).trigger('change');
+            // Lógica para asegurar que el valor preseleccionado se visualice correctamente
+            if(empleadoId && empleadoNombre) {
+                // Verificar si Select2 ya lo renderizó (por el HTML), si no, forzarlo
+                if ($('#buscadorEmpleados').val() != empleadoId) {
+                     var option = new Option(empleadoNombre, empleadoId, true, true);
+                     $('#buscadorEmpleados').append(option).trigger('change');
+                }
             }
         });
     </script>

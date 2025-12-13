@@ -1,10 +1,54 @@
 @model TallerBecerraAguilera.Models.Usuarios
 
-<h1>Eliminar Usuario</h1>
+@{
+    ViewData["Title"] = "Eliminar Usuario";
+}
 
-<p>¿Seguro que deseas eliminar el usuario @Model.email?</p>
+<div class="min-h-[80vh] flex items-center justify-center p-4">
+    
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl border border-red-100 overflow-hidden">
+        
+        <div class="bg-red-50 p-6 flex items-center gap-4 border-b border-red-100">
+            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-red-500 shadow-sm shrink-0">
+                <i class="bi bi-person-x-fill text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-red-800">¿Eliminar Cuenta?</h2>
+                <p class="text-sm text-red-600/80">Acción irreversible.</p>
+            </div>
+        </div>
 
-<form method="post">
-    <button class="btn btn-danger">Eliminar</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
+        <div class="p-8">
+            <p class="text-gray-600 mb-6 text-sm leading-relaxed text-center">
+                ¿Está seguro que desea revocar el acceso y eliminar el usuario?
+            </p>
+
+            <div class="bg-gray-50 rounded-xl p-4 mb-8 border border-gray-100 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-lg font-bold border border-gray-300">
+                    @Model.email.Substring(0, 1).ToUpper()
+                </div>
+                
+                <div class="overflow-hidden">
+                    <p class="text-gray-900 font-bold text-sm truncate">@Model.email</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white border border-gray-200 text-gray-500">
+                            @Model.rol
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="Delete" method="post" class="flex flex-col gap-3">
+                <input type="hidden" asp-for="id" />
+                
+                <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl shadow-md transition-all hover:shadow-lg flex items-center justify-center gap-2">
+                    <i class="bi bi-trash-fill"></i> Eliminar Usuario
+                </button>
+                
+                <a asp-action="Index" class="w-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-800 font-medium py-3 rounded-xl transition flex items-center justify-center">
+                    Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

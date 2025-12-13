@@ -1,52 +1,122 @@
 @using TallerBecerraAguilera.Helpers
 @model PaginatedList<TallerBecerraAguilera.Models.Usuarios>
 
-<h1 class="mb-3">Usuarios</h1>
+@{
+    ViewData["Title"] = "Gestión de Usuarios";
+}
 
-<a class="btn btn-primary mb-3" asp-action="Create">Nuevo Usuario</a>
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+    <div>
+        <h2 class="text-2xl font-bold text-gray-800">Usuarios del Sistema</h2>
+        <p class="text-sm text-gray-500">Administre el acceso y roles del personal.</p>
+    </div>
+    <a asp-action="Create" class="bg-primary hover:bg-primaryDark text-white px-5 py-2.5 rounded-xl shadow-sm font-medium transition flex items-center gap-2 w-full md:w-auto justify-center">
+        <i class="bi bi-person-plus-fill text-lg"></i>
+        <span>Nuevo Usuario</span>
+    </a>
+</div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Email</th>
-            <th>Rol</th>
-            <th>Avatar</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var u in Model)
-        {
-            <tr>
-                <td>@u.email</td>
-                <td>@u.rol</td>
-                <td><img src="@u.avatar_path" width="40" class="rounded-circle" /></td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@u.id" class="btn btn-warning btn-sm">Editar</a>
-                    <a asp-action="ResetPassword" asp-route-id="@u.id" class="btn btn-info btn-sm">Clave</a>
-                    <a asp-action="Delete" asp-route-id="@u.id" class="btn btn-danger btn-sm">Eliminar</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th class="px-6 py-4">Usuario</th>
+                    <th class="px-6 py-4">Rol Asignado</th>
+                    <th class="px-6 py-4 text-center">Estado</th>
+                    <th class="px-6 py-4 text-right">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                @foreach (var u in Model)
+                {
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="relative">
+                                    @if (!string.IsNullOrEmpty(u.avatar_path))
+                                    {
+                                        <img src="@u.avatar_path" class="w-10 h-10 rounded-full object-cover border border-gray-200" alt="Avatar" />
+                                    }
+                                    else
+                                    {
+                                        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 border border-gray-200">
+                                            <i class="bi bi-person-fill text-xl"></i>
+                                        </div>
+                                    }
+                                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
+                                </div>
+                                
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-gray-800 text-sm">@u.email</span>
+                                    <span class="text-xs text-gray-400">ID: @u.id</span>
+                                </div>
+                            </div>
+                        </td>
 
-<div class="d-flex justify-content-between align-items-center mt-3">
-    <div class="fw-bold">
-        Página @Model.PageIndex de @Model.TotalPages
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border @GetRoleBadgeClass(u.rol)">
+                                @if(u.rol == "Administrador") { <i class="bi bi-shield-lock-fill mr-1.5"></i> }
+                                else { <i class="bi bi-tools mr-1.5"></i> }
+                                @u.rol
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4 text-center">
+                            <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-md">
+                                Activo
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                
+                                <a asp-action="Edit" asp-route-id="@u.id" class="w-8 h-8 flex items-center justify-center rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition" title="Editar Usuario">
+                                    <i class="bi bi-pencil-fill text-sm"></i>
+                                </a>
+
+                                <a asp-action="ResetPassword" asp-route-id="@u.id" class="w-8 h-8 flex items-center justify-center rounded-lg bg-cyan-50 text-cyan-600 hover:bg-cyan-100 transition" title="Cambiar Contraseña">
+                                    <i class="bi bi-key-fill text-sm"></i>
+                                </a>
+
+                                <a asp-action="Delete" asp-route-id="@u.id" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition" title="Eliminar Usuario">
+                                    <i class="bi bi-trash-fill text-sm"></i>
+                                </a>
+
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 
-    <div class="btn-group">
-        <a asp-action="Index"
-           asp-route-pageNumber="@(Model.PageIndex - 1)"
-           class="btn btn-outline-primary @(!Model.HasPreviousPage ? "disabled" : "")">
-            <i class="bi bi-chevron-left"></i> Anterior
-        </a>
-
-        <a asp-action="Index"
-           asp-route-pageNumber="@(Model.PageIndex + 1)"
-           class="btn btn-outline-primary @(!Model.HasNextPage ? "disabled" : "")">
-            Siguiente <i class="bi bi-chevron-right"></i>
-        </a>
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+        <span class="text-sm text-gray-500">
+            Página <span class="font-bold text-gray-800">@Model.PageIndex</span> de @Model.TotalPages
+        </span>
+        <div class="flex gap-2">
+            <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" 
+               class="px-3 py-1 text-sm rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition @(!Model.HasPreviousPage ? "pointer-events-none opacity-50" : "")">
+               <i class="bi bi-chevron-left"></i> Anterior
+            </a>
+            <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" 
+               class="px-3 py-1 text-sm rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition @(!Model.HasNextPage ? "pointer-events-none opacity-50" : "")">
+               Siguiente <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
     </div>
 </div>
+
+@functions {
+    public string GetRoleBadgeClass(string rol)
+    {
+        return rol switch
+        {
+            "Administrador" => "bg-purple-50 text-purple-700 border-purple-200",
+            "Empleado" => "bg-blue-50 text-blue-700 border-blue-200",
+            _ => "bg-gray-50 text-gray-600 border-gray-200"
+        };
+    }
+}
