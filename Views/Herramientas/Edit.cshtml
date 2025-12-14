@@ -1,31 +1,99 @@
 @model TallerBecerraAguilera.Models.Herramientas
 
-<h2>Editar Herramienta</h2>
+@{
+    ViewData["Title"] = "Editar Herramienta";
+}
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-
-    <div class="form-group">
-        <label asp-for="Codigo"></label>
-        <input asp-for="Codigo" class="form-control" />
+<div class="container mx-auto px-4 py-8">
+    
+    <div class="mb-8 flex items-center gap-4">
+        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-indigo-800">Editar Herramienta</h1>
+            <p class="text-gray-500 mt-1">Modifica los detalles técnicos o la ubicación.</p>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Nombre"></label>
-        <input asp-for="Nombre" class="form-control" />
-    </div>
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        
+        <div class="h-2 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
 
-    <div class="form-group">
-        <label asp-for="Estado"></label>
-        <select asp-for="Estado" class="form-control" asp-items="ViewBag.Estados"></select>
-    </div>
+        <div class="p-8">
+            <form asp-action="Edit" method="post" class="space-y-6">
+                
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-200 text-sm"></div>
 
-    <div class="form-group">
-        <label asp-for="Ubicacion"></label>
-        <input asp-for="Ubicacion" class="form-control" />
-    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <div>
+                        <label asp-for="Codigo" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Código de Inventario</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2v1h1V5h-1z" clip-rule="evenodd" />
+                                    <path d="M11 4a1 1 0 10-2 0v1a1 1 0 102 0V4zM10 7a1 1 0 011 1v1h2a1 1 0 110 2h-3a1 1 0 01-1-1V8a1 1 0 011-1zM16 9a1 1 0 100 2 1 1 0 000-2zM9 13a1 1 0 011-1h1a1 1 0 110 2v2a1 1 0 11-2 0v-3zM7 11a1 1 0 100-2H4a1 1 0 100 2h3zM17 13a1 1 0 01-1 1h-2a1 1 0 110-2h2a1 1 0 011 1zM16 17a1 1 0 100-2h-3a1 1 0 100 2h3z" />
+                                </svg>
+                            </span>
+                            <input asp-for="Codigo" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200" placeholder="Ej: HER-001" />
+                        </div>
+                        <span asp-validation-for="Codigo" class="text-red-500 text-xs mt-1"></span>
+                    </div>
 
-    <br />
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-    <a asp-action="Index" class="btn btn-secondary">Volver</a>
-</form>
+                    <div>
+                        <label asp-for="Nombre" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Nombre de la Herramienta</label>
+                        <input asp-for="Nombre" class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200" placeholder="Ej: Taladro Percutor" />
+                        <span asp-validation-for="Nombre" class="text-red-500 text-xs mt-1"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Estado" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Estado Actual</label>
+                        <div class="relative">
+                            <select asp-for="Estado" class="w-full pl-4 pr-10 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200 cursor-pointer appearance-none" asp-items="ViewBag.Estados">
+                                </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Estado" class="text-red-500 text-xs mt-1"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Ubicacion" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Ubicación en Taller</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <input asp-for="Ubicacion" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200" placeholder="Ej: Estante A-3" />
+                        </div>
+                        <span asp-validation-for="Ubicacion" class="text-red-500 text-xs mt-1"></span>
+                    </div>
+
+                </div>
+
+                <div class="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-gray-100">
+                    <a asp-action="Index" class="text-gray-600 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition duration-150">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition duration-150 ease-in-out transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

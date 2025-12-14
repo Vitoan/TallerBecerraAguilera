@@ -1,12 +1,57 @@
 @model TallerBecerraAguilera.Models.ImagenHerramienta
 
-<h2>Eliminar Imagen</h2>
+@{
+    ViewData["Title"] = "Eliminar Imagen";
+}
 
-<img src="@Model.Url" width="250" style="border-radius:10px;object-fit:cover;" />
+<div class="container mx-auto px-4 py-8">
 
-<form asp-action="Delete">
-    <input type="hidden" asp-for="Id" />
-    <br />
-    <button type="submit" class="btn btn-danger">Eliminar</button>
-    <a asp-action="Index" asp-route-herramientaId="@Model.HerramientaId" class="btn btn-secondary">Cancelar</a>
-</form>
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-indigo-800">Eliminar Imagen</h1>
+        <p class="text-gray-500 mt-1">Confirmación de borrado de archivo multimedia.</p>
+    </div>
+
+    <div class="max-w-2xl mx-auto bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r shadow-sm flex items-start gap-4">
+        <div class="text-red-500 mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+        </div>
+        <div>
+            <h3 class="font-bold text-red-800">¿Estás seguro que deseas eliminar esta imagen?</h3>
+            <p class="text-red-700 text-sm mt-1">
+                El archivo se borrará permanentemente del servidor y no podrá recuperarse.
+            </p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-2xl mx-auto">
+        
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wide">Vista Previa</h2>
+        </div>
+
+        <div class="p-8 bg-gray-100 flex justify-center items-center">
+            <img src="@Model.Url" 
+                 class="max-w-full max-h-80 rounded-lg shadow-md border-4 border-white object-contain transform hover:scale-105 transition duration-300" 
+                 alt="Imagen a eliminar" />
+        </div>
+
+        <div class="bg-white px-6 py-4 flex justify-end items-center gap-3 border-t border-gray-100">
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                
+                <a asp-action="Index" asp-route-herramientaId="@Model.HerramientaId" class="inline-block bg-white text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition duration-150 ease-in-out">
+                    Cancelar
+                </a>
+
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-150 ease-in-out transform hover:-translate-y-0.5 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    Eliminar Definitivamente
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

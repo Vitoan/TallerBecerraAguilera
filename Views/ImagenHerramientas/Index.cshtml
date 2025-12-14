@@ -1,34 +1,79 @@
 @model IEnumerable<TallerBecerraAguilera.Models.ImagenHerramienta>
 
 @{
-    ViewBag.Title = "Imágenes de Herramienta";
+    ViewData["Title"] = "Galería de Imágenes";
 }
 
-<h2>Imágenes de Herramienta</h2>
+<div class="container mx-auto px-4 py-8">
 
-<p>
-    <a asp-action="Create" asp-route-herramientaId="@ViewBag.HerramientaId" class="btn btn-primary">Subir Imagen</a>
-    <a asp-controller="Herramientas" asp-action="Index" class="btn btn-secondary">Volver</a>
-</p>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-indigo-800">Galería de Imágenes</h1>
+            <p class="text-gray-500 mt-1">Gestiona las fotografías asociadas a la herramienta.</p>
+        </div>
 
-<table class="table table-striped align-middle">
-    <thead>
-        <tr>
-            <th>Imagen</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model)
-{
-        <tr>
-            <td>
-                <img src="@item.Url" width="120" height="120" style="object-fit:cover;border-radius:8px;" />
-            </td>
-            <td>
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Eliminar</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <div class="flex gap-3">
+            <a asp-controller="Herramientas" asp-action="Index" class="bg-white text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition duration-150 ease-in-out flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                Volver al Inventario
+            </a>
+
+            <a asp-action="Create" asp-route-herramientaId="@ViewBag.HerramientaId" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-150 ease-in-out flex items-center gap-2 transform hover:-translate-y-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01" />
+                </svg>
+                Subir Nueva Foto
+            </a>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @foreach (var item in Model)
+            {
+                <div class="group relative bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1">
+                    
+                    <div class="aspect-w-16 aspect-h-9 w-full bg-gray-200 overflow-hidden relative">
+                        <img src="@item.Url" alt="Foto Herramienta" class="h-48 w-full object-cover group-hover:scale-105 transition duration-500 ease-in-out" />
+                        
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition duration-300"></div>
+                    </div>
+
+                    <div class="p-4 flex justify-between items-center bg-white border-t border-gray-50">
+                        <span class="text-xs text-gray-400 font-mono">ID: @item.Id</span>
+                        
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-full transition duration-150" title="Eliminar Imagen">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-12 text-center">
+            <div class="mx-auto h-12 w-12 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No hay imágenes</h3>
+            <p class="mt-1 text-sm text-gray-500">Esta herramienta aún no tiene fotografías cargadas.</p>
+            <div class="mt-6">
+                <a asp-action="Create" asp-route-herramientaId="@ViewBag.HerramientaId" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Subir la primera foto
+                </a>
+            </div>
+        </div>
+    }
+</div>

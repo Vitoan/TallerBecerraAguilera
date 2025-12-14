@@ -4,36 +4,83 @@
     ViewData["Title"] = "Eliminar Herramienta";
 }
 
-<h2>Eliminar Herramienta</h2>
+<div class="container mx-auto px-4 py-8">
 
-<h4>¿Seguro que deseas eliminar esta herramienta?</h4>
+    <h1 class="text-3xl font-bold text-indigo-800 mb-6">Eliminar Herramienta</h1>
 
-<hr />
+    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-8 rounded-r shadow-sm flex items-start gap-4">
+        <div class="text-red-500 mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+        </div>
+        <div>
+            <h3 class="font-bold text-red-800 text-lg">¿Estás seguro que deseas eliminar esta herramienta?</h3>
+            <p class="text-red-700 mt-1">
+                Estás a punto de eliminar <strong>@Model.Nombre</strong> (Código: @Model.Codigo).
+                Esta acción es irreversible y eliminará el historial de ubicación de este ítem.
+            </p>
+        </div>
+    </div>
 
-<div class="mb-3">
-    <dl class="row">
-        <dt class="col-sm-3">Código</dt>
-        <dd class="col-sm-9">@Model.Codigo</dd>
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-4xl">
+        
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-700">Detalles de la Herramienta</h2>
+        </div>
 
-        <dt class="col-sm-3">Nombre</dt>
-        <dd class="col-sm-9">@Model.Nombre</dd>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Código de Inventario</label>
+                    <p class="text-indigo-600 font-mono font-bold text-lg border-b border-gray-100 pb-2">@Html.DisplayFor(model => model.Codigo)</p>
+                </div>
 
-        <dt class="col-sm-3">Estado</dt>
-        <dd class="col-sm-9">@Model.Estado</dd>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Nombre</label>
+                    <p class="text-gray-800 font-medium text-lg border-b border-gray-100 pb-2">@Html.DisplayFor(model => model.Nombre)</p>
+                </div>
 
-        <dt class="col-sm-3">Ubicación</dt>
-        <dd class="col-sm-9">@Model.Ubicacion</dd>
-    </dl>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Estado Actual</label>
+                    <p class="text-gray-800 font-medium text-lg border-b border-gray-100 pb-2 flex items-center gap-2">
+                        @if (Model.Estado.ToString() == "Disponible") { <span class="w-3 h-3 bg-green-500 rounded-full"></span> }
+                        else if (Model.Estado.ToString() == "EnUso") { <span class="w-3 h-3 bg-yellow-500 rounded-full"></span> }
+                        else { <span class="w-3 h-3 bg-red-500 rounded-full"></span> }
+                        
+                        @Html.DisplayFor(model => model.Estado)
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Ubicación</label>
+                    <p class="text-gray-800 font-medium text-lg border-b border-gray-100 pb-2 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        @Html.DisplayFor(model => model.Ubicacion)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gray-50 px-6 py-4 flex justify-end items-center gap-3">
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                
+                <a asp-action="Index" class="inline-block bg-white text-gray-700 font-semibold py-2 px-4 border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition duration-150 ease-in-out">
+                    Cancelar
+                </a>
+
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-150 ease-in-out transform hover:-translate-y-0.5 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    Confirmar Eliminación
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
-
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
-
-    <button type="submit" class="btn btn-danger">
-        🗑️ Eliminar
-    </button>
-
-    <a asp-action="Index" class="btn btn-secondary">
-        Cancelar
-    </a>
-</form>
