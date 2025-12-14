@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Data;
 using TallerBecerraAguilera.Models.ViewModels;
+using System.Linq; // Necesario para Select y OrderBy
+using System.Threading.Tasks;
 
 namespace TallerBecerraAguilera.ViewComponents
 {
@@ -19,8 +21,8 @@ namespace TallerBecerraAguilera.ViewComponents
             var ultimasOts = await _context.OrdenesTrabajo
                 .Include(o => o.Vehiculo)
                 .Include(o => o.Empleado)
-                .OrderByDescending(o => o.FechaIngreso) 
-                .Take(cantidad) 
+                .OrderByDescending(o => o.FechaIngreso)
+                .Take(cantidad)
                 .Select(o => new UltimasOTsViewModel
                 {
                     Id = o.Id,
