@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-12-2025 a las 01:21:42
+-- Tiempo de generación: 14-12-2025 a las 02:44:23
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -97,8 +97,8 @@ CREATE TABLE `herramientas` (
 --
 
 INSERT INTO `herramientas` (`Id`, `Codigo`, `Nombre`, `Estado`, `Ubicacion`, `Created_at`, `Updated_at`) VALUES
-(1, 'H001', 'Llave inglesa 10mm', 1, 'Estante A1', '2025-12-04 16:07:56', '2025-12-04 16:07:56'),
-(2, 'H002', 'Extractor de bujías', 1, 'Cajón B2', '2025-11-05 22:58:39', '2025-11-05 22:58:39');
+(1, 'H001', 'Llave inglesa 10mm', 0, 'Estante A1', '2025-12-04 16:07:56', '2025-12-13 21:36:34'),
+(2, 'H002', 'Extractor de bujías', 1, 'Cajón B2', '2025-11-05 22:58:39', '2025-12-13 21:36:33');
 
 -- --------------------------------------------------------
 
@@ -154,19 +154,22 @@ INSERT INTO `ordenes_trabajo` (`id`, `descripcion_falla`, `fecha_ingreso`, `fech
 --
 
 CREATE TABLE `ot_herramientas` (
+  `id` int(11) NOT NULL,
   `ot_id` int(11) NOT NULL,
   `herramienta_id` int(11) NOT NULL,
-  `fecha_prestamo` datetime NOT NULL DEFAULT current_timestamp(),
-  `fecha_devolucion` datetime DEFAULT NULL,
-  `empleado_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `empleado_id` int(11) NOT NULL,
+  `fecha_prestamo` datetime NOT NULL,
+  `fecha_devolucion` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `ot_herramientas`
 --
 
-INSERT INTO `ot_herramientas` (`ot_id`, `herramienta_id`, `fecha_prestamo`, `fecha_devolucion`, `empleado_id`) VALUES
-(1, 1, '2025-11-05 09:00:00', NULL, 2);
+INSERT INTO `ot_herramientas` (`id`, `ot_id`, `herramienta_id`, `empleado_id`, `fecha_prestamo`, `fecha_devolucion`) VALUES
+(1, 2, 1, 2, '2025-12-13 21:32:50', '2025-12-13 21:36:34'),
+(2, 2, 2, 2, '2025-12-13 21:33:12', '2025-12-13 21:36:33'),
+(3, 2, 2, 2, '2025-12-13 21:36:39', NULL);
 
 -- --------------------------------------------------------
 
@@ -175,17 +178,19 @@ INSERT INTO `ot_herramientas` (`ot_id`, `herramienta_id`, `fecha_prestamo`, `fec
 --
 
 CREATE TABLE `ot_repuestos` (
+  `id` int(11) NOT NULL,
   `ot_id` int(11) NOT NULL,
   `repuesto_id` int(11) NOT NULL,
-  `cantidad_usada` int(11) NOT NULL CHECK (`cantidad_usada` > 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `empleado_id` int(11) NOT NULL,
+  `cantidad_usada` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `ot_repuestos`
 --
 
-INSERT INTO `ot_repuestos` (`ot_id`, `repuesto_id`, `cantidad_usada`) VALUES
-(1, 1, 1);
+INSERT INTO `ot_repuestos` (`id`, `ot_id`, `repuesto_id`, `empleado_id`, `cantidad_usada`) VALUES
+(1, 2, 1, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -291,8 +296,8 @@ CREATE TABLE `repuestos` (
 --
 
 INSERT INTO `repuestos` (`id`, `codigo`, `descripcion`, `cantidad_stock`, `precio_unitario`, `stock_minimo`, `proveedor_id`, `created_at`, `updated_at`) VALUES
-(1, 'R001', 'Filtro de aceite Toyota', 15, 12.50, 5, 1, '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
-(2, 'R002', 'Pastillas de freno Fiat', 8, 45.00, 3, 1, '2025-11-05 22:58:39', '2025-11-05 22:58:39'),
+(1, 'R001', 'Filtro de aceite Toyota', 13, 12.50, 5, 1, '2025-11-05 22:58:39', '2025-12-13 22:43:09'),
+(2, 'R002', 'Pastillas de freno Fiat', 7, 45.00, 3, 1, '2025-11-05 22:58:39', '2025-12-13 22:26:09'),
 (3, 'H003', 'Balizas Ford ', 6, 15.00, 4, 2, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -407,16 +412,19 @@ ALTER TABLE `ordenes_trabajo`
 -- Indices de la tabla `ot_herramientas`
 --
 ALTER TABLE `ot_herramientas`
-  ADD PRIMARY KEY (`ot_id`,`herramienta_id`),
-  ADD KEY `herramienta_id` (`herramienta_id`),
-  ADD KEY `empleado_id` (`empleado_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_ot_id` (`ot_id`),
+  ADD KEY `idx_herramienta_id` (`herramienta_id`),
+  ADD KEY `idx_empleado_id` (`empleado_id`);
 
 --
 -- Indices de la tabla `ot_repuestos`
 --
 ALTER TABLE `ot_repuestos`
-  ADD PRIMARY KEY (`ot_id`,`repuesto_id`),
-  ADD KEY `repuesto_id` (`repuesto_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_ot_repuesto` (`ot_id`,`repuesto_id`),
+  ADD KEY `fk_otrep_repuesto` (`repuesto_id`),
+  ADD KEY `fk_otrep_empleado` (`empleado_id`);
 
 --
 -- Indices de la tabla `pedidos_repuestos`
@@ -506,6 +514,18 @@ ALTER TABLE `ordenes_trabajo`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT de la tabla `ot_herramientas`
+--
+ALTER TABLE `ot_herramientas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `ot_repuestos`
+--
+ALTER TABLE `ot_repuestos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de la tabla `pedidos_repuestos`
 --
 ALTER TABLE `pedidos_repuestos`
@@ -543,14 +563,30 @@ ALTER TABLE `vehiculos`
 -- Filtros para la tabla `imagenherramientas`
 --
 ALTER TABLE `imagenherramientas`
-  ADD CONSTRAINT `FK_ImagenHerramientas_Herramientas` FOREIGN KEY (`HerramientaId`) REFERENCES `herramientas` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `FK_ImagenHerramientas_Herramientas` FOREIGN KEY (`HerramientaId`) REFERENCES `herramientas` (`Id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `ordenes_trabajo`
 --
 ALTER TABLE `ordenes_trabajo`
   ADD CONSTRAINT `ordenes_trabajo_ibfk_1` FOREIGN KEY (`vehiculo_id`) REFERENCES `vehiculos` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `ordenes_trabajo_ibfk_2` FOREIGN KEY (`empleado_id`) REFERENCES `empleados` (`id`);
+  ADD CONSTRAINT `ordenes_trabajo_ibfk_2` FOREIGN KEY (`empleado_id`) REFERENCES `empleados` (`Id`);
+
+--
+-- Filtros para la tabla `ot_herramientas`
+--
+ALTER TABLE `ot_herramientas`
+  ADD CONSTRAINT `fk_ot_herramientas_empleado` FOREIGN KEY (`empleado_id`) REFERENCES `empleados` (`Id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_ot_herramientas_herramienta` FOREIGN KEY (`herramienta_id`) REFERENCES `herramientas` (`Id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_ot_herramientas_ot` FOREIGN KEY (`ot_id`) REFERENCES `ordenes_trabajo` (`id`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `ot_repuestos`
+--
+ALTER TABLE `ot_repuestos`
+  ADD CONSTRAINT `fk_otrep_empleado` FOREIGN KEY (`empleado_id`) REFERENCES `empleados` (`Id`),
+  ADD CONSTRAINT `fk_otrep_ot` FOREIGN KEY (`ot_id`) REFERENCES `ordenes_trabajo` (`id`),
+  ADD CONSTRAINT `fk_otrep_repuesto` FOREIGN KEY (`repuesto_id`) REFERENCES `repuestos` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
