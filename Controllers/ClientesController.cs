@@ -1,16 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
-using TallerBecerraAguilera.Repositorios;
-using TallerBecerraAguilera.Models;
+using Microsoft.EntityFrameworkCore; // Necesario para DbUpdateConcurrencyException
+using System.Linq;
 using System.Threading.Tasks;
-// NECESARIO para DbUpdateConcurrencyException
-using Microsoft.EntityFrameworkCore; 
+using TallerBecerraAguilera.Models;
+using TallerBecerraAguilera.Repositorios;
+using TallerBecerraAguilera.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TallerBecerraAguilera.Controllers
 {
-    using Microsoft.AspNetCore.Authorization;
-    using TallerBecerraAguilera.Helpers;
-
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador")] // O el rol que uses
     public class ClientesController : Controller
     {
         private readonly ClienteRepositorio _clienteRepositorio;
@@ -20,42 +19,48 @@ namespace TallerBecerraAguilera.Controllers
             _clienteRepositorio = clienteRepositorio;
         }
 
-        // GET: Clientes (LISTAR TODOS)
+        // GET: Clientes (Con Paginación)
         public async Task<IActionResult> Index(int pageNumber = 1)
         {
             int pageSize = 10;
-
+            // Obtenemos la query sin ejecutar desde el repositorio
             var query = _clienteRepositorio.Query();
-
+            
+            // PaginatedList se encarga de ejecutar la consulta paginada
             var paginated = await PaginatedList<Clientes>.CreateAsync(query, pageNumber, pageSize);
             
             return View(paginated);
         }
 
-        // GET: Clientes/Details/5 (VISTA DETALLES)
+        // GET: Clientes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
-            var cliente = await _clienteRepositorio.GetByIdAsync(id.Value); 
+
+            // NOTA: Asegúrate que tu repositorio haga el .Include(v => v.Vehiculos) 
+            // dentro de GetByIdAsync si quieres ver la lista de autos en el detalle.
+            var cliente = await _clienteRepositorio.GetByIdAsync(id.Value);
+            
             if (cliente == null) return NotFound();
+
             return View(cliente);
         }
 
-        // GET: Clientes/Create (VISTA CREAR)
+        // GET: Clientes/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Clientes/Create (ACCIÓN CREAR)
+        // POST: Clientes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Nombre,Apellido,Dni,Telefono,Email")] Clientes cliente)
         {
-            // VALIDACIÓN: DNI duplicado
+            // Validación personalizada: Evitar DNIs duplicados
             if (cliente.Dni != null && await _clienteRepositorio.GetByDniAsync(cliente.Dni) != null)
             {
-                ModelState.AddModelError("Dni", "Ya existe un cliente con este DNI.");
+                ModelState.AddModelError("Dni", "Ya existe un cliente registrado con este DNI.");
             }
 
             if (ModelState.IsValid)
@@ -67,23 +72,25 @@ namespace TallerBecerraAguilera.Controllers
             return View(cliente);
         }
 
-        // GET: Clientes/Edit/5 (VISTA EDITAR)
+        // GET: Clientes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
+
             var cliente = await _clienteRepositorio.GetByIdAsync(id.Value);
             if (cliente == null) return NotFound();
+
             return View(cliente);
         }
 
-        // POST: Clientes/Edit/5 (ACCIÓN ACTUALIZAR)
+        // POST: Clientes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Apellido,Dni,Telefono,Email,Created_at")] Clientes cliente)
         {
             if (id != cliente.Id) return NotFound();
-            
-            // VALIDACIÓN: DNI duplicado, excluyendo el cliente que se está editando
+
+            // Validación DNI duplicado (excluyendo al propio usuario que se edita)
             if (cliente.Dni != null)
             {
                 var existingClient = await _clienteRepositorio.GetByDniAsync(cliente.Dni);
@@ -100,29 +107,34 @@ namespace TallerBecerraAguilera.Controllers
                     await _clienteRepositorio.UpdateAsync(cliente);
                     TempData["Mensaje"] = "Cliente actualizado exitosamente.";
                 }
-                catch (DbUpdateConcurrencyException) // Manejo de concurrencia
+                catch (DbUpdateConcurrencyException)
                 {
-                    if (await _clienteRepositorio.ExistsAsync(cliente.Id) == false)
+                    if (!await _clienteRepositorio.ExistsAsync(cliente.Id))
                     {
                         return NotFound();
                     }
-                    throw;
+                    else
+                    {
+                        throw;
+                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
             return View(cliente);
         }
-        
-        // GET: Clientes/Delete/5 (VISTA ELIMINAR)
+
+        // GET: Clientes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
+
             var cliente = await _clienteRepositorio.GetByIdAsync(id.Value);
             if (cliente == null) return NotFound();
+
             return View(cliente);
         }
 
-        // POST: Clientes/Delete/5 (ACCIÓN ELIMINAR)
+        // POST: Clientes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -132,17 +144,21 @@ namespace TallerBecerraAguilera.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // ==========================================================
+        //  ENDPOINT PARA SELECT2 (Buscador en Vehículos)
+        // ==========================================================
         // GET: Clientes/BuscarClientes?term=juan
         [HttpGet]
         public async Task<IActionResult> BuscarClientes(string term)
         {
+            // Debes tener este método 'BuscarPorTerminoAsync' en tu Repositorio
             var clientes = await _clienteRepositorio.BuscarPorTerminoAsync(term);
 
-            // Select2 espera un formato específico: { results: [ { id: 1, text: 'Juan' }, ... ] }
-            var resultadoJson = clientes.Select(c => new 
-            { 
-                id = c.Id, 
-                text = $"{c.Apellido}, {c.Nombre} (DNI: {c.Dni})" 
+            // Formateamos la respuesta JSON como le gusta a Select2
+            var resultadoJson = clientes.Select(c => new
+            {
+                id = c.Id,
+                text = $"{c.Apellido}, {c.Nombre} (DNI: {c.Dni})"
             });
 
             return Json(new { results = resultadoJson });
