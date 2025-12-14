@@ -50,12 +50,17 @@ namespace TallerBecerraAguilera.Repositorios
 
         public async Task UpdateAsync(Proveedores proveedor)
         {
-            // Manejo de fechas de auditoría
-            proveedor.Updated_at = DateTime.Now;
-            
-            _context.Proveedores.Update(proveedor);
+            var existente = await _context.Proveedores.FindAsync(proveedor.Id);
+            if (existente == null) throw new Exception("Proveedor no encontrado");
+
+            existente.Nombre = proveedor.Nombre;
+            existente.Contacto = proveedor.Contacto;
+            existente.Telefono = proveedor.Telefono;
+            existente.CondicionesCompra = proveedor.CondicionesCompra;
+
             await _context.SaveChangesAsync();
         }
+
 
         public async Task DeleteAsync(int id)
         {
