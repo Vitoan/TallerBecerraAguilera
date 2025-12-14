@@ -1,0 +1,26 @@
+@model List<TallerBecerraAguilera.Models.OtRepuestos>
+
+<h3 class="mb-3">🧾 Repuestos Usados</h3>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>OT</th>
+            <th>Repuesto</th>
+            <th>Cantidad</th>
+            <th>Empleado</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>#@item.ot_id</td>
+            <td>@item.Repuesto?.descripcion</td>
+            <td>@item.cantidad_usada</td>
+            <td>@item.Empleado?.Nombre @item.Empleado?.Apellido</td>
+        </tr>
+    }
+    </tbody>
+</table>
+<a asp-controller="Repuestos" asp-action="Index" class="btn btn-secondary">Volver a lista de Repuestos</a>

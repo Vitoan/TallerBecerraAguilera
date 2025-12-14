@@ -3,11 +3,17 @@
 
 @{
     ViewData["Title"] = "Repuestos";
+    var esAdmin = User.IsInRole("Administrador");
+    var esEmpleado = User.IsInRole("Empleado");
 }
 
 <div class="d-sm-flex align-items-center justify-content-between mb-3">
     <h2>@ViewData["Title"]</h2>
-    <a class="btn btn-primary" asp-action="Create">Agregar Repuesto</a>
+
+    @if (esAdmin)
+    {
+        <a class="btn btn-primary" asp-action="Create">Agregar Repuesto</a>
+    }
 </div>
 
 <div class="card shadow-sm">
@@ -22,7 +28,7 @@
                         <th>Stock Mínimo</th>
                         <th>Precio</th>
                         <th>Proveedor</th>
-                        <th></th>
+                        <th class="text-center">Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,9 +41,30 @@
                         <td>@item.stockMinimo</td>
                         <td>@item.precioUnitario.ToString("C")</td>
                         <td>@item.Proveedor?.Nombre</td>
-                        <td>
-                            <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.id">Editar</a>
-                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.id">Eliminar</a>
+                        <td class="text-center">
+                            @if (esAdmin)
+                            {
+                                <a class="btn btn-warning btn-sm"
+                                   asp-action="Edit"
+                                   asp-route-id="@item.id">
+                                    Editar
+                                </a>
+
+                                <a class="btn btn-danger btn-sm"
+                                   asp-action="Delete"
+                                   asp-route-id="@item.id">
+                                    Eliminar
+                                </a>
+                            }
+                            else if (esEmpleado)
+                            {
+                                <a class="btn btn-success btn-sm"
+                                    asp-controller="OtRepuestos"
+                                    asp-action="Usar"
+                                    asp-route-repuestoId="@item.id">
+                                     Usar repuesto
+                                    </a>
+                            }
                         </td>
                     </tr>
                 }

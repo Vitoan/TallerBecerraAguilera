@@ -45,9 +45,6 @@ namespace TallerBecerraAguilera.Data
             modelBuilder.Entity<PedidoRepuestos>()
                 .HasKey(pr => new { pr.pedido_id, pr.repuesto_id });
 
-            modelBuilder.Entity<OtRepuestos>()
-                .HasKey(or => new { or.ot_id, or.repuesto_id });
-
             // === ÍNDICES Y UNICIDAD ===
             modelBuilder.Entity<Vehiculos>()
                 .HasIndex(v => v.patente)

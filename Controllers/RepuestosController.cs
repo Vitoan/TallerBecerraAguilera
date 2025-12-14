@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Helpers;
 using TallerBecerraAguilera.Models;
 using TallerBecerraAguilera.Repositorios;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -30,11 +31,13 @@ namespace TallerBecerraAguilera.Controllers
             return View(paginated);
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create()
         {
             return View();
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> Create(Repuestos repuesto)
         {
@@ -47,6 +50,7 @@ namespace TallerBecerraAguilera.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id)
         {
             var repuesto = await _repo.GetByIdAsync(id);
@@ -54,6 +58,7 @@ namespace TallerBecerraAguilera.Controllers
             return View(repuesto);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> Edit(Repuestos repuesto)
         {
@@ -66,12 +71,14 @@ namespace TallerBecerraAguilera.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int id)
         {
             var repuesto = await _repo.GetByIdAsync(id);
             return View(repuesto);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -79,6 +86,7 @@ namespace TallerBecerraAguilera.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        
         [HttpGet]
         public async Task<IActionResult> BuscarProveedores(string term)
         {
