@@ -1,47 +1,61 @@
 @model List<TallerBecerraAguilera.Models.OtHerramientas>
 
 @{
-    ViewData["Title"] = "Herramientas de la OT";
-    var ot = ViewBag.OT;
+    ViewData["Title"] = "Pedidos de Herramientas";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>🔧 Herramientas usadas en la OT #@ot.Id</h3>
+<h3 class="mb-3">🔧 Pedidos de Herramientas</h3>
 
-    <a asp-action="Create" asp-route-otId="@ot.Id" class="btn btn-primary">
-        Agregar Herramienta
-    </a>
-</div>
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No hay pedidos de herramientas registrados.
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>OT</th>
+                <th>Herramienta</th>
+                <th>Empleado</th>
+                <th>Fecha Préstamo</th>
+                <th>Fecha Devolución</th>
+                <th class="text-center">Acciones</th>
+            </tr>
+        </thead>
 
-<table class="table table-bordered table-striped align-middle">
-    <thead class="table-light">
-        <tr>
-            <th>Herramienta</th>
-            <th>Estado</th>
-            <th>Empleado</th>
-            <th>Fecha Préstamo</th>
-            <th class="text-center">Acciones</th>
-        </tr>
-    </thead>
-
-    <tbody>
+        <tbody>
         @foreach (var item in Model)
         {
             <tr>
+                <td>#@item.ot_id</td>
                 <td>@item.Herramienta?.Nombre</td>
-                <td>@item.Herramienta?.Estado</td>
                 <td>@item.Empleado?.Nombre @item.Empleado?.Apellido</td>
-                <td>@item.fecha_prestamo.ToString("dd/MM/yyyy")</td>
+                <td>@item.fecha_prestamo.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>
+                    @if (item.fecha_devolucion.HasValue)
+                    {
+                        @item.fecha_devolucion.Value.ToString("dd/MM/yyyy HH:mm")
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Pendiente</span>
+                    }
+                </td>
                 <td class="text-center">
-                    <a asp-action="Delete" asp-route-id="@item.ot_id" class="btn btn-sm btn-danger">
-                        <i class="bi bi-trash"></i> Eliminar
-                    </a>
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a asp-action="Delete"
+                           asp-route-id="@item.id"
+                           class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    }
                 </td>
             </tr>
         }
-    </tbody>
-</table>
-
-<a asp-controller="OrdenesTrabajo" asp-action="Edit" asp-route-id="@ot.Id" class="btn btn-secondary">
-    Volver a la OT
-</a>
+        </tbody>
+    </table>
+}

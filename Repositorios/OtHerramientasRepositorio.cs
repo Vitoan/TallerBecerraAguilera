@@ -4,6 +4,7 @@ using TallerBecerraAguilera.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
 
 namespace TallerBecerraAguilera.Repositorios
 {
@@ -20,6 +21,7 @@ namespace TallerBecerraAguilera.Repositorios
         {
             return _context.OtHerramientas
                 .Include(o => o.Herramienta)
+                .Include(o => o.Empleado)
                 .Include(o => o.OrdenTrabajo);
         }
 
@@ -29,18 +31,17 @@ namespace TallerBecerraAguilera.Repositorios
                 .Include(o => o.Herramienta)
                 .Include(o => o.Empleado)
                 .Where(o => o.ot_id == otId)
+                .OrderByDescending(o => o.fecha_prestamo)
                 .ToListAsync();
         }
 
-        public async Task<OtHerramientas?> ObtenerAsync(int otId, int herramientaId)
+        public async Task<OtHerramientas?> ObtenerPorIdAsync(int id)
         {
             return await _context.OtHerramientas
                 .Include(o => o.Herramienta)
                 .Include(o => o.OrdenTrabajo)
                 .Include(o => o.Empleado)
-                .FirstOrDefaultAsync(o =>
-                    o.ot_id == otId &&
-                    o.herramienta_id == herramientaId);
+                .FirstOrDefaultAsync(o => o.id == id);
         }
 
         public async Task CrearAsync(OtHerramientas entidad)
@@ -55,9 +56,9 @@ namespace TallerBecerraAguilera.Repositorios
             await _context.SaveChangesAsync();
         }
 
-        public async Task EliminarAsync(int otId, int herramientaId)
+        public async Task EliminarAsync(int id)
         {
-            var entidad = await ObtenerAsync(otId, herramientaId);
+            var entidad = await ObtenerPorIdAsync(id);
             if (entidad != null)
             {
                 _context.OtHerramientas.Remove(entidad);
@@ -75,9 +76,21 @@ namespace TallerBecerraAguilera.Repositorios
                 .ToListAsync();
         }
 
-        public async Task<bool> DevolverHerramienta(int otId, int herramientaId, int empleadoId)
+        public async Task<List<OtHerramientas>> ObtenerPendientesPorEmpleado(int empleadoId)
         {
-            var registro = await ObtenerAsync(otId, herramientaId);
+            return await _context.OtHerramientas
+                .Include(x => x.Herramienta)
+                .Include(x => x.OrdenTrabajo)
+                .Where(x =>
+                    x.empleado_id == empleadoId &&
+                    x.fecha_devolucion == null)
+                .OrderByDescending(x => x.fecha_prestamo)
+                .ToListAsync();
+        }
+
+        public async Task<bool> DevolverHerramienta(int id, int empleadoId)
+        {
+            var registro = await ObtenerPorIdAsync(id);
 
             if (registro == null)
                 return false;
@@ -85,18 +98,18 @@ namespace TallerBecerraAguilera.Repositorios
             if (registro.empleado_id != empleadoId)
                 return false;
 
+            if (registro.fecha_devolucion != null)
+                return false;
+
             registro.fecha_devolucion = DateTime.Now;
 
             var herramienta = await _context.Herramientas
-                .FirstOrDefaultAsync(x => x.Id == herramientaId);
+                .FirstOrDefaultAsync(x => x.Id == registro.herramienta_id);
 
             if (herramienta == null)
                 return false;
 
             herramienta.Estado = EstadoHerramienta.Disponible;
-            _context.Herramientas.Update(herramienta);
-
-            _context.OtHerramientas.Remove(registro);
 
             await _context.SaveChangesAsync();
             return true;

@@ -37,8 +37,8 @@
 
                 <td class="text-center">
                     <form asp-action="Devolver" method="post" class="d-inline">
-                        <input type="hidden" name="otId" value="@item.ot_id" />
-                        <input type="hidden" name="herramientaId" value="@item.herramienta_id" />
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.id" />
 
                         <button type="submit" class="btn btn-sm btn-success">
                             <i class="bi bi-arrow-return-left"></i> Devolver
