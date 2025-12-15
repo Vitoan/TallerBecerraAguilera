@@ -3,7 +3,8 @@
 @{
     ViewData["Title"] = "Solicitar Herramienta";
 
-    // Recuperamos la herramienta y la lista de OTs
+    // Recuperamos la herramienta y la lista de OTs desde el ViewBag
+    // Usamos el operador 'as' y el operador de coalescencia nula '??' para evitar errores si viene null
     var herramienta = ViewBag.Herramienta as TallerBecerraAguilera.Models.Herramientas;
     var ots = ViewBag.OTs as List<TallerBecerraAguilera.Models.OrdenesTrabajo> ?? new List<TallerBecerraAguilera.Models.OrdenesTrabajo>();
 }
@@ -11,7 +12,7 @@
 <div class="container mx-auto px-4 py-8">
 
     <div class="mb-8 flex items-center gap-4">
-        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600">
+        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 shadow-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11" />
             </svg>
@@ -22,7 +23,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-2xl mx-auto transition-all hover:shadow-xl">
         
         <div class="h-2 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
 
@@ -30,9 +31,13 @@
             <div>
                 <p class="text-xs font-bold text-indigo-500 uppercase tracking-wide">Herramienta Solicitada</p>
                 <h2 class="text-2xl font-bold text-indigo-900 mt-1">@herramienta?.Nombre</h2>
-                <p class="text-sm text-indigo-700 font-mono">Cód: @herramienta?.Codigo</p>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="px-2 py-0.5 rounded text-xs font-mono bg-white border border-indigo-100 text-indigo-700">
+                        Cód: @herramienta?.Codigo
+                    </span>
+                </div>
             </div>
-            <div class="bg-white p-3 rounded-full shadow-sm text-indigo-600">
+            <div class="bg-white p-3 rounded-full shadow-sm text-indigo-600 hidden sm:block">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -43,13 +48,13 @@
         <div class="p-8">
             @if (ots.Any())
             {
-                <form method="post" class="space-y-6">
+                <form asp-action="Create" method="post" class="space-y-6">
                     
                     <input type="hidden" asp-for="herramienta_id" value="@herramienta?.Id" />
                     <input type="hidden" asp-for="empleado_id" />
 
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Orden de Trabajo</label>
+                        <label asp-for="ot_id" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Orden de Trabajo</label>
                         <div class="relative">
                             <select asp-for="ot_id" class="w-full pl-4 pr-10 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200 cursor-pointer appearance-none" required>
                                 <option value="">-- Seleccionar OT activa --</option>
@@ -62,11 +67,16 @@
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">Solo se muestran tus órdenes en estado 'En Reparación'.</p>
+                        <p class="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            Solo se muestran tus órdenes en estado 'En Reparación'.
+                        </p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Fecha de Préstamo</label>
+                        <label asp-for="fecha_prestamo" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Fecha de Préstamo</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -81,7 +91,7 @@
                         <a asp-action="Index" asp-controller="Herramientas" class="text-gray-600 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition duration-150">
                             Cancelar
                         </a>
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition duration-150 ease-in-out transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition duration-150 ease-in-out transform hover:-translate-y-0.5 flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
@@ -92,18 +102,18 @@
             }
             else
             {
-                <div class="text-center py-4">
-                    <div class="mx-auto h-12 w-12 text-yellow-400 mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="text-center py-8">
+                    <div class="mx-auto h-16 w-16 bg-yellow-50 rounded-full flex items-center justify-center text-yellow-500 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900">No tienes Órdenes de Trabajo activas</h3>
-                    <p class="mt-2 text-sm text-gray-500">
-                        Para pedir una herramienta prestada, primero debes tener asignada una OT en estado "En Reparación".
+                    <h3 class="text-lg font-bold text-gray-900">No tienes Órdenes de Trabajo activas</h3>
+                    <p class="mt-2 text-sm text-gray-500 max-w-sm mx-auto">
+                        Para pedir una herramienta prestada, primero debes tener asignada una OT en estado <span class="font-bold text-gray-700">"En Reparación"</span>.
                     </p>
-                    <div class="mt-6">
-                        <a asp-controller="Herramientas" asp-action="Index" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    <div class="mt-8">
+                        <a asp-controller="Herramientas" asp-action="Index" class="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition">
                             Volver al Inventario
                         </a>
                     </div>

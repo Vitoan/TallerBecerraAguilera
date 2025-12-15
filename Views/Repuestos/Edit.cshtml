@@ -7,55 +7,113 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
-<h2>Editar Repuesto</h2>
+<style>
+    .select2-container--bootstrap-5 .select2-selection {
+        border-color: #d1d5db;
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+        min-height: 48px;
+    }
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+        color: #374151;
+        font-size: 0.95rem;
+    }
+</style>
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="id"/>
-
-    <div class="form-group mb-3">
-        <label asp-for="codigo"></label>
-        <input asp-for="codigo" class="form-control" />
-        <span asp-validation-for="codigo" class="text-danger"></span>
+<div class="container mx-auto px-4 py-8">
+    
+    <div class="mb-8 flex items-center gap-4">
+        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-indigo-800">Editar Repuesto</h1>
+            <p class="text-gray-500 mt-1">Modificar datos del artículo: <span class="font-mono font-bold text-indigo-600">@Model.codigo</span></p>
+        </div>
     </div>
 
-    <div class="form-group mb-3">
-        <label asp-for="descripcion"></label>
-        <input asp-for="descripcion" class="form-control" />
-        <span asp-validation-for="descripcion" class="text-danger"></span>
-    </div>
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="h-2 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
 
-    <div class="form-group mb-3">
-        <label asp-for="precioUnitario"></label>
-        <input asp-for="precioUnitario" class="form-control" />
-        <span asp-validation-for="precioUnitario" class="text-danger"></span>
-    </div>
+        <div class="p-8">
+            <form asp-action="Edit" method="post" class="space-y-6">
+                
+                <input type="hidden" asp-for="id"/>
+                <div asp-validation-summary="ModelOnly" class="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-200 text-sm"></div>
 
-    <div class="form-group mb-3">
-        <label asp-for="cantidadStock"></label>
-        <input asp-for="cantidadStock" class="form-control" />
-        <span asp-validation-for="cantidadStock" class="text-danger"></span>
-    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <div>
+                        <label asp-for="codigo" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Código</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm2 2V5h1v1H5zM3 13a1 1 0 011-1h3a1 1 0 011 1v3a1 1 0 01-1 1H4a1 1 0 01-1-1v-3zm2 2v-1h1v1H5zM13 3a1 1 0 00-1 1v3a1 1 0 001 1h3a1 1 0 001-1V4a1 1 0 00-1-1h-3zm1 2v1h1V5h-1z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <input asp-for="codigo" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200" />
+                        </div>
+                        <span asp-validation-for="codigo" class="text-red-500 text-xs mt-1"></span>
+                    </div>
 
-    <div class="form-group mb-3">
-        <label asp-for="stockMinimo"></label>
-        <input asp-for="stockMinimo" class="form-control" />
-        <span asp-validation-for="stockMinimo" class="text-danger"></span>
-    </div>
+                    <div>
+                        <label asp-for="descripcion" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Descripción</label>
+                        <input asp-for="descripcion" class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200" />
+                        <span asp-validation-for="descripcion" class="text-red-500 text-xs mt-1"></span>
+                    </div>
 
-    <div class="form-group mb-3">
-        <label>Proveedor</label>
-        <select asp-for="proveedorId" class="form-select" id="buscadorProveedores">
-            @if (Model.Proveedor != null)
-            {
-                <option value="@Model.Proveedor.Id" selected="selected">@Model.Proveedor.Nombre</option>
-            }
-        </select>
-        <span asp-validation-for="proveedorId" class="text-danger"></span>
-    </div>
+                    <div>
+                        <label asp-for="precioUnitario" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Precio Unitario ($)</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 font-bold">$</span>
+                            <input asp-for="precioUnitario" type="number" step="0.01" class="w-full pl-8 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200" />
+                        </div>
+                        <span asp-validation-for="precioUnitario" class="text-red-500 text-xs mt-1"></span>
+                    </div>
 
-    <button type="submit" class="btn btn-primary">Guardar</button>
-    <a asp-action="Index" class="btn btn-secondary">Volver</a>
-</form>
+                    <div>
+                        <label asp-for="proveedorId" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Proveedor</label>
+                        <select asp-for="proveedorId" class="form-select w-full" id="buscadorProveedores">
+                            @if (Model.Proveedor != null)
+                            {
+                                <option value="@Model.Proveedor.Id" selected="selected">
+                                    @Model.Proveedor.Nombre
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="proveedorId" class="text-red-500 text-xs mt-1"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="cantidadStock" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Stock Actual</label>
+                        <input asp-for="cantidadStock" type="number" class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200" />
+                        <span asp-validation-for="cantidadStock" class="text-red-500 text-xs mt-1"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="stockMinimo" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Stock Mínimo</label>
+                        <input asp-for="stockMinimo" type="number" class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200" />
+                        <span asp-validation-for="stockMinimo" class="text-red-500 text-xs mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-gray-100">
+                    <a asp-action="Index" class="text-gray-600 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition duration-150">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition duration-150 ease-in-out transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -63,17 +121,17 @@
 
     <script>
         $(document).ready(function() {
-            var proveedorId = '@Model.Proveedor?.Id';
-            var proveedorNombre = '@Model.Proveedor?.Nombre';
-
+            // Inicializar Select2
             $('#buscadorProveedores').select2({
                 theme: 'bootstrap-5',
                 placeholder: 'Seleccione un proveedor',
+                width: '100%',
                 minimumInputLength: 1,
                 allowClear: true,
                 language: {
                     noResults: function() { return "No se encontraron proveedores"; },
-                    searching: function() { return "Buscando..." }
+                    searching: function() { return "Buscando..."; },
+                    inputTooShort: function() { return "Ingrese al menos un carácter"; }
                 },
                 ajax: {
                     url: '@Url.Action("BuscarProveedores", "Repuestos")',
@@ -89,9 +147,23 @@
                 }
             });
 
-            if(proveedorId) {
-                var option = new Option(proveedorNombre, proveedorId, true, true);
-                $('#buscadorProveedores').append(option).trigger('change');
+            // Lógica Simplificada y Segura para precargar el proveedor
+            // El operador ?? "" evita que sea null y rompa el JS
+            // Usamos .Id (Mayúscula) para Proveedor
+            var currentProvId = '@(Model.Proveedor?.Id.ToString() ?? "")';
+            
+            // Usamos .Nombre (o .RazonSocial, .nombre, etc.)
+            var currentProvName = '@(Model.Proveedor?.Nombre ?? "")';
+
+            if (currentProvId) {
+                // Verificar si ya existe la opción visualmente
+                if ($('#buscadorProveedores').find("option[value='" + currentProvId + "']").length) {
+                    $('#buscadorProveedores').val(currentProvId).trigger('change');
+                } else {
+                    // Si Select2 no tiene la data, la creamos manualmente
+                    var newOption = new Option(currentProvName, currentProvId, true, true);
+                    $('#buscadorProveedores').append(newOption).trigger('change');
+                }
             }
         });
     </script>
