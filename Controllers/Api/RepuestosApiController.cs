@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using TallerBecerraAguilera.Repositorios;
+using TallerBecerraAguilera.Models;
 
 namespace TallerBecerraAguilera.Controllers.Api
 {
@@ -118,6 +119,58 @@ namespace TallerBecerraAguilera.Controllers.Api
                 });
 
             return Ok(resultado);
+        }
+
+        // -------------------------------------------------------------
+        // URL:
+        // POST https://localhost:XXXX/api/RepuestosApi
+        // Body (JSON):
+        // {
+        //   "codigo": "R888",
+        //   "descripcion": "Filtro de aire Peugeot",
+        //   "cantidadStock": 8,
+        //   "precioUnitario": 3900
+        // }
+        // Header requerido:
+        // Authorization: Bearer <TOKEN>
+        // -------------------------------------------------------------
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] Repuestos repuesto)
+        {
+            if (repuesto == null)
+                return BadRequest("Datos inválidos");
+
+            await _repo.AddAsync(repuesto);
+
+            return CreatedAtAction(nameof(GetById), new { id = repuesto.id }, new
+            {
+                repuesto.id,
+                repuesto.codigo,
+                repuesto.descripcion
+            });
+        }
+
+        // -------------------------------------------------------------
+        // URL:
+        // DELETE https://localhost:XXXX/api/RepuestosApi/5
+        // Header requerido:
+        // Authorization: Bearer <TOKEN>
+        // -------------------------------------------------------------
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var repuesto = await _repo.GetByIdAsync(id);
+
+            if (repuesto == null)
+                return NotFound("Repuesto no encontrado");
+
+            await _repo.DeleteAsync(id);
+
+            return Ok(new
+            {
+                Mensaje = "Repuesto eliminado correctamente",
+                Id = id
+            });
         }
     }
 }
