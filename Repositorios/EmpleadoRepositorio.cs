@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using TallerBecerraAguilera.Data;
 using TallerBecerraAguilera.Helpers;
 
-
 namespace TallerBecerraAguilera.Repositorios
 {
     public class EmpleadoRepositorio
@@ -45,13 +44,26 @@ namespace TallerBecerraAguilera.Repositorios
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        // Delete con manejo de FK
+        public async Task<(bool ok, string mensaje)> DeleteAsync(int id)
         {
             var empleado = await _context.Empleados.FindAsync(id);
-            if (empleado != null)
+            if (empleado == null)
+                return (false, "El empleado no existe.");
+
+            try
             {
                 _context.Empleados.Remove(empleado);
                 await _context.SaveChangesAsync();
+                return (true, "Empleado eliminado exitosamente.");
+            }
+            catch (DbUpdateException)
+            {
+                return (false, "No se pudo eliminar el empleado porque está asociado a otras entidades.");
+            }
+            catch (Exception)
+            {
+                return (false, "Ocurrió un error inesperado al eliminar el empleado.");
             }
         }
 

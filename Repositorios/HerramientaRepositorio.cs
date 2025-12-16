@@ -35,13 +35,26 @@ namespace TallerBecerraAguilera.Repositorios
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        // Delete con manejo de FK
+        public async Task<(bool ok, string mensaje)> DeleteAsync(int id)
         {
             var herramienta = await _context.Herramientas.FindAsync(id);
-            if (herramienta != null)
+            if (herramienta == null)
+                return (false, "La herramienta no existe.");
+
+            try
             {
                 _context.Herramientas.Remove(herramienta);
                 await _context.SaveChangesAsync();
+                return (true, "Herramienta eliminada correctamente.");
+            }
+            catch (DbUpdateException)
+            {
+                return (false, "No se pudo eliminar la herramienta porque está asociada a otras entidades.");
+            }
+            catch (Exception)
+            {
+                return (false, "Ocurrió un error inesperado al eliminar la herramienta.");
             }
         }
 

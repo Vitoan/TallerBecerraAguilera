@@ -8,6 +8,32 @@
 
     <h1 class="text-3xl font-bold text-indigo-800 mb-6">Eliminar Herramienta</h1>
 
+    @if (TempData["Mensaje"] != null)
+{
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm flex justify-between items-center" role="alert">
+        <div>
+            <p class="font-bold">¡Éxito!</p>
+            <p>@TempData["Mensaje"]</p>
+        </div>
+        <button type="button" onclick="this.parentElement.remove()" class="text-green-700 hover:text-green-900">
+            <span class="text-2xl">&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm flex justify-between items-center" role="alert">
+        <div>
+            <p class="font-bold">¡Error!</p>
+            <p>@TempData["Error"]</p>
+        </div>
+        <button type="button" onclick="this.parentElement.remove()" class="text-red-700 hover:text-red-900">
+            <span class="text-2xl">&times;</span>
+        </button>
+    </div>
+}
+
     <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-8 rounded-r shadow-sm flex items-start gap-4">
         <div class="text-red-500 mt-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

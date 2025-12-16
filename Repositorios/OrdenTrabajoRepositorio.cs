@@ -84,12 +84,26 @@ namespace TallerBecerraAguilera.Repositorios
 
         public async Task DeleteAsync(int id)
         {
-            var ot = await GetByIdAsync(id);
+            // Primero borrar los OtHerramientas relacionados
+            var herramientas = await _context.OtHerramientas
+                .Where(h => h.ot_id == id)
+                .ToListAsync();
+            if (herramientas.Any())
+                _context.OtHerramientas.RemoveRange(herramientas);
+
+            // Después borrar los OtRepuestos relacionados
+            var repuestos = await _context.OtRepuestos
+                .Where(r => r.ot_id == id)
+                .ToListAsync();
+            if (repuestos.Any())
+                _context.OtRepuestos.RemoveRange(repuestos);
+
+            // Por último, borrar la Orden de Trabajo
+            var ot = await _context.OrdenesTrabajo.FindAsync(id);
             if (ot != null)
-            {
                 _context.OrdenesTrabajo.Remove(ot);
-                await _context.SaveChangesAsync();
-            }
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> ExistsAsync(int id)

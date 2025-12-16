@@ -16,7 +16,6 @@ namespace TallerBecerraAguilera.Controllers
             _repo = repo;
         }
 
-        // GET: Empleados
         public async Task<IActionResult> Index(int? pageNumber)
         {
             int pageSize = 10;
@@ -24,7 +23,6 @@ namespace TallerBecerraAguilera.Controllers
             return View(empleados);
         }
 
-        // GET: Empleados/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var empleado = await _repo.GetByIdAsync(id);
@@ -32,13 +30,8 @@ namespace TallerBecerraAguilera.Controllers
             return View(empleado);
         }
 
-        // GET: Empleados/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
-        // POST: Empleados/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Empleados empleado)
@@ -51,7 +44,6 @@ namespace TallerBecerraAguilera.Controllers
             return View(empleado);
         }
 
-        // GET: Empleados/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var empleado = await _repo.GetByIdAsync(id);
@@ -59,7 +51,6 @@ namespace TallerBecerraAguilera.Controllers
             return View(empleado);
         }
 
-        // POST: Empleados/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Empleados empleado)
@@ -73,7 +64,6 @@ namespace TallerBecerraAguilera.Controllers
             return View(empleado);
         }
 
-        // GET: Empleados/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
             var empleado = await _repo.GetByIdAsync(id);
@@ -81,12 +71,12 @@ namespace TallerBecerraAguilera.Controllers
             return View(empleado);
         }
 
-        // POST: Empleados/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _repo.DeleteAsync(id);
+            var (ok, mensaje) = await _repo.DeleteAsync(id);
+            TempData["Mensaje"] = mensaje;
             return RedirectToAction(nameof(Index));
         }
     }

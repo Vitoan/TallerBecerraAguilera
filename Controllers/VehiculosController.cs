@@ -157,10 +157,19 @@ namespace TallerBecerraAguilera.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _vehiculoRepositorio.DeleteAsync(id);
-            TempData["Mensaje"] = "Vehículo eliminado exitosamente.";
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _vehiculoRepositorio.DeleteAsync(id);
+                TempData["Mensaje"] = "Vehículo eliminado exitosamente.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Delete), new { id });
+            }
         }
+
 
         // ===========================
         // DROPDOWN DE CLIENTES

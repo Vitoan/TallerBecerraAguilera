@@ -79,14 +79,29 @@ namespace TallerBecerraAguilera.Repositorios
         }
 
         // Eliminar un cliente por ID (ELIMINAR)
-        public async Task DeleteAsync(int id)
+        // Eliminar un cliente por ID (ELIMINAR) con manejo de FK
+        public async Task<(bool ok, string mensaje)> DeleteAsync(int id)
         {
-            var cliente = await GetByIdAsync(id);
-            if (cliente != null)
+            try
             {
+                var cliente = await GetByIdAsync(id);
+                if (cliente == null)
+                    return (false, "Cliente no encontrado.");
+
                 _context.Clientes.Remove(cliente);
                 await _context.SaveChangesAsync();
+                return (true, "Cliente eliminado correctamente.");
             }
-        }
+            catch (DbUpdateException)
+            {
+                // Esto captura los errores de clave foránea
+                return (false, "No se pudo eliminar el cliente porque tiene registros asociados (vehículos, órdenes, etc.).");
+            }
+            catch (Exception ex)
+            {
+                // Captura cualquier otro error
+                return (false, $"Ocurrió un error al eliminar el cliente: {ex.Message}");
+            }
+        }   
     }
 }

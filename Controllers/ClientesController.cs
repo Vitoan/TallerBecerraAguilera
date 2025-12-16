@@ -139,8 +139,13 @@ namespace TallerBecerraAguilera.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _clienteRepositorio.DeleteAsync(id);
-            TempData["Mensaje"] = "Cliente eliminado exitosamente.";
+            var (ok, mensaje) = await _clienteRepositorio.DeleteAsync(id);
+            if (!ok)
+            {
+                TempData["Error"] = mensaje;
+                return RedirectToAction(nameof(Index), new { id });
+            }
+            TempData["Mensaje"] = mensaje;
             return RedirectToAction(nameof(Index));
         }
 

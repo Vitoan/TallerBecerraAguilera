@@ -109,22 +109,30 @@ namespace TallerBecerraAguilera.Controllers
             return View(herramienta);
         }
 
-        [Authorize(Roles = "Administrador")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _repo.DeleteAsync(id);
+    // Llamamos al repositorio que devuelve un tuple (bool, string)
+            var resultado = await _repo.DeleteAsync(id);
 
-            // También eliminamos imágenes de la herramienta
-            var imagenes = await _imgRepo.ObtenerPorHerramientaAsync(id);
-            foreach (var img in imagenes)
+            // Eliminamos imágenes si la herramienta se borró correctamente
+            if (resultado.ok)
             {
-                await _imgRepo.EliminarAsync(img.Id);
-            }
+                var imagenes = await _imgRepo.ObtenerPorHerramientaAsync(id);
+                foreach (var img in imagenes)
+                {
+                    await _imgRepo.EliminarAsync(img.Id);
+                }
 
-            TempData["success"] = "Herramienta eliminada correctamente.";
-            return RedirectToAction(nameof(Index));
+                TempData["success"] = resultado.mensaje;
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                TempData["error"] = resultado.mensaje;
+                return RedirectToAction(nameof(Delete), new { id });
+            }
         }
     }
 }

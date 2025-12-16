@@ -76,8 +76,15 @@ namespace TallerBecerraAguilera.Repositorios
             var vehiculo = await _context.Vehiculos.FindAsync(id);
             if (vehiculo != null)
             {
-                _context.Vehiculos.Remove(vehiculo);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    _context.Vehiculos.Remove(vehiculo);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    throw new InvalidOperationException("No se pudo eliminar el vehículo porque está asociado a otras entidades.");
+                }
             }
         }
 

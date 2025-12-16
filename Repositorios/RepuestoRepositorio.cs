@@ -51,8 +51,15 @@ namespace TallerBecerraAguilera.Repositorios
             var repuesto = await _context.Repuestos.FindAsync(id);
             if (repuesto != null)
             {
-                _context.Repuestos.Remove(repuesto);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    _context.Repuestos.Remove(repuesto);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    throw new InvalidOperationException("No se pudo eliminar el repuesto porque está asociado a otras entidades.");
+                }
             }
         }
 

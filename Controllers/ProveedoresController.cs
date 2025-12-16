@@ -58,10 +58,18 @@ namespace TallerBecerraAguilera.Controllers
 
         // POST: Eliminar
         [HttpPost]
-        public async Task<IActionResult> Delete([FromBody] Proveedores proveedor)
-        {
-            await _repo.DeleteAsync(proveedor.Id);
-            return Ok();
-        }
+public async Task<IActionResult> Delete([FromBody] Proveedores proveedor)
+{
+    try
+    {
+        await _repo.DeleteAsync(proveedor.Id);
+        return Ok();
+    }
+    catch (InvalidOperationException ex)
+    {
+        return BadRequest(ex.Message);
+    }
+}
+
     }
 }

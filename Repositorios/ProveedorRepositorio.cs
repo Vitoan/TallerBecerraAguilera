@@ -63,18 +63,21 @@ namespace TallerBecerraAguilera.Repositorios
 
 
         public async Task DeleteAsync(int id)
+{
+    var proveedor = await GetByIdAsync(id);
+    if (proveedor != null)
+    {
+        try
         {
-            var proveedor = await GetByIdAsync(id);
-            if (proveedor != null)
-            {
-                _context.Proveedores.Remove(proveedor);
-                await _context.SaveChangesAsync();
-            }
+            _context.Proveedores.Remove(proveedor);
+            await _context.SaveChangesAsync();
         }
+        catch (DbUpdateException)
+        {
+            throw new InvalidOperationException("No se pudo eliminar el proveedor porque está asociado a otras entidades.");
+        }
+    }
+}
 
-        public async Task<bool> ExistsAsync(int id)
-        {
-            return await _context.Proveedores.AnyAsync(p => p.Id == id);
-        }
     }
 }

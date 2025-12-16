@@ -99,9 +99,18 @@ namespace TallerBecerraAguilera.Controllers
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _repo.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _repo.DeleteAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Delete), new { id });
+            }
         }
+
 
         
         [HttpGet]
