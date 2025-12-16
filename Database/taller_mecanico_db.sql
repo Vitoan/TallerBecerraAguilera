@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-12-2025 a las 02:44:23
+-- Tiempo de generación: 16-12-2025 a las 16:21:09
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `taller_mecanico_db`
 --
+CREATE DATABASE IF NOT EXISTS `taller_mecanico_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `taller_mecanico_db`;
 
 -- --------------------------------------------------------
 
@@ -145,7 +147,10 @@ CREATE TABLE `ordenes_trabajo` (
 
 INSERT INTO `ordenes_trabajo` (`id`, `descripcion_falla`, `fecha_ingreso`, `fecha_estimada_entrega`, `estado`, `horas_estimadas`, `vehiculo_id`, `empleado_id`, `created_at`, `updated_at`) VALUES
 (1, 'Cambio de aceite y filtro', '2025-11-05 22:58:39', '2025-11-10 12:00:00', 0, 2.50, 1, 2, '2025-11-05 22:58:39', '2025-12-10 10:44:27'),
-(2, 'Le gotea aceite', '2025-12-10 00:00:00', '2025-12-12 00:00:00', 1, 12.00, 3, 2, '2025-12-10 17:27:14', '2025-12-11 15:40:19');
+(2, 'Le gotea aceite', '2025-12-10 00:00:00', '2025-12-12 00:00:00', 1, 12.00, 3, 2, '2025-12-10 17:27:14', '2025-12-11 15:40:19'),
+(3, 'Servicio completo Octubre', '2025-10-15 10:00:00', '2025-10-16 10:00:00', 3, 2.00, 1, 2, '2025-12-16 12:19:57', '2025-12-16 12:19:57'),
+(4, 'Cambio distribución Noviembre', '2025-11-20 09:00:00', '2025-11-22 18:00:00', 3, 5.00, 2, 2, '2025-12-16 12:19:57', '2025-12-16 12:19:57'),
+(5, 'Frenos y Aceite Diciembre', '2025-12-14 14:00:00', '2025-12-14 18:00:00', 3, 3.50, 1, 2, '2025-12-16 12:19:57', '2025-12-16 12:19:57');
 
 -- --------------------------------------------------------
 
@@ -168,8 +173,7 @@ CREATE TABLE `ot_herramientas` (
 
 INSERT INTO `ot_herramientas` (`id`, `ot_id`, `herramienta_id`, `empleado_id`, `fecha_prestamo`, `fecha_devolucion`) VALUES
 (1, 2, 1, 2, '2025-12-13 21:32:50', '2025-12-13 21:36:34'),
-(2, 2, 2, 2, '2025-12-13 21:33:12', '2025-12-13 21:36:33'),
-(3, 2, 2, 2, '2025-12-13 21:36:39', NULL);
+(2, 2, 2, 2, '2025-12-13 21:33:12', '2025-12-13 21:36:33');
 
 -- --------------------------------------------------------
 
@@ -190,7 +194,10 @@ CREATE TABLE `ot_repuestos` (
 --
 
 INSERT INTO `ot_repuestos` (`id`, `ot_id`, `repuesto_id`, `empleado_id`, `cantidad_usada`) VALUES
-(1, 2, 1, 2, 1);
+(1, 2, 1, 2, 1),
+(2, 3, 1, 2, 1),
+(3, 4, 2, 2, 2),
+(4, 5, 1, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -221,7 +228,10 @@ INSERT INTO `pedidos_repuestos` (`Id`, `Fecha`, `Estado`, `Proveedor_id`, `Emple
 (5, '2025-12-10 16:41:43', 2, 1, 1, '2025-12-10 16:41:43', '2025-12-11 18:59:14', '2025-12-10 00:00:00'),
 (6, '2025-12-11 16:38:59', 1, 1, 3, '2025-12-11 16:38:58', '2025-12-11 18:59:35', '2025-12-11 00:00:00'),
 (7, '2025-12-11 18:06:18', 2, 1, 2, '2025-12-11 18:06:18', '2025-12-11 18:59:06', '2025-12-11 00:00:00'),
-(8, '2025-12-11 20:27:42', 0, 1, 3, '2025-12-11 20:27:42', '2025-12-11 20:27:42', '2025-12-11 00:00:00');
+(8, '2025-12-11 20:27:42', 0, 1, 3, '2025-12-11 20:27:42', '2025-12-11 20:27:42', '2025-12-11 00:00:00'),
+(9, '2025-12-16 11:29:54', 0, 1, 2, '2025-12-16 11:29:54', '2025-12-16 11:29:54', '2025-12-16 00:00:00'),
+(10, '2025-12-16 11:32:07', 0, 1, 2, '2025-12-16 11:32:07', '2025-12-16 11:32:07', '2025-12-16 00:00:00'),
+(11, '2025-12-16 11:34:20', 0, 1, 2, '2025-12-16 11:34:20', '2025-12-16 11:34:20', '2025-12-16 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -247,7 +257,8 @@ INSERT INTO `pedido_repuestos` (`pedido_id`, `repuesto_id`, `cantidad_solicitada
 (6, 3, 2, 0),
 (8, 1, 2, 0),
 (8, 2, 2, 0),
-(8, 3, 2, 0);
+(8, 3, 2, 0),
+(11, 3, 2, 0);
 
 -- --------------------------------------------------------
 
@@ -296,8 +307,8 @@ CREATE TABLE `repuestos` (
 --
 
 INSERT INTO `repuestos` (`id`, `codigo`, `descripcion`, `cantidad_stock`, `precio_unitario`, `stock_minimo`, `proveedor_id`, `created_at`, `updated_at`) VALUES
-(1, 'R001', 'Filtro de aceite Toyota', 13, 12.50, 5, 1, '2025-11-05 22:58:39', '2025-12-13 22:43:09'),
-(2, 'R002', 'Pastillas de freno Fiat', 7, 45.00, 3, 1, '2025-11-05 22:58:39', '2025-12-13 22:26:09'),
+(1, 'R001', 'Filtro de aceite Toyota', 13, 15000.00, 5, 1, '2025-11-05 22:58:39', '2025-12-16 12:19:57'),
+(2, 'R002', 'Pastillas de freno Fiat', 7, 45000.00, 3, 1, '2025-11-05 22:58:39', '2025-12-16 12:19:57'),
 (3, 'H003', 'Balizas Ford ', 6, 15.00, 4, 2, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -511,7 +522,7 @@ ALTER TABLE `imagenherramientas`
 -- AUTO_INCREMENT de la tabla `ordenes_trabajo`
 --
 ALTER TABLE `ordenes_trabajo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `ot_herramientas`
@@ -523,13 +534,13 @@ ALTER TABLE `ot_herramientas`
 -- AUTO_INCREMENT de la tabla `ot_repuestos`
 --
 ALTER TABLE `ot_repuestos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `pedidos_repuestos`
 --
 ALTER TABLE `pedidos_repuestos`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedores`
