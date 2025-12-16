@@ -1,63 +1,125 @@
 @model TallerBecerraAguilera.Models.PedidosRepuestos
 
 @{
-    ViewData["Title"] = "Crear Pedido de Repuestos";
+    ViewData["Title"] = "Crear Pedido de Compra";
     var esAdmin = User.IsInRole("Administrador");
 }
 
-<h2 class="fw-bold mb-4">@ViewData["Title"]</h2>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
-<div class="card p-4 shadow-sm">
-    <form asp-action="Create" method="post">
-        @Html.AntiForgeryToken()
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<style>
+    /* Ajuste para que Select2 coincida con Tailwind */
+    .select2-container--bootstrap-5 .select2-selection {
+        border-color: #d1d5db;
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+        min-height: 48px;
+        border-radius: 0.5rem;
+    }
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+        color: #374151;
+        font-size: 0.95rem;
+    }
+</style>
 
-        <div class="form-group mb-3">
-            <label>Proveedor</label>
-            <select asp-for="ProveedorId" class="form-control" id="buscadorProveedores">
-                <option value="">Escriba para buscar proveedor...</option>
-            </select>
-            <span asp-validation-for="ProveedorId" class="text-danger"></span>
+<div class="container mx-auto px-4 py-8">
+
+    <div class="mb-8 flex items-center gap-4">
+        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
         </div>
-
-        @if (esAdmin)
-        {
-            <div class="form-group mb-3">
-                <label>Empleado</label>
-                <select asp-for="EmpleadoId" class="form-control" id="buscadorEmpleados">
-                    <option value="">Escriba para buscar empleado...</option>
-                </select>
-                <span asp-validation-for="EmpleadoId" class="text-danger"></span>
-            </div>
-        }
-        else
-        {
-            <input type="hidden" asp-for="EmpleadoId" value="@ViewBag.EmpleadoId" />
-        }
-
-        <div class="form-group mb-4">
-            <label asp-for="Fecha" class="control-label">Fecha</label>
-            <input asp-for="Fecha" type="date" class="form-control" />
-            <span asp-validation-for="Fecha" class="text-danger"></span>
+        <div>
+            <h1 class="text-3xl font-bold text-indigo-800">Nuevo Pedido</h1>
+            <p class="text-gray-500 mt-1">Registrar una orden de compra a proveedor.</p>
         </div>
+    </div>
 
-        <button type="submit" class="btn btn-success">Crear Pedido</button>
-        <a asp-action="Index" class="btn btn-secondary ms-2">Cancelar</a>
-    </form>
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-2xl mx-auto">
+        <div class="h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+
+        <div class="p-8">
+            <form asp-action="Create" method="post" class="space-y-6">
+                
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-200 text-sm"></div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Proveedor</label>
+                    <div class="relative">
+                        <select asp-for="ProveedorId" class="w-full" id="buscadorProveedores">
+                            <option value="">Escriba para buscar proveedor...</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="ProveedorId" class="text-red-500 text-xs mt-1"></span>
+                </div>
+
+                @if (esAdmin)
+                {
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Empleado Solicitante</label>
+                        <div class="relative">
+                            <select asp-for="EmpleadoId" class="w-full" id="buscadorEmpleados">
+                                <option value="">Escriba para buscar empleado...</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="EmpleadoId" class="text-red-500 text-xs mt-1"></span>
+                    </div>
+                }
+                else
+                {
+                    <input type="hidden" asp-for="EmpleadoId" value="@ViewBag.EmpleadoId" />
+                }
+
+                <div>
+                    <label asp-for="Fecha" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Fecha del Pedido</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <input asp-for="Fecha" type="date" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <span asp-validation-for="Fecha" class="text-red-500 text-xs mt-1"></span>
+                </div>
+
+                <div class="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-gray-100">
+                    <a asp-action="Index" class="text-gray-600 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition duration-150">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition duration-150 ease-in-out transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Crear Pedido
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
         $(document).ready(function () {
+            // Select2 para Proveedores
             $('#buscadorProveedores').select2({
                 theme: 'bootstrap-5',
+                width: '100%',
                 placeholder: 'Seleccione un proveedor',
                 minimumInputLength: 1,
+                language: {
+                    noResults: function() { return "No se encontraron resultados"; },
+                    searching: function() { return "Buscando..."; },
+                    inputTooShort: function() { return "Escriba al menos 1 caracter"; }
+                },
                 ajax: {
                     url: '@Url.Action("GetProveedores", "PedidosRepuestos")',
                     dataType: 'json',
@@ -68,13 +130,20 @@
                 }
             });
 
+            // Select2 para Empleados (Solo si es Admin)
             @if (esAdmin)
             {
                 <text>
                 $('#buscadorEmpleados').select2({
                     theme: 'bootstrap-5',
+                    width: '100%',
                     placeholder: 'Seleccione un empleado',
                     minimumInputLength: 1,
+                    language: {
+                        noResults: function() { return "No se encontraron empleados"; },
+                        searching: function() { return "Buscando..."; },
+                        inputTooShort: function() { return "Escriba al menos 1 caracter"; }
+                    },
                     ajax: {
                         url: '@Url.Action("GetEmpleados", "PedidosRepuestos")',
                         dataType: 'json',

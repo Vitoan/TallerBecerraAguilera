@@ -6,114 +6,212 @@
     bool puedeEditar = Model.Estado == EstadoPedido.Pendiente;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">📄 @ViewData["Title"]</h2>
-    <div>
-        <span
-            class="badge bg-@(Model.Estado == EstadoPedido.Pendiente ? "warning" : (Model.Estado == EstadoPedido.Recibido ? "success" : "danger")) fs-6">
-            @Model.Estado
-        </span>
-    </div>
-</div>
+<div class="container mx-auto px-4 py-8">
 
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">Información General</h5>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-4">
-                <strong>Proveedor:</strong> @(Model.Proveedor?.Nombre ?? "N/A")
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
             </div>
-            <div class="col-md-4">
-                <strong>Fecha Solicitud:</strong> @Model.Fecha.ToString("dd/MM/yyyy")
-            </div>
-            <div class="col-md-4">
-                <strong>Empleado:</strong> @(Model.Empleado?.NombreCompleto ?? "N/A")
+            <div>
+                <h1 class="text-3xl font-bold text-indigo-800">Pedido #@Model.Id</h1>
+                <p class="text-gray-500 mt-1">Detalle de la orden de compra.</p>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="card shadow-sm">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">📦 Repuestos Solicitados</h5>
+        <div>
+            @{
+                var estado = Model.Estado;
+                var badgeClass = "bg-gray-100 text-gray-800 border-gray-200";
+                var icon = "";
 
-        @if (puedeEditar)
-        {
-            @* Botón que lleva a la acción de agregar un item a ESTE pedido *@
-                <a asp-controller="PedidoRepuestos" asp-action="Create" asp-route-pedidoId="@Model.Id"
-                class="btn btn-light btn-sm">
-                <i class="bi bi-plus-circle"></i> Agregar Repuesto
-            </a>
-        }
-    </div>
-    <div class="card-body p-0">
-        <table class="table table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>Repuesto</th>
-                    <th class="text-center">Cant. Solicitada</th>
-                    <th class="text-center">Cant. Recibida</th>
-                    <th class="text-end">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.Detalles != null && Model.Detalles.Any())
+                if (estado == EstadoPedido.Pendiente)
                 {
-                    foreach (var item in Model.Detalles)
-                    {
-                        <tr>
-                            <td>
-                                <strong>@item.Repuesto?.descripcion</strong> <br />
-                                <small class="text-muted">Cód: @item.Repuesto?.codigo</small>
-                            </td>
-                            <td class="text-center">@item.cantidad_solicitada</td>
-                            <td class="text-center">
-                                @if (Model.Estado == EstadoPedido.Recibido)
-                                {
-                                    <span class="badge bg-success">@item.cantidad_recibida</span>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">-</span>
-                                }
-                            </td>
-                            <td class="text-end">
-                                @if (puedeEditar)
-                                {
-                                    <form asp-controller="PedidoRepuestos" asp-action="Delete" method="post" class="d-inline">
-
-                                        @* Enviamos los IDs necesarios para que el Controlador sepa qué borrar *@
-                <input type="hidden" name="pedidoId" value="@Model.Id" />
-                                        <input type="hidden" name="repuestoId" value="@item.repuesto_id" />
-
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Quitar repuesto"
-                                            onclick="return confirm('¿Estás seguro de que deseas eliminar este repuesto del pedido?');">
-                                            🗑️
-                                        </button>
-
-                                    </form>
-                                }
-                            </td>
-                        </tr>
-                    }
+                    badgeClass = "bg-yellow-100 text-yellow-800 border-yellow-200";
+                    icon = "⏳"; // O SVG
+                }
+                else if (estado == EstadoPedido.Recibido)
+                {
+                    badgeClass = "bg-green-100 text-green-800 border-green-200";
+                    icon = "✅";
                 }
                 else
                 {
-                    <tr>
-                        <td colspan="4" class="text-center text-muted py-4">
-                            <em>No hay repuestos agregados a este pedido aún.</em>
-                        </td>
-                    </tr>
+                    badgeClass = "bg-red-100 text-red-800 border-red-200";
+                    icon = "❌";
                 }
-            </tbody>
-        </table>
+            }
+            <span class="px-4 py-2 inline-flex items-center text-sm font-bold rounded-full border @badgeClass shadow-sm">
+                <span class="mr-2">@icon</span> @estado
+            </span>
+        </div>
     </div>
-</div>
 
-<div class="mt-4">
-    <a asp-action="Index" class="btn btn-secondary">
-        ⬅ Volver al listado
-    </a>
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden mb-8">
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-100">
+            <h3 class="text-lg font-bold text-gray-700">Información General</h3>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-50 p-2 rounded-lg text-blue-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 uppercase font-bold">Proveedor</p>
+                    <p class="text-gray-900 font-medium">@(Model.Proveedor?.Nombre ?? "N/A")</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="bg-purple-50 p-2 rounded-lg text-purple-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 uppercase font-bold">Fecha Solicitud</p>
+                    <p class="text-gray-900 font-medium">@Model.Fecha.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="bg-orange-50 p-2 rounded-lg text-orange-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 uppercase font-bold">Solicitado por</p>
+                    <p class="text-gray-900 font-medium">@(Model.Empleado?.Nombre ?? "N/A") @(Model.Empleado?.Apellido ?? "")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        
+        <div class="bg-indigo-600 px-6 py-4 flex justify-between items-center">
+            <h3 class="text-white font-bold text-lg flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                Repuestos Solicitados
+            </h3>
+
+            @if (puedeEditar)
+            {
+                <a asp-controller="PedidoRepuestos" asp-action="Create" asp-route-pedidoId="@Model.Id" class="bg-white text-indigo-600 hover:bg-indigo-50 font-bold py-2 px-4 rounded-lg shadow-sm text-sm transition duration-150 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Agregar Item
+                </a>
+            }
+        </div>
+
+        @if (Model.Detalles != null && Model.Detalles.Any())
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr class="bg-gray-50 text-left border-b border-gray-200">
+                            <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Repuesto</th>
+                            <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Cant. Solicitada</th>
+                            <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-center">Cant. Recibida</th>
+                            <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @foreach (var item in Model.Detalles)
+                        {
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="px-6 py-4">
+                                    <div class="text-sm font-bold text-gray-900">@item.Repuesto?.descripcion</div>
+                                    <div class="text-xs text-gray-500 font-mono mt-1">Cód: @item.Repuesto?.codigo</div>
+                                </td>
+
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-bold text-sm">
+                                        @item.cantidad_solicitada
+                                    </span>
+                                </td>
+
+                                <td class="px-6 py-4 text-center">
+                                    @if (Model.Estado == EstadoPedido.Recibido)
+                                    {
+                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-800 font-bold text-sm border border-green-200">
+                                            @item.cantidad_recibida
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-300 text-xl">-</span>
+                                    }
+                                </td>
+
+                                <td class="px-6 py-4 text-right">
+                                    @if (puedeEditar)
+                                    {
+                                        <form asp-controller="PedidoRepuestos" asp-action="Delete" method="post" class="inline-block">
+                                            <input type="hidden" name="pedidoId" value="@Model.Id" />
+                                            <input type="hidden" name="repuestoId" value="@item.repuesto_id" />
+
+                                            <button type="submit" class="text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition duration-150" 
+                                                    title="Quitar repuesto"
+                                                    onclick="return confirm('¿Estás seguro de que deseas eliminar este repuesto del pedido?');">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-300 text-xs">Bloqueado</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="p-12 text-center flex flex-col items-center justify-center">
+                <div class="bg-gray-100 p-4 rounded-full mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-700">Pedido vacío</h3>
+                <p class="text-gray-500 mt-1 mb-6">No hay repuestos agregados a este pedido aún.</p>
+                
+                @if (puedeEditar)
+                {
+                    <a asp-controller="PedidoRepuestos" asp-action="Create" asp-route-pedidoId="@Model.Id" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                        <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Agregar el primer repuesto
+                    </a>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mt-8">
+        <a asp-action="Index" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition ease-in-out duration-150">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Volver al listado
+        </a>
+    </div>
+
 </div>

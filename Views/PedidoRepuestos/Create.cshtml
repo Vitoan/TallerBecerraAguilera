@@ -1,51 +1,110 @@
 @model TallerBecerraAguilera.Models.PedidoRepuestos
 
 @{
-    ViewData["Title"] = "Agregar Repuesto al Pedido";
-    var esAdmin = User.IsInRole("Administrador");
+    ViewData["Title"] = "Agregar Repuesto";
 }
 
-<h2 class="fw-bold mb-4">@ViewData["Title"]</h2>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
-<div class="card p-4 shadow-sm">
-    <form asp-action="Create" method="post">
-        @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="pedido_id" />
+<style>
+    /* Ajuste para unificar Select2 con el diseño Tailwind */
+    .select2-container--bootstrap-5 .select2-selection {
+        border-color: #d1d5db;
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+        min-height: 48px;
+        border-radius: 0.5rem;
+    }
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+        color: #374151;
+        font-size: 0.95rem;
+    }
+</style>
 
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container mx-auto px-4 py-8">
 
-        <div class="form-group mb-3">
-            <label>Repuesto</label>
-            <select asp-for="repuesto_id" class="form-control" id="buscadorRepuestos">
-                <option value="">Escriba para buscar repuesto...</option>
-            </select>
-            <span asp-validation-for="repuesto_id" class="text-danger"></span>
+    <div class="mb-8 flex items-center gap-4">
+        <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
         </div>
-
-        <div class="form-group mb-4">
-            <label asp-for="cantidad_solicitada" class="control-label">Cantidad a Pedir</label>
-            <input asp-for="cantidad_solicitada" type="number" min="1" class="form-control" />
-            <span asp-validation-for="cantidad_solicitada" class="text-danger"></span>
+        <div>
+            <h1 class="text-3xl font-bold text-indigo-800">Agregar Repuesto</h1>
+            <p class="text-gray-500 mt-1">Sumar ítems al pedido de compra <span class="font-mono font-bold text-indigo-600">#@Model.pedido_id</span></p>
         </div>
+    </div>
 
-        <button type="submit" class="btn btn-success">Agregar al Pedido</button>
-        <a asp-action="Details" asp-controller="PedidosRepuestos" asp-route-id="@Model.pedido_id" class="btn btn-secondary ms-2">Cancelar</a>
-    </form>
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-lg mx-auto">
+        <div class="h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+
+        <div class="p-8">
+            <form asp-action="Create" method="post" class="space-y-6">
+                
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="pedido_id" />
+                <div asp-validation-summary="ModelOnly" class="bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-200 text-sm"></div>
+
+                <div>
+                    <label asp-for="repuesto_id" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Repuesto</label>
+                    <div class="relative">
+                        <select asp-for="repuesto_id" class="w-full" id="buscadorRepuestos">
+                            <option value="">Escriba para buscar repuesto...</option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="repuesto_id" class="text-red-500 text-xs mt-1"></span>
+                </div>
+
+                <div>
+                    <label asp-for="cantidad_solicitada" class="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Cantidad a Pedir</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.699-3.181a1 1 0 111.768.951l-1.778 3.329 1.802 3.874a1 1 0 11-1.802.833l-1.956-4.205L11 9.59v5.82a1 1 0 001 1v1a1 1 0 11-2 0v-1a1 1 0 001-1V9.59l-3.687-2.476-1.956 4.205a1 1 0 01-1.802-.833l1.802-3.874-1.778-3.329a1 1 0 111.768-.951L7.046 5.323 11 3.737V3a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                <path d="M4 10a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z" />
+                            </svg>
+                        </span>
+                        <input asp-for="cantidad_solicitada" type="number" min="1" class="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-300 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition duration-200" placeholder="Ej: 10" />
+                    </div>
+                    <span asp-validation-for="cantidad_solicitada" class="text-red-500 text-xs mt-1"></span>
+                </div>
+
+                <div class="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-gray-100">
+                    <a asp-action="Details" asp-controller="PedidosRepuestos" asp-route-id="@Model.pedido_id" class="text-gray-600 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition duration-150">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transition duration-150 ease-in-out transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Agregar al Pedido
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
         $(document).ready(function () {
             $('#buscadorRepuestos').select2({
                 theme: 'bootstrap-5',
+                width: '100%', // Asegura ancho completo dentro del contenedor
                 placeholder: 'Seleccione un repuesto',
                 minimumInputLength: 1,
+                language: {
+                    noResults: function() { return "No se encontraron repuestos"; },
+                    searching: function() { return "Buscando..."; },
+                    inputTooShort: function() { return "Ingrese al menos un carácter"; }
+                },
                 ajax: {
+                    // Asegúrate de que el nombre del controlador aquí coincida con tu archivo (PedidoRepuestos vs PedidosRepuestos)
                     url: '@Url.Action("GetRepuestos", "PedidoRepuestos")',
                     dataType: 'json',
                     delay: 250,

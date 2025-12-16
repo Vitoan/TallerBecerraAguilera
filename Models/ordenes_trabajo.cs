@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-// Nota: Puedes necesitar un using para el helper de DisplayName si lo usas en Details
-// using TallerBecerraAguilera.Helpers; 
+using System.Collections.Generic; // IMPORTANTE: Necesario para ICollection
 
 namespace TallerBecerraAguilera.Models
 {
-    // El enum EstadoOrden se mapeará a INT en la base de datos
+    // Tu Enum está perfecto
     public enum EstadoOrden
     {
         [Display(Name = "0 - Pendiente (Ingreso)")]
@@ -65,6 +63,11 @@ namespace TallerBecerraAguilera.Models
         // --- Propiedades de Navegación ---
         public Vehiculos? Vehiculo { get; set; }
         public Empleados? Empleado { get; set; }
+
+        // --- ¡AQUÍ ESTABA EL FALTANTE! ---
+        // Debemos agregar esto para solucionar el error del Controlador.
+        // Asegúrate de tener una clase modelo llamada "OtRepuestos" o "OtRepuesto"
+        public virtual ICollection<OtRepuestos> OtRepuestos { get; set; } = new List<OtRepuestos>();
         
         // Propiedades de auditoría
         [Column("created_at")]

@@ -1,0 +1,67 @@
+@model TallerBecerraAguilera.ViewModels.ReportesViewModel
+
+@{
+    ViewData["Title"] = "Reportes del Taller";
+}
+
+<div class="container mx-auto p-4">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">📊 Reportes del Taller</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h3 class="font-bold text-gray-600 mb-4">Ingresos Estimados (Últimos 6 meses)</h3>
+            <div class="h-64">
+                <canvas id="graficoIngresos"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+            <h3 class="font-bold text-gray-600 mb-4">Estado Actual de Vehículos</h3>
+            <div class="h-64">
+                <canvas id="graficoEstados"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-6">
+        <a asp-controller="Home" asp-action="Index" class="text-blue-600 hover:underline">← Volver al Panel</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // 1. Gráfico de BARRAS (Dinero)
+        const ctx1 = document.getElementById('graficoIngresos');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.Meses)),
+                datasets: [{
+                    label: 'Total ($)',
+                    data: @Html.Raw(Json.Serialize(Model.Totales)),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // 2. Gráfico de DONA (Estados)
+        const ctx2 = document.getElementById('graficoEstados');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.EstadosNombres)),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.EstadosCantidades)),
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    </script>
+}

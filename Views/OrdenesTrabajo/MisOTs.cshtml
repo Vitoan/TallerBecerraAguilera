@@ -1,91 +1,147 @@
-@using TallerBecerraAguilera.Helpers;
-@model PaginatedList<TallerBecerraAguilera.Models.OrdenesTrabajo>
+@using TallerBecerraAguilera.Helpers
 @using TallerBecerraAguilera.Models
+@model PaginatedList<TallerBecerraAguilera.Models.OrdenesTrabajo>
+
 @{
     ViewData["Title"] = "Mis Órdenes de Trabajo";
 }
 
-<div class="container mt-4">
-    <h2 class="fw-bold text-info mb-4">📝 Mis Órdenes de Trabajo</h2>
+<div class="container mx-auto px-4 py-8">
+
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-indigo-100 rounded-full text-indigo-600 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-indigo-800">Mis Órdenes Asignadas</h1>
+                <p class="text-gray-500 mt-1">Gestiona el estado de tus reparaciones activas.</p>
+            </div>
+        </div>
+    </div>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-warning">
-            No tenés órdenes asignadas actualmente.
+        <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-12 text-center">
+            <div class="mx-auto h-12 w-12 text-gray-400 mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">¡Todo listo por ahora!</h3>
+            <p class="mt-1 text-gray-500">No tienes órdenes de trabajo pendientes asignadas a tu nombre.</p>
         </div>
     }
     else
     {
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>OT</th>
-                    <th>Vehículo</th>
-                    <th>Descripción</th>
-                    <th>Estado</th>
-                    <th>Fecha Ingreso</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var ot in Model)
-                {
-                    <tr>
-                        <td>@ot.Id</td>
-                        <td>@ot.Vehiculo?.patente</td>
-                        <td>@ot.DescripcionFalla</td>
-                        <td>
-                            <span class="badge @(ot.Estado == EstadoOrden.Pendiente ? "bg-secondary" :
-                                                ot.Estado == EstadoOrden.EnReparacion ? "bg-warning text-dark" :
-                                                ot.Estado == EstadoOrden.Finalizada ? "bg-success" :
-                                                ot.Estado == EstadoOrden.Entregada ? "bg-info" : "bg-light")">
-                                @ot.Estado
-                            </span>
-                        </td>
-                        <td>@ot.FechaIngreso.ToShortDateString()</td>
-                        <td>
-                            <form asp-action="CambiarEstado" method="post" class="d-inline">
-                                <input type="hidden" name="id" value="@ot.Id" />
-                                <select name="nuevoEstado" class="form-select form-select-sm d-inline w-auto">
-                                    @foreach (EstadoOrden estado in Enum.GetValues(typeof(EstadoOrden)))
-                                    {
-                                        var isSelected = (ot.Estado == estado) ? "selected" : "";
-                                        var displayName = estado switch
-                                        {
-                                            EstadoOrden.Pendiente => "Pendiente (Ingreso)",
-                                            EstadoOrden.EnReparacion => "En Reparación",
-                                            EstadoOrden.Finalizada => "Finalizada (Esperando Retiro)",
-                                            EstadoOrden.Entregada => "Entregada (Cerrada)",
-                                            _ => estado.ToString()
-                                        };
-                                        @:<option value="@( (int)estado )" @isSelected>@displayName</option>
-                                    }
-                                </select>
-                                <button type="submit" class="btn btn-sm btn-primary ms-1">Actualizar</button>
-                                <a asp-action="Details" asp-route-id="@ot.Id" class="btn btn-sm btn-info ms-1">Detalles</a>
-                            </form>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr class="bg-indigo-50 border-b border-indigo-100 text-left">
+                            <th class="px-6 py-4 text-xs font-bold text-indigo-600 uppercase tracking-wider">OT / Vehículo</th>
+                            <th class="px-6 py-4 text-xs font-bold text-indigo-600 uppercase tracking-wider">Descripción Falla</th>
+                            <th class="px-6 py-4 text-xs font-bold text-indigo-600 uppercase tracking-wider">Estado Actual</th>
+                            <th class="px-6 py-4 text-xs font-bold text-indigo-600 uppercase tracking-wider">Actualizar Estado</th>
+                            <th class="px-6 py-4 text-xs font-bold text-indigo-600 uppercase tracking-wider text-right">Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="hover:bg-gray-50 transition duration-150 border-b border-gray-100 last:border-b-0 group">
+                                
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center font-mono font-bold text-sm border border-indigo-200">
+                                            #@item.Id
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-gray-900">@item.Vehiculo?.patente</div>
+                                            <div class="text-xs text-gray-500 flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                                                </svg>
+                                                @item.FechaIngreso.ToShortDateString()
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
 
-        <!-- Paginación -->
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-                    <a class="page-link" asp-action="MisOTs" asp-route-pageNumber="@(Model.PageIndex - 1)">Anterior</a>
-                </li>
-                @for (int i = 1; i <= Model.TotalPages; i++)
-                {
-                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                        <a class="page-link" asp-action="MisOTs" asp-route-pageNumber="@i">@i</a>
-                    </li>
-                }
-                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-                    <a class="page-link" asp-action="MisOTs" asp-route-pageNumber="@(Model.PageIndex + 1)">Siguiente</a>
-                </li>
-            </ul>
-        </nav>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-700 line-clamp-2 max-w-xs" title="@item.DescripcionFalla">
+                                        @item.DescripcionFalla
+                                    </p>
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @{
+                                        var estadoActual = item.Estado;
+                                        var badgeClass = "bg-gray-100 text-gray-800 border-gray-200";
+                                        
+                                        if(estadoActual == EstadoOrden.Pendiente) badgeClass = "bg-yellow-100 text-yellow-800 border-yellow-200";
+                                        else if(estadoActual == EstadoOrden.EnReparacion) badgeClass = "bg-blue-100 text-blue-800 border-blue-200";
+                                        else if(estadoActual == EstadoOrden.Finalizada) badgeClass = "bg-green-100 text-green-800 border-green-200";
+                                        else if(estadoActual == EstadoOrden.Entregada) badgeClass = "bg-purple-100 text-purple-800 border-purple-200";
+                                    }
+                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border @badgeClass">
+                                        @estadoActual.ToString()
+                                    </span>
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <form asp-action="CambiarEstado" method="post" class="flex items-center gap-2">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        
+                                        <div class="relative">
+                                            <select name="nuevoEstado" class="block w-full pl-3 pr-8 py-1.5 text-xs border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md bg-gray-50 hover:bg-white transition cursor-pointer">
+                                                @foreach (EstadoOrden estado in Enum.GetValues(typeof(EstadoOrden)))
+                                                {
+                                                    var isSelected = (item.Estado == estado);
+                                                    <!option value="@((int)estado)" @(isSelected ? "selected" : "")>
+                                                        @estado.ToString()
+                                                    </!option>
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <button type="submit" class="text-indigo-600 hover:text-white hover:bg-indigo-600 bg-indigo-50 p-1.5 rounded-md transition duration-200 shadow-sm border border-indigo-100" title="Guardar Cambio">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="text-gray-500 hover:text-indigo-600 font-medium text-sm inline-flex items-center transition">
+                                        Ver
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                        </svg>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-between items-center">
+            <span class="text-sm text-gray-500">
+                Página <span class="font-bold">@Model.PageIndex</span> de <span class="font-bold">@Model.TotalPages</span>
+            </span>
+            <div class="flex gap-2">
+                <a asp-action="MisOTs" asp-route-pageNumber="@(Model.PageIndex - 1)" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition @(!Model.HasPreviousPage ? "opacity-50 pointer-events-none" : "")">
+                    Anterior
+                </a>
+                <a asp-action="MisOTs" asp-route-pageNumber="@(Model.PageIndex + 1)" class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition @(!Model.HasNextPage ? "opacity-50 pointer-events-none" : "")">
+                    Siguiente
+                </a>
+            </div>
+        </div>
     }
 </div>

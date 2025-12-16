@@ -1,69 +1,155 @@
 @using TallerBecerraAguilera.Helpers
+@using TallerBecerraAguilera.Models
 @model PaginatedList<TallerBecerraAguilera.Models.PedidosRepuestos>
 
 @{
     ViewData["Title"] = "Pedidos de Repuestos";
 }
 
-<h2 class="fw-bold mb-4">@ViewData["Title"]</h2>
+<div class="container mx-auto px-4 py-8">
 
-<table class="table table-bordered table-striped shadow-sm">
-    <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Proveedor</th>
-            <th>Empleado</th>
-            <th>Fecha</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model)
-{
-        <tr>
-            <td>@item.Id</td>
-            <td>@item.Proveedor?.Nombre</td>
-            <td>@item.Empleado?.NombreCompleto</td>
-            <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
-            <td>@item.Estado</td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Detalles</a>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Editar</a>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-indigo-800">@ViewData["Title"]</h1>
+            <p class="text-gray-500 mt-1">Historial de compras y órdenes a proveedores.</p>
+        </div>
 
-                <form asp-action="CambiarEstado" method="post" class="d-inline">
-                    <input type="hidden" name="pedidoId" value="@item.Id" />
-                    <select name="estado" class="form-select d-inline w-auto">
-                        <option value="Pendiente" selected="@((item.Estado == EstadoPedido.Pendiente))">Pendiente</option>
-                        <option value="Recibido" selected="@((item.Estado == EstadoPedido.Recibido))">Recibido</option>
-                        <option value="Cancelado" selected="@((item.Estado == EstadoPedido.Cancelado))">Cancelado</option>
-                    </select>
-                    <button type="submit" class="btn btn-success btn-sm">Guardar</button>
-                </form>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-
-<div class="d-flex justify-content-between align-items-center mt-3">
-    <div>
-        Página @Model.PageIndex de @Model.TotalPages
-    </div>
-
-    <div>
-        <a asp-action="Index"
-           asp-route-pageNumber="@(Model.PageIndex - 1)"
-           class="btn btn-outline-primary @(!Model.HasPreviousPage ? "disabled" : "")">
-           <i class="bi bi-arrow-left"></i> Anterior
-        </a>
-
-        <a asp-action="Index"
-           asp-route-pageNumber="@(Model.PageIndex + 1)"
-           class="btn btn-outline-primary @(!Model.HasNextPage ? "disabled" : "")">
-            Siguiente <i class="bi bi-arrow-right"></i>
+        <a asp-action="Create" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-150 ease-in-out flex items-center gap-2 transform hover:-translate-y-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Nuevo Pedido
         </a>
     </div>
+
+    @if (!Model.Any())
+    {
+        <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-12 text-center flex flex-col items-center justify-center">
+            <div class="bg-gray-100 p-4 rounded-full mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-gray-700">No hay pedidos registrados</h3>
+            <p class="text-gray-500 mt-1 max-w-sm">
+                Comienza creando una nueva orden de compra para abastecer el inventario.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr class="bg-indigo-50 border-b border-indigo-100 text-left">
+                            <th class="px-5 py-3 text-xs font-bold text-indigo-600 uppercase tracking-wider">ID</th>
+                            <th class="px-5 py-3 text-xs font-bold text-indigo-600 uppercase tracking-wider">Proveedor</th>
+                            <th class="px-5 py-3 text-xs font-bold text-indigo-600 uppercase tracking-wider">Solicitado Por</th>
+                            <th class="px-5 py-3 text-xs font-bold text-indigo-600 uppercase tracking-wider">Fecha</th>
+                            <th class="px-5 py-3 text-xs font-bold text-indigo-600 uppercase tracking-wider text-center">Estado</th>
+                            <th class="px-5 py-3 text-xs font-bold text-indigo-600 uppercase tracking-wider">Gestión Rápida</th>
+                            <th class="px-5 py-3 text-xs font-bold text-indigo-600 uppercase tracking-wider text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="hover:bg-gray-50 transition duration-150 border-b border-gray-200 last:border-b-0">
+                                
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <span class="font-mono text-sm font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded border border-indigo-100">
+                                        #@item.Id
+                                    </span>
+                                </td>
+
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-bold text-gray-900">@item.Proveedor?.Nombre</div>
+                                </td>
+
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs font-bold">
+                                            @(item.Empleado?.Nombre?.Substring(0, 1) ?? "?")
+                                        </div>
+                                        <span class="text-sm text-gray-700">@item.Empleado?.NombreCompleto</span>
+                                    </div>
+                                </td>
+
+                                <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    @item.Fecha.ToString("dd/MM/yyyy")
+                                </td>
+
+                                <td class="px-5 py-4 whitespace-nowrap text-center">
+                                    @{
+                                        var estado = item.Estado;
+                                        var badgeClass = "bg-gray-100 text-gray-800 border-gray-200";
+                                        
+                                        if(estado == EstadoPedido.Pendiente) badgeClass = "bg-yellow-100 text-yellow-800 border-yellow-200";
+                                        else if(estado == EstadoPedido.Recibido) badgeClass = "bg-green-100 text-green-800 border-green-200";
+                                        else if(estado == EstadoPedido.Cancelado) badgeClass = "bg-red-100 text-red-800 border-red-200";
+                                    }
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium border @badgeClass">
+                                        @estado
+                                    </span>
+                                </td>
+
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <form asp-action="CambiarEstado" method="post" class="flex items-center gap-2">
+                                        <input type="hidden" name="pedidoId" value="@item.Id" />
+                                        <div class="relative">
+                                            <select name="estado" class="block w-full pl-2 pr-6 py-1 text-xs border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md bg-gray-50 hover:bg-white transition cursor-pointer">
+                                                <option value="Pendiente" selected="@(item.Estado == EstadoPedido.Pendiente)">Pendiente</option>
+                                                <option value="Recibido" selected="@(item.Estado == EstadoPedido.Recibido)">Recibido</option>
+                                                <option value="Cancelado" selected="@(item.Estado == EstadoPedido.Cancelado)">Cancelado</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="text-green-600 hover:text-green-800 hover:bg-green-50 p-1 rounded transition" title="Guardar Estado">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </td>
+
+                                <td class="px-5 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end items-center gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-1.5 rounded transition" title="Ver Detalles">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </a>
+                                        
+                                        @if(item.Estado == EstadoPedido.Pendiente)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="text-amber-600 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 p-1.5 rounded transition" title="Editar">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                </svg>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="bg-gray-50 px-5 py-3 border-t border-gray-200 flex items-center justify-between">
+                <span class="text-sm text-gray-700">
+                    Página <span class="font-bold">@Model.PageIndex</span> de <span class="font-bold">@Model.TotalPages</span>
+                </span>
+                <div class="inline-flex gap-2">
+                    <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" class="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 transition duration-150 @(!Model.HasPreviousPage ? "pointer-events-none opacity-50" : "")">
+                        Anterior
+                    </a>
+                    <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" class="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 transition duration-150 @(!Model.HasNextPage ? "pointer-events-none opacity-50" : "")">
+                        Siguiente
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
 </div>
-
-<a asp-action="Create" class="btn btn-success mt-3">Nuevo Pedido</a>
