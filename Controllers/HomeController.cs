@@ -31,8 +31,8 @@ namespace TallerBecerraAguilera.Controllers
                 ViewBag.OrdenesFinalizadas = finalizadas + entregadas;
                 
                 // Asegúrate que tu repositorio tenga este método, si no, comenta esta línea temporalmente
-                // ViewBag.StockCritico = await _ordenTrabajoRepositorio.GetStockCriticoCountAsync(); 
-                ViewBag.StockCritico = 0; // Valor por defecto si no tienes el método aún
+                ViewBag.StockCritico = await _ordenTrabajoRepositorio.GetStockCriticoCountAsync(); 
+                //ViewBag.StockCritico = 0; // Valor por defecto si no tienes el método aún
 
                 return View(); // Carga Views/Home/Index.cshtml
             }

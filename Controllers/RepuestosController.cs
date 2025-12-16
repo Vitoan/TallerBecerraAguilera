@@ -19,14 +19,27 @@ namespace TallerBecerraAguilera.Controllers
             _proveedorRepo = proveedorRepo;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1)
+        public async Task<IActionResult> Index(int pageNumber = 1, string stock = "")
         {
             int pageSize = 10;
 
-            var query = _repo.Query()
-                             .OrderBy(r => r.codigo);
-            
-            var paginated =await PaginatedList<Repuestos>.CreateAsync(query, pageNumber, pageSize);
+            var query = _repo.Query();
+
+            if (stock == "con")
+            {
+                query = query.Where(r => r.cantidadStock > 0);
+            }
+            else if (stock == "sin")
+            {
+                query = query.Where(r => r.cantidadStock <= 0);
+            }
+
+            query = query.OrderBy(r => r.codigo);
+
+            var paginated = await PaginatedList<Repuestos>
+               .CreateAsync(query, pageNumber, pageSize);
+
+            ViewBag.StockSeleccionado = stock;
 
             return View(paginated);
         }
