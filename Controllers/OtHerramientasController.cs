@@ -53,21 +53,35 @@ namespace TallerBecerraAguilera.Controllers
             }
 
             // Si es empleado, solo mostramos sus pedidos sin filtro
-            int empleadoId = int.Parse(User.FindFirst("Id")!.Value);
-            return View(await _repo.ObtenerPorEmpleado(empleadoId));
+            var usuarioIdClaim = User.FindFirst("Id")?.Value;
+            if (usuarioIdClaim == null) return Forbid();
+
+            var usuarioId = int.Parse(usuarioIdClaim);
+
+            var empleados = await _otRepo.GetEmpleadoByUserIdAsync(usuarioId);
+            if (empleados == null) return Forbid();
+
+            return View(await _repo.ObtenerPorEmpleado(empleados.Id));
         }
 
         public async Task<IActionResult> Create(int herramientaId)
         {
-            int empleadoId = int.Parse(User.FindFirst("Id")!.Value);
+            var usuarioIdClaim = User.FindFirst("Id")?.Value;
+            if (usuarioIdClaim == null) return Forbid();
+
+            var usuarioId = int.Parse(usuarioIdClaim);
+
+            var empleados = await _otRepo.GetEmpleadoByUserIdAsync(usuarioId);
+            if (empleados == null) return Forbid();
 
             var herramienta = await _herramientasRepo.GetByIdAsync(herramientaId);
             if (herramienta == null || herramienta.Estado != EstadoHerramienta.Disponible)
                 return NotFound();
 
             var ots = await _otRepo.ObtenerPorEmpleadoYEstadoAsync(
-                empleadoId,
+                empleados.Id,
                 EstadoOrden.EnReparacion);
+
 
             ViewBag.Herramienta = herramienta;
             ViewBag.OTs = ots ?? new List<OrdenesTrabajo>();
@@ -75,7 +89,7 @@ namespace TallerBecerraAguilera.Controllers
             return View(new OtHerramientas
             {
                 herramienta_id = herramientaId,
-                empleado_id = empleadoId,
+                empleado_id = empleados.Id,
                 fecha_prestamo = DateTime.Now
             });
         }
@@ -117,17 +131,30 @@ namespace TallerBecerraAguilera.Controllers
 
         public async Task<IActionResult> MisHerramientas()
         {
-            int empleadoId = int.Parse(User.FindFirst("Id")!.Value);
-            return View(await _repo.ObtenerPendientesPorEmpleado(empleadoId));
+            var usuarioIdClaim = User.FindFirst("Id")?.Value;
+            if (usuarioIdClaim == null) return Forbid();
+
+            var usuarioId = int.Parse(usuarioIdClaim);
+
+            var empleado = await _otRepo.GetEmpleadoByUserIdAsync(usuarioId);
+            if (empleado == null) return Forbid();
+
+            return View(await _repo.ObtenerPendientesPorEmpleado(empleado.Id)); 
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Devolver(int id)
         {
-            int empleadoId = int.Parse(User.FindFirst("Id")!.Value);
+            var usuarioIdClaim = User.FindFirst("Id")?.Value;
+            if (usuarioIdClaim == null) return Forbid();
 
-            bool ok = await _repo.DevolverHerramienta(id, empleadoId);
+            var usuarioId = int.Parse(usuarioIdClaim);
+
+            var empleado = await _otRepo.GetEmpleadoByUserIdAsync(usuarioId);
+            if (empleado == null) return Forbid();
+
+            bool ok = await _repo.DevolverHerramienta(id, empleado.Id);
 
             TempData[ok ? "success" : "error"] =
                 ok ? "Herramienta devuelta correctamente." : "No podés devolver esta herramienta.";

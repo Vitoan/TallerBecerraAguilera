@@ -34,15 +34,21 @@ namespace TallerBecerraAguilera.Controllers
         [HttpGet]
         public async Task<IActionResult> Usar(int repuestoId)
         {
-            int empleadoId = int.Parse(User.FindFirst("Id")!.Value);
+            var usuarioIdClaim = User.FindFirst("Id")?.Value;
+            if (usuarioIdClaim == null) return Forbid();
+
+            var usuarioId = int.Parse(usuarioIdClaim);
+
+            var empleado = await _otRepo.GetEmpleadoByUserIdAsync(usuarioId);
+            if (empleado == null) return Forbid();
 
             var repuesto = await _repuestosRepo.GetByIdAsync(repuestoId);
             if (repuesto == null)
                 return NotFound();
 
             var ots = await _otRepo.ObtenerPorEmpleadoYEstadoAsync(
-                empleadoId,
-                EstadoOrden.EnReparacion);
+                empleado.Id,
+                EstadoOrden.EnReparacion);     
 
             ViewBag.Repuesto = repuesto;
             ViewBag.OTs = ots.Select(o => new SelectListItem
@@ -53,7 +59,8 @@ namespace TallerBecerraAguilera.Controllers
 
             return View(new OtRepuestos
             {
-                repuesto_id = repuestoId
+                repuesto_id = repuestoId,
+                Repuesto = repuesto
             });
         }
 
@@ -61,14 +68,20 @@ namespace TallerBecerraAguilera.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Usar(OtRepuestos modelo)
         {
-            int empleadoId = int.Parse(User.FindFirst("Id")!.Value);
+            var usuarioIdClaim = User.FindFirst("Id")?.Value;
+            if (usuarioIdClaim == null) return Forbid();
+
+            var usuarioId = int.Parse(usuarioIdClaim);
+
+            var empleado = await _otRepo.GetEmpleadoByUserIdAsync(usuarioId);
+            if (empleado == null) return Forbid();
 
             if (!ModelState.IsValid)
             {
                 ViewBag.Repuesto = await _repuestosRepo.GetByIdAsync(modelo.repuesto_id);
 
                 var ots = await _otRepo.ObtenerPorEmpleadoYEstadoAsync(
-                    empleadoId,
+                    empleado.Id,
                     EstadoOrden.EnReparacion);
 
                 ViewBag.OTs = ots.Select(o => new SelectListItem
@@ -83,7 +96,7 @@ namespace TallerBecerraAguilera.Controllers
             bool ok = await _repo.UsarRepuestoAsync(
                 modelo.ot_id,
                 modelo.repuesto_id,
-                empleadoId,
+                empleado.Id,
                 modelo.cantidad_usada);
 
             TempData[ok ? "success" : "error"] =

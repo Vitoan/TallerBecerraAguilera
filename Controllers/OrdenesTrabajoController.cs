@@ -245,8 +245,16 @@ namespace TallerBecerraAguilera.Controllers
             var ot = await _otRepositorio.GetByIdAsync(id);
             if (ot == null) return NotFound();
 
-            var userId = int.Parse(User.FindFirst("Id")!.Value);
-            if (ot.EmpleadoId != userId) return Forbid();
+            var usuarioIdClaim = User.FindFirst("Id")?.Value;
+            if (usuarioIdClaim == null) return Forbid();
+
+            var usuarioId = int.Parse(usuarioIdClaim);
+
+            var empleado = await _otRepositorio.GetEmpleadoByUserIdAsync(usuarioId);
+            if (empleado == null) return Forbid();
+
+            if (ot.EmpleadoId != empleado.Id)
+                return Forbid();    
 
             ot.Estado = (EstadoOrden)nuevoEstado;
             await _otRepositorio.UpdateAsync(ot);
