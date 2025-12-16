@@ -1,49 +1,71 @@
 @model List<TallerBecerraAguilera.Models.ViewModels.UltimasOTsViewModel>
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Últimas Órdenes de Trabajo</h6>
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+        <h3 class="font-bold text-gray-800">
+            📋 Últimas Órdenes de Trabajo
+        </h3>
     </div>
-    <div class="card-body">
-        @if (Model == null || !Model.Any())
-        {
-            <p>No hay órdenes de trabajo recientes para mostrar.</p>
-        }
-        else
-        {
-            <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>OT #</th>
-                            <th>Vehículo</th>
-                            <th>Falla</th>
-                            <th>Ingreso</th>
-                            <th>Estado</th>
-                            <th>Asignado a</th>
+
+    <!-- Body -->
+    @if (Model == null || !Model.Any())
+    {
+        <div class="p-6 text-center text-gray-400">
+            No hay órdenes de trabajo recientes para mostrar.
+        </div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+                    <tr>
+                        <th class="px-6 py-3">OT #</th>
+                        <th class="px-6 py-3">Vehículo</th>
+                        <th class="px-6 py-3">Falla</th>
+                        <th class="px-6 py-3">Ingreso</th>
+                        <th class="px-6 py-3">Estado</th>
+                        <th class="px-6 py-3">Asignado</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-100">
+                    @foreach (var ot in Model)
+                    {
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 font-medium text-gray-800">
+                                #@ot.Id
+                            </td>
+
+                            <td class="px-6 py-4 text-gray-700">
+                                @ot.Patente
+                            </td>
+
+                            <td class="px-6 py-4 text-gray-600 max-w-xs truncate">
+                                @ot.DescripcionFalla
+                            </td>
+
+                            <td class="px-6 py-4 text-gray-500">
+                                @ot.FechaIngreso.ToString("dd/MM/yyyy")
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 text-xs rounded-full font-semibold @GetBadgeClass(ot.Estado ?? "Desconocido")">
+                                    @ot.Estado
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-4 text-gray-600">
+                                @ot.EmpleadoAsignado
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var ot in Model)
-                        {
-                            <tr>
-                                <td>@ot.Id</td>
-                                <td>@ot.Patente</td>
-                                <td>@ot.DescripcionFalla</td>
-                                <td>@ot.FechaIngreso.ToShortDateString()</td>
-                                <td>
-                                    <span class="badge @GetBadgeClass(ot.Estado)">
-                                        @ot.Estado
-                                    </span>
-                                </td>
-                                <td>@ot.EmpleadoAsignado</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-    </div>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
 
 @functions {
@@ -51,11 +73,11 @@
     {
         return estado switch
         {
-            "Pendiente" => "bg-warning text-dark",
-            "EnReparacion" => "bg-primary text-white",
-            "Finalizada" => "bg-success text-white",
-            "Entregada" => "bg-info text-dark",
-            _ => "bg-secondary text-white"
+            "Pendiente"     => "bg-indigo-50 text-indigo-600",
+            "EnReparacion"  => "bg-orange-50 text-orange-600",
+            "Finalizada"    => "bg-emerald-50 text-emerald-600",
+            "Entregada"     => "bg-sky-50 text-sky-600",
+            _               => "bg-gray-100 text-gray-600"
         };
     }
 }

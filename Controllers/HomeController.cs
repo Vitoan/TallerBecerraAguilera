@@ -55,7 +55,7 @@ namespace TallerBecerraAguilera.Controllers
 
                 // IMPORTANTE: Debes crear la vista 'IndexEmpleado.cshtml' si quieres un dashboard distinto
                 // O usar la misma Index y ocultar cosas con if(User.IsInRole...)
-                return View("Index", empleado); 
+                return View("IndexEmpleado", empleado); 
             }
 
             return RedirectToAction("Login", "Usuarios");
