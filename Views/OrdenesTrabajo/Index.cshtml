@@ -1,34 +1,110 @@
-@using TallerBecerraAguilera.Helpers 
-@model PaginatedList<TallerBecerraAguilera.Models.OrdenesTrabajo>
+@using TallerBecerraAguilera.Helpers
+@using TallerBecerraAguilera.Models
+@model PaginatedList<OrdenesTrabajo>
 
 @{
     ViewData["Title"] = "Órdenes de Trabajo";
 }
 
+<!-- 🧾 HEADER -->
 <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
     <div>
         <h2 class="text-2xl font-bold text-gray-800">Órdenes de Trabajo</h2>
         <p class="text-sm text-gray-500">Gestión y seguimiento de reparaciones</p>
     </div>
-    <a asp-action="Create" class="bg-primary hover:bg-primaryDark text-white px-5 py-2.5 rounded-xl shadow-sm font-medium transition flex items-center gap-2 w-full md:w-auto justify-center">
+    <a asp-action="Create"
+       class="bg-primary hover:bg-primaryDark text-white px-5 py-2.5 rounded-xl shadow-sm font-medium transition
+              flex items-center gap-2 w-full md:w-auto justify-center">
         <i class="bi bi-plus-lg text-lg"></i>
         <span>Nueva Orden</span>
     </a>
 </div>
 
-@if (TempData["Mensaje"] != null)
-{
-    <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r shadow-sm flex justify-between items-center" role="alert">
-        <div class="flex items-center gap-2">
-            <i class="bi bi-check-circle-fill text-xl"></i>
-            <span class="font-medium">@TempData["Mensaje"]</span>
-        </div>
-        <button type="button" class="text-green-500 hover:text-green-700" onclick="this.parentElement.style.display='none'">
-            <i class="bi bi-x-lg"></i>
-        </button>
-    </div>
-}
+<!-- 🔍 FILTROS -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6">
+    <div class="bg-gray-50 px-6 py-4 border-b border-gray-100">
+        <form method="get" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
 
+            <!-- ESTADO -->
+            <div class="md:col-span-3">
+                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">
+                    Estado
+                </label>
+                <select name="estado"
+                        class="w-full rounded-lg border-gray-300 shadow-sm text-sm">
+                    <option value="">-- Todas --</option>
+                    @foreach (EstadoOrden estado in Enum.GetValues(typeof(EstadoOrden)))
+                    {
+                        <option value="@estado"
+                                selected="@(ViewBag.EstadoSeleccionado?.ToString() == estado.ToString())">
+                            @estado
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <!-- EMPLEADO -->
+            <div class="md:col-span-3">
+                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">
+                    Empleado
+                </label>
+                <input type="text"
+                       name="empleado"
+                       value="@ViewBag.Empleado"
+                       placeholder="Nombre o apellido"
+                       class="w-full rounded-lg border-gray-300 shadow-sm text-sm" />
+            </div>
+
+            <!-- PATENTE -->
+            <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">
+                    Patente
+                </label>
+                <input type="text"
+                       name="patente"
+                       value="@ViewBag.Patente"
+                       class="w-full rounded-lg border-gray-300 shadow-sm text-sm" />
+            </div>
+
+            <!-- FECHA DESDE -->
+            <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">
+                    Desde
+                </label>
+                <input type="date"
+                       name="fechaDesde"
+                       value="@ViewBag.FechaDesde"
+                       class="w-full rounded-lg border-gray-300 shadow-sm text-sm" />
+            </div>
+
+            <!-- FECHA HASTA -->
+            <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">
+                    Hasta
+                </label>
+                <input type="date"
+                       name="fechaHasta"
+                       value="@ViewBag.FechaHasta"
+                       class="w-full rounded-lg border-gray-300 shadow-sm text-sm" />
+            </div>
+
+            <!-- BOTONES -->
+            <div class="md:col-span-12 flex gap-2">
+                <button type="submit"
+                        class="bg-primary hover:bg-primaryDark text-white px-6 py-2 rounded-lg text-sm font-medium transition">
+                    Filtrar
+                </button>
+                <a asp-action="Index"
+                   class="bg-white border border-gray-300 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                    Limpiar
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- 📋 TABLA -->
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
@@ -36,16 +112,17 @@
                 <tr class="bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     <th class="px-6 py-4">OT #</th>
                     <th class="px-6 py-4">Vehículo / Cliente</th>
-                    <th class="px-6 py-4">Empleado Asignado</th>
-                    <th class="px-6 py-4">Fecha Ingreso</th>
+                    <th class="px-6 py-4">Empleado</th>
+                    <th class="px-6 py-4">Fecha</th>
                     <th class="px-6 py-4 text-center">Estado</th>
                     <th class="px-6 py-4 text-right">Acciones</th>
                 </tr>
             </thead>
+
             <tbody class="divide-y divide-gray-50">
                 @foreach (var item in Model)
                 {
-                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                    <tr class="hover:bg-gray-50/50 transition group">
                         <td class="px-6 py-4 font-mono text-sm text-primary font-bold">
                             #@item.Id
                         </td>
@@ -57,43 +134,42 @@
                             </div>
                         </td>
 
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                @{
-                                    var nombre = item.Empleado?.Nombre ?? "N/A";
-                                    var inicial = nombre.Length > 0 ? nombre.Substring(0, 1) : "?";
-                                    var colorAvatar = "bg-indigo-100 text-indigo-600"; // Color por defecto
-                                }
-                                <div class="w-8 h-8 rounded-full @colorAvatar flex items-center justify-center text-xs font-bold shadow-sm">
-                                    @inicial
-                                </div>
-                                <span class="text-sm font-medium text-gray-700">@nombre @item.Empleado?.Apellido</span>
-                            </div>
+                        <td class="px-6 py-4 text-sm text-gray-700">
+                            @(item.Empleado != null
+                                ? $"{item.Empleado.Nombre} {item.Empleado.Apellido}"
+                                : "—")
                         </td>
 
                         <td class="px-6 py-4 text-sm text-gray-600">
-                            <div class="flex items-center gap-2">
-                                <i class="bi bi-calendar3 text-gray-400"></i>
-                                @item.FechaIngreso.ToString("dd/MM/yyyy")
-                            </div>
+                            @item.FechaIngreso.ToString("dd/MM/yyyy")
                         </td>
 
                         <td class="px-6 py-4 text-center">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium @GetBadgeClass(item.Estado)">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                  @GetBadgeClass(item.Estado)">
                                 @GetStatusIcon(item.Estado)
                                 @item.Estado
                             </span>
                         </td>
 
+                        <!-- 👇 ACCIONES COMO ANTES -->
                         <td class="px-6 py-4 text-right">
-                            <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-50 text-orange-500 hover:bg-orange-100 transition" title="Editar">
+                            <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition">
+                                <a asp-action="Edit" asp-route-id="@item.Id"
+                                   class="w-8 h-8 flex items-center justify-center rounded-lg
+                                          bg-orange-50 text-orange-500 hover:bg-orange-100">
                                     <i class="bi bi-pencil-fill text-sm"></i>
                                 </a>
-                                <a asp-action="Details" asp-route-id="@item.Id" class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100 transition" title="Detalles">
+
+                                <a asp-action="Details" asp-route-id="@item.Id"
+                                   class="w-8 h-8 flex items-center justify-center rounded-lg
+                                          bg-blue-50 text-blue-500 hover:bg-blue-100">
                                     <i class="bi bi-eye-fill text-sm"></i>
                                 </a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition" title="Eliminar">
+
+                                <a asp-action="Delete" asp-route-id="@item.Id"
+                                   class="w-8 h-8 flex items-center justify-center rounded-lg
+                                          bg-red-50 text-red-500 hover:bg-red-100">
                                     <i class="bi bi-trash-fill text-sm"></i>
                                 </a>
                             </div>
@@ -104,47 +180,66 @@
         </table>
     </div>
 
-    <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+    <!-- ⏭ PAGINACIÓN -->
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
         <span class="text-sm text-gray-500">
-            Página <span class="font-bold text-gray-800">@Model.PageIndex</span> de @Model.TotalPages
+            Página <strong>@Model.PageIndex</strong> de @Model.TotalPages
         </span>
+
         <div class="flex gap-2">
-            <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" 
-               class="px-3 py-1 text-sm rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition @(!Model.HasPreviousPage ? "pointer-events-none opacity-50" : "")">
-               <i class="bi bi-chevron-left"></i> Anterior
+            <a asp-action="Index"
+               asp-route-pageNumber="@(Model.PageIndex - 1)"
+               asp-route-estado="@ViewBag.EstadoSeleccionado"
+               asp-route-empleado="@ViewBag.Empleado"
+               asp-route-patente="@ViewBag.Patente"
+               asp-route-fechaDesde="@ViewBag.FechaDesde"
+               asp-route-fechaHasta="@ViewBag.FechaHasta"
+               class="px-3 py-1 text-sm rounded-md border bg-white
+                      @(!Model.HasPreviousPage ? "pointer-events-none opacity-50" : "")">
+                Anterior
             </a>
-            <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" 
-               class="px-3 py-1 text-sm rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition @(!Model.HasNextPage ? "pointer-events-none opacity-50" : "")">
-               Siguiente <i class="bi bi-chevron-right"></i>
+
+            <a asp-action="Index"
+               asp-route-pageNumber="@(Model.PageIndex + 1)"
+               asp-route-estado="@ViewBag.EstadoSeleccionado"
+               asp-route-empleado="@ViewBag.Empleado"
+               asp-route-patente="@ViewBag.Patente"
+               asp-route-fechaDesde="@ViewBag.FechaDesde"
+               asp-route-fechaHasta="@ViewBag.FechaHasta"
+               class="px-3 py-1 text-sm rounded-md border bg-white
+                      @(!Model.HasNextPage ? "pointer-events-none opacity-50" : "")">
+                Siguiente
             </a>
         </div>
     </div>
 </div>
 
 @functions {
-    public string GetBadgeClass(TallerBecerraAguilera.Models.EstadoOrden estado)
+    public string GetBadgeClass(EstadoOrden estado)
     {
         return estado switch
         {
-            TallerBecerraAguilera.Models.EstadoOrden.Pendiente => "bg-gray-100 text-gray-600",
-            TallerBecerraAguilera.Models.EstadoOrden.EnReparacion => "bg-indigo-100 text-primary",
-            TallerBecerraAguilera.Models.EstadoOrden.Finalizada => "bg-amber-100 text-amber-700",
-            TallerBecerraAguilera.Models.EstadoOrden.Entregada => "bg-emerald-100 text-emerald-700",
+            EstadoOrden.Pendiente => "bg-gray-100 text-gray-600",
+            EstadoOrden.EnReparacion => "bg-indigo-100 text-primary",
+            EstadoOrden.Finalizada => "bg-amber-100 text-amber-700",
+            EstadoOrden.Entregada => "bg-emerald-100 text-emerald-700",
             _ => "bg-gray-100 text-gray-800",
         };
     }
 
-    public Microsoft.AspNetCore.Html.IHtmlContent GetStatusIcon(TallerBecerraAguilera.Models.EstadoOrden estado)
+    public Microsoft.AspNetCore.Html.IHtmlContent GetStatusIcon(EstadoOrden estado)
     {
         var icon = estado switch
         {
-            TallerBecerraAguilera.Models.EstadoOrden.Pendiente => "bi-hourglass-split",
-            TallerBecerraAguilera.Models.EstadoOrden.EnReparacion => "bi-tools",
-            TallerBecerraAguilera.Models.EstadoOrden.Finalizada => "bi-check-circle",
-            TallerBecerraAguilera.Models.EstadoOrden.Entregada => "bi-box-seam",
+            EstadoOrden.Pendiente => "bi-hourglass-split",
+            EstadoOrden.EnReparacion => "bi-tools",
+            EstadoOrden.Finalizada => "bi-check-circle",
+            EstadoOrden.Entregada => "bi-box-seam",
             _ => "bi-circle",
         };
-        // Nota: El espacio antes del cierre del tag es intencional para separar icono de texto
-        return new Microsoft.AspNetCore.Html.HtmlString($"<i class='bi {icon} mr-1.5'></i>");
+
+        return new Microsoft.AspNetCore.Html.HtmlString(
+            $"<i class='bi {icon} mr-1.5'></i>"
+        );
     }
 }

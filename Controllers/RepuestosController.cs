@@ -33,6 +33,10 @@ namespace TallerBecerraAguilera.Controllers
             {
                 query = query.Where(r => r.cantidadStock <= 0);
             }
+            else if (stock == "bajo")
+            {
+                query = query.Where(r => r.cantidadStock <= r.stockMinimo && r.stockMinimo > 0);
+            }
 
             query = query.OrderBy(r => r.codigo);
 

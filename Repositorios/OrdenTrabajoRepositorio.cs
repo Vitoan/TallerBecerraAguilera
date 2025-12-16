@@ -10,6 +10,17 @@ namespace TallerBecerraAguilera.Repositorios
 {
     public class OrdenTrabajoRepositorio
     {
+        
+        public IQueryable<OrdenesTrabajo> Query()
+        {
+            return _context.OrdenesTrabajo
+                .Include(o => o.Vehiculo)
+                    .ThenInclude(v => v!.Cliente)
+                .Include(o => o.Empleado)
+                .AsQueryable();
+        }
+
+
         public async Task<PaginatedList<OrdenesTrabajo>> GetAllPaginatedAsync(int pageIndex, int pageSize)
         {
             // Preparamos la consulta pero NO la ejecutamos todavía (no usamos ToListAsync aquí)

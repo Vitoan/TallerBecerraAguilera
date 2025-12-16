@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TallerBecerraAguilera.Repositorios;
 using TallerBecerraAguilera.Models;
+using TallerBecerraAguilera.Helpers;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -52,15 +53,74 @@ namespace TallerBecerraAguilera.Controllers
         // ===========================
         
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Index(int? pageNumber)
+        public async Task<IActionResult> Index(
+            int pageNumber = 1,
+            EstadoOrden? estado = null,
+            string? patente = null,
+            string? empleado = null,
+            DateTime? fechaDesde = null,
+            DateTime? fechaHasta = null)
         {
-            int pageSize = 1; // Cantidad de órdenes por página (puedes cambiarlo a 10)
-            
-            // Llamamos al nuevo método del repositorio
-            var ots = await _otRepositorio.GetAllPaginatedAsync(pageNumber ?? 1, pageSize);
-            
-            return View(ots);
+            int pageSize = 5;
+
+            var query = _otRepositorio.Query();
+
+            // ESTADO
+            if (estado.HasValue)
+            {
+                query = query.Where(o => o.Estado == estado.Value);
+            }
+
+            // PATENTE
+            if (!string.IsNullOrWhiteSpace(patente))
+            {
+                var pat = patente.Trim().ToLower();
+                query = query.Where(o =>
+                    o.Vehiculo != null &&
+                    o.Vehiculo.patente.ToLower().Contains(pat));
+            }
+
+            // EMPLEADO (nombre o apellido, case-insensitive)
+            if (!string.IsNullOrWhiteSpace(empleado))
+            {
+                var emp = empleado.Trim().ToLower();
+                query = query.Where(o =>
+                    o.Empleado != null &&
+                    (
+                        o.Empleado.Nombre.ToLower().Contains(emp) ||
+                        o.Empleado.Apellido.ToLower().Contains(emp)
+                    ));
+            }
+
+            // FECHA DESDE
+            if (fechaDesde.HasValue)
+            {
+                query = query.Where(o => o.FechaIngreso.Date >= fechaDesde.Value.Date);
+            }
+
+            // FECHA HASTA
+            if (fechaHasta.HasValue)
+            {
+                query = query.Where(o => o.FechaIngreso.Date <= fechaHasta.Value.Date);
+            }
+
+            // ORDEN
+            query = query.OrderByDescending(o => o.FechaIngreso);
+
+            // PAGINADO
+            var paginated = await PaginatedList<OrdenesTrabajo>
+                .CreateAsync(query, pageNumber, pageSize);
+
+            // VIEWBAGS
+            ViewBag.EstadoSeleccionado = estado;
+            ViewBag.Patente = patente;
+            ViewBag.Empleado = empleado;
+            ViewBag.FechaDesde = fechaDesde?.ToString("yyyy-MM-dd");
+            ViewBag.FechaHasta = fechaHasta?.ToString("yyyy-MM-dd");
+
+            return View(paginated);
         }
+
 
         public async Task<IActionResult> Details(int? id)
         {

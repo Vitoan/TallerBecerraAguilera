@@ -26,17 +26,33 @@ namespace TallerBecerraAguilera.Controllers
             _otRepo = otRepo;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string empleado = "")
         {
             if (User.IsInRole("Administrador"))
             {
-                var lista = await _repo.Query()
+        // Obtenemos todos los registros
+                var query = _repo.Query();
+
+                // Filtrado por empleado si se pasó algo en el input
+                if (!string.IsNullOrEmpty(empleado))
+                {
+                    query = query.Where(o =>
+                        (o.Empleado != null &&
+                        (o.Empleado.Nombre.Contains(empleado, StringComparison.OrdinalIgnoreCase) ||
+                        o.Empleado.Apellido.Contains(empleado, StringComparison.OrdinalIgnoreCase)))
+                    );
+                }
+
+                var lista = await query
                     .OrderByDescending(x => x.fecha_prestamo)
                     .ToListAsync();
+
+                ViewBag.EmpleadoSeleccionado = empleado; // Para mantener el texto en el input
 
                 return View(lista);
             }
 
+            // Si es empleado, solo mostramos sus pedidos sin filtro
             int empleadoId = int.Parse(User.FindFirst("Id")!.Value);
             return View(await _repo.ObtenerPorEmpleado(empleadoId));
         }

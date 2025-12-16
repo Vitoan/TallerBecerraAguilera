@@ -24,17 +24,57 @@ namespace TallerBecerraAguilera.Controllers
             _empleadoRepo = empleadoRepo;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1)
+        public async Task<IActionResult> Index(
+            int pageNumber = 1,
+            DateTime? fechaDesde = null,
+            DateTime? fechaHasta = null,
+            int? proveedorId = null,
+            EstadoPedido? estado = null)
         {
             int pageSize = 10;
 
-            var query = _repo.Query()
-                             .OrderByDescending(p => p.Fecha);
+            var query = _repo.Query();
 
-            var paginated = await PaginatedList<PedidosRepuestos>.CreateAsync(query, pageNumber, pageSize);
+            // FILTROS
+            if (fechaDesde.HasValue)
+            {
+                query = query.Where(p => p.Fecha.Date >= fechaDesde.Value.Date);
+            }
+
+            if (fechaHasta.HasValue)
+            {
+                query = query.Where(p => p.Fecha.Date <= fechaHasta.Value.Date);
+            }
+
+            if (proveedorId.HasValue)
+            {
+                query = query.Where(p => p.ProveedorId == proveedorId.Value);
+            }
+
+            if (estado.HasValue)
+            {
+            query = query.Where(p => p.Estado == estado.Value);
+            }
+
+            // ORDEN
+            query = query.OrderByDescending(p => p.Fecha);
+            // 📄 PAGINADO
+            var paginated = await PaginatedList<PedidosRepuestos>
+                .CreateAsync(query, pageNumber, pageSize);
+
+            // DATOS PARA LA VISTA
+            ViewBag.FechaDesde = fechaDesde;
+            ViewBag.FechaHasta = fechaHasta;
+            ViewBag.ProveedorId = proveedorId;
+            ViewBag.Estado = estado;
+
+            ViewBag.Proveedores = (await _proveedorRepo.GetAllAsync())
+                .OrderBy(p => p.Nombre)
+                .ToList();
 
             return View(paginated);
         }
+
 
         public async Task<IActionResult> Details(int id)
         {

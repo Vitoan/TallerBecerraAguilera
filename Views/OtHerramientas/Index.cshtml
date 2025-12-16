@@ -20,6 +20,37 @@
         </div>
     </div>
 
+    <!-- 🔍 FILTRO POR EMPLEADO -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 px-6 py-4">
+        <form method="get" class="flex flex-col md:flex-row gap-4 items-end">
+
+            <div class="flex-1">
+                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">
+                    Filtrar por empleado
+                </label>
+                <input type="text" name="empleado" value="@ViewBag.EmpleadoSeleccionado"
+                       class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-primary focus:border-primary text-sm"
+                       placeholder="Nombre o Apellido del empleado">
+            </div>
+
+            <div>
+                <button type="submit"
+                        class="w-full bg-primary hover:bg-primaryDark text-white py-2 rounded-lg text-sm font-medium transition">
+                    Filtrar
+                </button>
+            </div>
+
+            <div>
+                <a asp-action="Index"
+                   class="w-full inline-flex justify-center bg-white border border-gray-300
+                          text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                    Limpiar
+                </a>
+            </div>
+
+        </form>
+    </div>
+
     @if (!Model.Any())
     {
         <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-12 text-center flex flex-col items-center justify-center">
