@@ -20,6 +20,11 @@ namespace TallerBecerraAguilera.Repositorios
                 .AsQueryable();
         }
 
+        public async Task<Empleados?> GetEmpleadoByUserIdAsync(int usuarioId)
+        {
+            return await _context.Empleados
+                .FirstOrDefaultAsync(e => e.UsuarioId == usuarioId);
+        }
 
         public async Task<PaginatedList<OrdenesTrabajo>> GetAllPaginatedAsync(int pageIndex, int pageSize)
         {

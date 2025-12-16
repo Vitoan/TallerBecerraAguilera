@@ -29,5 +29,15 @@ namespace TallerBecerraAguilera.Helpers
             var items = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
             return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }
+
+        public static PaginatedList<T> CreateEmpty(int pageSize)
+        {
+            return new PaginatedList<T>(
+                new List<T>(),
+                0,
+                1,
+                pageSize
+            );
+        }
     }
 }

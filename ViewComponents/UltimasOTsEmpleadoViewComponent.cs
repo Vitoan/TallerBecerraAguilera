@@ -16,28 +16,23 @@ namespace TallerBecerraAguilera.ViewComponents
             _repo = repo;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public async Task<IViewComponentResult> InvokeAsync(int empleadoId)
         {
-            var claimsPrincipal = User as ClaimsPrincipal;
-            var claimId = claimsPrincipal?.FindFirst("Id")?.Value;
-
-            if (string.IsNullOrEmpty(claimId))
-                return Content("Empleado no identificado");
-
-            if (!int.TryParse(claimId, out int empleadoId))
-                return Content("Empleado no válido");
-
             var ordenes = await _repo.GetByEmpleadoAsync(empleadoId);
 
-            var model = ordenes.Select(o => new UltimasOTsViewModel
-            {
-                Id = o.Id,
-                DescripcionFalla = o.DescripcionFalla,
-                FechaIngreso = o.FechaIngreso,
-                Estado = o.Estado.ToString(),
-                Patente = $"{o.Vehiculo?.marca} {o.Vehiculo?.modelo} ({o.Vehiculo?.patente})",
-                EmpleadoAsignado = o.Empleado?.NombreCompleto ?? ""
-            }).ToList();
+            var model = ordenes
+                .OrderByDescending(o => o.FechaIngreso)
+                .Take(5)
+                .Select(o => new UltimasOTsViewModel
+                {
+                    Id = o.Id,
+                    DescripcionFalla = o.DescripcionFalla,
+                    FechaIngreso = o.FechaIngreso,
+                    Estado = o.Estado.ToString(),
+                    Patente = $"{o.Vehiculo?.marca} {o.Vehiculo?.modelo} ({o.Vehiculo?.patente})",
+                    EmpleadoAsignado = o.Empleado?.NombreCompleto ?? ""
+                })
+                .ToList();
 
             return View(model);
         }

@@ -6,7 +6,8 @@ using TallerBecerraAguilera.Helpers;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization; // Necesario para Select
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims; // Necesario para Select
 
 namespace TallerBecerraAguilera.Controllers
 {
@@ -218,11 +219,20 @@ namespace TallerBecerraAguilera.Controllers
         [Authorize(Roles = "Empleado")]
         public async Task<IActionResult> MisOTs(int? pageNumber)
         {
-            var userId = int.Parse(User.FindFirst("Id")!.Value);
-
             int pageSize = 5;
 
-            var ots = await _otRepositorio.GetByEmpleadoPaginatedAsync(userId, pageNumber ?? 1, pageSize);
+            var usuarioIdClaim = User.FindFirst("Id")?.Value;
+            if (usuarioIdClaim == null)
+                return Forbid();
+
+            var usuarioId = int.Parse(usuarioIdClaim);
+
+            var empleado = await _otRepositorio.GetEmpleadoByUserIdAsync(usuarioId);
+
+            if (empleado == null)
+                return View(PaginatedList<OrdenesTrabajo>.CreateEmpty(pageSize));
+
+            var ots = await _otRepositorio.GetByEmpleadoPaginatedAsync(empleado.Id, pageNumber ?? 1, pageSize);
 
             return View(ots);
         }
