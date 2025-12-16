@@ -30,7 +30,6 @@ namespace TallerBecerraAguilera.Controllers
                 var entregadas = await _ordenTrabajoRepositorio.GetCountByEstadoAsync(EstadoOrden.Entregada);
                 ViewBag.OrdenesFinalizadas = finalizadas + entregadas;
                 
-                // Asegúrate que tu repositorio tenga este método, si no, comenta esta línea temporalmente
                 ViewBag.StockCritico = await _ordenTrabajoRepositorio.GetStockCriticoCountAsync(); 
                 //ViewBag.StockCritico = 0; // Valor por defecto si no tienes el método aún
 
@@ -53,8 +52,6 @@ namespace TallerBecerraAguilera.Controllers
                 ViewBag.MisOTsFinalizadas = await _ordenTrabajoRepositorio.GetCountByEmpleadoAndEstadoAsync(empleado.Id, EstadoOrden.Finalizada)
                                           + await _ordenTrabajoRepositorio.GetCountByEmpleadoAndEstadoAsync(empleado.Id, EstadoOrden.Entregada);
 
-                // IMPORTANTE: Debes crear la vista 'IndexEmpleado.cshtml' si quieres un dashboard distinto
-                // O usar la misma Index y ocultar cosas con if(User.IsInRole...)
                 return View("IndexEmpleado", empleado); 
             }
 
