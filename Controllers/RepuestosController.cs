@@ -27,7 +27,7 @@ namespace TallerBecerraAguilera.Controllers
 
             if (stock == "con")
             {
-                query = query.Where(r => r.cantidadStock > 0);
+                query = query.Where(r => r.cantidadStock > 0 && r.cantidadStock > r.stockMinimo);
             }
             else if (stock == "sin")
             {
@@ -35,7 +35,7 @@ namespace TallerBecerraAguilera.Controllers
             }
             else if (stock == "bajo")
             {
-                query = query.Where(r => r.cantidadStock <= r.stockMinimo && r.stockMinimo > 0);
+                query = query.Where(r => r.cantidadStock <= r.stockMinimo && r.cantidadStock > 0 && r.stockMinimo > 0);
             }
 
             query = query.OrderBy(r => r.codigo);

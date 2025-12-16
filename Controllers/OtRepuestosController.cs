@@ -72,13 +72,47 @@ namespace TallerBecerraAguilera.Controllers
             if (usuarioIdClaim == null) return Forbid();
 
             var usuarioId = int.Parse(usuarioIdClaim);
-
             var empleado = await _otRepo.GetEmpleadoByUserIdAsync(usuarioId);
             if (empleado == null) return Forbid();
 
+            var repuesto = await _repuestosRepo.GetByIdAsync(modelo.repuesto_id);
+            if (repuesto == null) return NotFound();
+
+            //Validación de stock CLARA
+            if (modelo.cantidad_usada > repuesto.cantidadStock)
+            {
+                ModelState.AddModelError(
+                    "cantidad_usada",
+                    "La cantidad solicitada supera el stock disponible."
+                );
+            }
+
             if (!ModelState.IsValid)
             {
-                ViewBag.Repuesto = await _repuestosRepo.GetByIdAsync(modelo.repuesto_id);
+                var ots = await _otRepo.ObtenerPorEmpleadoYEstadoAsync(
+                    empleado.Id,
+                    EstadoOrden.EnReparacion);
+
+                ViewBag.OTs = ots.Select(o => new SelectListItem
+                {
+                    Value = o.Id.ToString(),
+                    Text = $"OT #{o.Id}"
+                }).ToList();
+
+                modelo.Repuesto = repuesto;
+                return View(modelo);
+            }
+
+            var (ok, mensaje) = await _repo.UsarRepuestoAsync(
+                modelo.ot_id,
+                modelo.repuesto_id,
+                empleado.Id,
+                modelo.cantidad_usada);
+
+            if (!ok)
+            {
+                ModelState.AddModelError("", mensaje);
+                modelo.Repuesto = repuesto;
 
                 var ots = await _otRepo.ObtenerPorEmpleadoYEstadoAsync(
                     empleado.Id,
@@ -93,16 +127,7 @@ namespace TallerBecerraAguilera.Controllers
                 return View(modelo);
             }
 
-            bool ok = await _repo.UsarRepuestoAsync(
-                modelo.ot_id,
-                modelo.repuesto_id,
-                empleado.Id,
-                modelo.cantidad_usada);
-
-            TempData[ok ? "success" : "error"] =
-                ok ? "Repuesto usado correctamente." :
-                     "No se pudo usar el repuesto.";
-
+            TempData["success"] = mensaje;
             return RedirectToAction("Index", "Repuestos");
         }
     }

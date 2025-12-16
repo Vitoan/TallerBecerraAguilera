@@ -40,7 +40,7 @@ namespace TallerBecerraAguilera.Repositorios
                 .ToListAsync();
         }
 
-        public async Task<bool> UsarRepuestoAsync(
+        public async Task<(bool ok, string mensaje)> UsarRepuestoAsync(
             int otId,
             int repuestoId,
             int empleadoId,
@@ -54,16 +54,16 @@ namespace TallerBecerraAguilera.Repositorios
                     .FirstOrDefaultAsync(r => r.id == repuestoId);
 
                 if (repuesto == null)
-                    return false;
+                    return (false, "Repuesto no encontrado.");
 
                 if (repuesto.cantidadStock < cantidad)
-                    return false;
+                    return (false, "No hay stock suficiente para este repuesto.");
 
                 bool existe = await _context.OtRepuestos
                     .AnyAsync(x => x.ot_id == otId && x.repuesto_id == repuestoId);
 
                 if (existe)
-                    return false;
+                    return (false, "Ya usaste este repuesto para esta Orden de Trabajo.");
 
                 var registro = new OtRepuestos
                 {
@@ -81,12 +81,12 @@ namespace TallerBecerraAguilera.Repositorios
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return true;
+                return (true, "Repuesto usado correctamente.");
             }
             catch
             {
                 await transaction.RollbackAsync();
-                return false;
+                return (false, "Ocurrió un error al usar el repuesto.");
             }
         }
 
