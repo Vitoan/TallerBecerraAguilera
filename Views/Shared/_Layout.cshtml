@@ -83,7 +83,7 @@
 
         <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
             
-            <a href="@Url.Action("Index", "Home")" class="flex items-center px-4 py-3 rounded-lg mb-4 @GetLinkClass(currentController, "Home")">
+            <a href="@Url.Action("Index", "Home")" class="flex items-center px-4 py-3 rounded-lg mb-4 @GetLinkClass(currentController!, "Home")">
                 <i class="bi bi-grid-1x2-fill mr-3 text-lg"></i>
                 <span>Dashboard</span>
             </a>
@@ -92,59 +92,59 @@
             {
                 <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-2">Administración</p>
 
-                <a href="@Url.Action("Create", "OrdenesTrabajo")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "OrdenesTrabajo")">
+                <a href="@Url.Action("Create", "OrdenesTrabajo")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "OrdenesTrabajo")">
                     <i class="bi bi-plus-circle-fill mr-3 text-lg text-green-500"></i>
                     <span>Nueva OT</span>
                 </a>
 
-                <a href="@Url.Action("Index", "Vehiculos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Vehiculos")">
+                <a href="@Url.Action("Index", "Vehiculos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "Vehiculos")">
                     <i class="bi bi-car-front-fill mr-3 text-lg"></i>
                     <span>Vehículos</span>
                 </a>
 
-                <a href="@Url.Action("Index", "Clientes")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Clientes")">
+                <a href="@Url.Action("Index", "Clientes")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "Clientes")">
                     <i class="bi bi-people-fill mr-3 text-lg"></i>
                     <span>Clientes</span>
                 </a>
 
-                <a href="@Url.Action("Index", "Empleados")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Empleados")">
+                <a href="@Url.Action("Index", "Empleados")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "Empleados")">
                     <i class="bi bi-person-badge-fill mr-3 text-lg"></i>
                     <span>Empleados</span>
                 </a>
                 
-                <a href="@Url.Action("Index", "Usuarios")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Usuarios")">
+                <a href="@Url.Action("Index", "Usuarios")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "Usuarios")">
                     <i class="bi bi-shield-lock-fill mr-3 text-lg"></i>
                     <span>Usuarios</span>
                 </a>
 
                 <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-6">Inventario & Taller</p>
 
-                <a href="@Url.Action("Index", "Repuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Repuestos")">
+                <a href="@Url.Action("Index", "Repuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "Repuestos")">
                     <i class="bi bi-box-seam-fill mr-3 text-lg"></i>
                     <span>Inventario</span>
                 </a>
                 
-                <a href="@Url.Action("Index", "Herramientas")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Herramientas")">
+                <a href="@Url.Action("Index", "Herramientas")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "Herramientas")">
                     <i class="bi bi-tools mr-3 text-lg"></i>
                     <span>Herramientas</span>
                 </a>
 
-                <a href="@Url.Action("Index", "OtHerramientas")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "OtHerramientas")">
+                <a href="@Url.Action("Index", "OtHerramientas")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "OtHerramientas")">
                     <i class="bi bi-tools mr-3 text-lg"></i>
                     <span>Pedidos de Herramientas</span>
                 </a>
                 
-                 <a href="@Url.Action("Create", "PedidosRepuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "PedidosRepuestos")">
+                 <a href="@Url.Action("Create", "PedidosRepuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "PedidosRepuestos")">
                     <i class="bi bi-cart-fill mr-3 text-lg"></i>
                     <span>Pedidos Compra</span>
                 </a>
                 
-                <a href="@Url.Action("Index", "Proveedores")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Proveedores")">
+                <a href="@Url.Action("Index", "Proveedores")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "Proveedores")">
                     <i class="bi bi-building-fill mr-3 text-lg"></i>
                     <span>Proveedores</span>
                 </a>
 
-                <a href="@Url.Action("Index", "OtRepuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "OtRepuestos")">
+                <a href="@Url.Action("Index", "OtRepuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "OtRepuestos")">
                     <i class="bi bi-box-seam-fill mr-3 text-lg"></i>
                     <span>Uso de Repuestos</span>
                 </a>
@@ -154,27 +154,27 @@
             {
                 <p class="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-2">Mi Trabajo</p>
 
-                <a href="@Url.Action("MisOTs", "OrdenesTrabajo")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "OrdenesTrabajo")">
+                <a href="@Url.Action("MisOTs", "OrdenesTrabajo")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "OrdenesTrabajo")">
                     <i class="bi bi-clipboard-check-fill mr-3 text-lg"></i>
                     <span>Mis Órdenes</span>
                 </a>
 
-                <a href="@Url.Action("Index", "Herramientas")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Herramientas")">
+                <a href="@Url.Action("Index", "Herramientas")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "Herramientas")">
                     <i class="bi bi-tools mr-3 text-lg"></i>
                     <span>Herramientas</span>
                 </a>
 
-                <a href="@Url.Action("MisHerramientas", "OtHerramientas")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "OtHerramientas")">
+                <a href="@Url.Action("MisHerramientas", "OtHerramientas")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "OtHerramientas")">
                     <i class="bi bi-tools mr-3 text-lg"></i>
                     <span>Mis Herramientas</span>
                 </a>
 
-                <a href="@Url.Action("Index", "Repuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "Repuestos")">
+                <a href="@Url.Action("Index", "Repuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "Repuestos")">
                     <i class="bi bi-search mr-3 text-lg"></i>
                     <span>Catálogo Repuestos</span>
                 </a>
                 
-                <a href="@Url.Action("Create", "PedidosRepuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController, "PedidosRepuestos")">
+                <a href="@Url.Action("Create", "PedidosRepuestos")" class="flex items-center px-4 py-3 rounded-lg @GetLinkClass(currentController!, "PedidosRepuestos")">
                     <i class="bi bi-cart-plus-fill mr-3 text-lg"></i>
                     <span>Solicitar Repuesto</span>
                 </a>

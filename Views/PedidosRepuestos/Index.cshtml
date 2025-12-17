@@ -120,18 +120,29 @@
                                 <td class="px-5 py-4">@item.Fecha.ToString("dd/MM/yyyy")</td>
 
                                 <td class="px-5 py-4 text-center">
-                                    @{
-                                        var badge = item.Estado switch
+                                    <form asp-action="CambiarEstado"
+                                      method="post"
+                                      class="flex items-center justify-center gap-2">
+
+                                    <input type="hidden" name="pedidoId" value="@item.Id" />
+
+                                    <select name="estado"
+                                            class="border rounded px-2 py-1 text-sm">
+
+                                        @foreach (EstadoPedido e in Enum.GetValues(typeof(EstadoPedido)))
                                         {
-                                            EstadoPedido.Pendiente => "bg-yellow-100 text-yellow-800",
-                                            EstadoPedido.Recibido => "bg-green-100 text-green-800",
-                                            EstadoPedido.Cancelado => "bg-red-100 text-red-800",
-                                            _ => "bg-gray-100 text-gray-800"
-                                        };
-                                    }
-                                    <span class="px-2 py-1 rounded-full text-xs font-bold @badge">
-                                        @item.Estado
-                                    </span>
+                                            <option value="@e" selected="@(item.Estado == e)">
+                                                @e
+                                            </option>
+                                        }
+                                    </select>
+
+                                    <button type="submit"
+                                            class="text-green-600 hover:text-green-800"
+                                            title="Confirmar cambio">
+                                        ✔
+                                    </button>
+                                    </form>
                                 </td>
 
                                 <td class="px-5 py-4 text-right">
