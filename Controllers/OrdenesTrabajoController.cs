@@ -132,9 +132,8 @@ namespace TallerBecerraAguilera.Controllers
         }
         
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            // Pre-llena la fecha de ingreso y el estado
             var ot = new OrdenesTrabajo { 
                 FechaIngreso = DateTime.Today,
                 Estado = EstadoOrden.Pendiente 

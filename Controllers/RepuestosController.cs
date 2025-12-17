@@ -49,7 +49,7 @@ namespace TallerBecerraAguilera.Controllers
         }
 
         [Authorize(Roles = "Administrador")]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
             return View();
         }
